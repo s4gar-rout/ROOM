@@ -25,6 +25,10 @@ if (!process.env.REFRESH_TOKEN_EXPIRES_IN) {
     throw new Error("REFRESH_TOKEN_EXPIRE_IN is not defined in enviroment varriables")
 }
 
+if(!process.env.ADMIN_USERNAME || !process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD || !process.env.ADMIN_CONTACT){
+    throw new Error("Admin credentials are not defined in enviroment varriables")
+}
+
 export const config = {
     PORT: process.env.PORT,
     MONGO_URI: process.env.MONGO_URI,
@@ -32,4 +36,8 @@ export const config = {
     JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
     ACCESS_TOKEN_EXPIRES_IN: process.env.ACCESS_TOKEN_EXPIRES_IN,
     REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN,
+    ADMIN_USERNAME: process.env.ADMIN_USERNAME,
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+    ADMIN_CONTACT: process.env.ADMIN_CONTACT,
 }

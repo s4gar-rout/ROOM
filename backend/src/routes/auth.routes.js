@@ -31,4 +31,22 @@ router.post("/login", loginValidator, validateRequest, authControllers.loginCont
 router.get("/me", authMiddleware, authControllers.getMeController);
 
 
+/**
+ * @route POST /api/auth/refresh
+ * @description Refresh access token
+ * @access Public
+ */
+router.post("/refresh", authControllers.refreshTokenController);
+
+
+
+/**
+ * @route POST /api/auth/logout
+ * @description Logout a user
+ * @access Private
+ */
+
+router.post("/logout", authMiddleware, authControllers.logoutController);
+
+
 export default router;

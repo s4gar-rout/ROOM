@@ -1,6 +1,8 @@
 import UserModel from "../models/user.model.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/generateTokens.js";
 import { config } from "../config/config.js";
+import jwt from "jsonwebtoken";
+
 
 // Register controller
 async function registerController(req, res) {
@@ -215,8 +217,114 @@ async function getMeController(req, res) {
     }
 }
 
+// Refresh token controller
+async function refreshTokenController(req, res) {
+    try {
+
+        // 1. Get refresh token from cookie
+        const refreshToken = req.cookies.refreshToken;
+
+        if (!refreshToken) {
+            return res.status(401).json({
+                success: false,
+                message: "Refresh token not provided"
+            });
+        }
+
+        // 2. Verify refresh token
+        const decoded = jwt.verify(
+            refreshToken,
+            config.JWT_REFRESH_SECRET
+        );
+
+
+        // 3. Find user
+        const user = await UserModel.findById(decoded.id);
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+
+        // 4. Generate new access token
+        const newAccessToken = generateAccessToken(user);
+
+        // 5. Set new access token in cookie
+        res.cookie("accessToken", newAccessToken, {
+            httpOnly: true,
+            secure: config.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 15 * 60 * 1000
+        });
+
+        // 6. Response
+        return res.status(200).json({
+            success: true,
+            message: "Access token refreshed successfully"
+        });
+
+
+    } catch (errors) {
+        if (errors.name === "TokenExpiredError") {
+            return res.status(401).json({
+                success: false,
+                message: "Refresh token expired, please login again"
+            });
+        }
+
+        if (errors.name === "JsonWebTokenError") {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid refresh token"
+            });
+        }
+
+        console.error("Refresh Token Error:", errors);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+}
+
+
+async function logoutController(req, res) {
+    try {
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: config.NODE_ENV === "production",
+            sameSite: "lax"
+        });
+
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: config.NODE_ENV === "production",
+            sameSite: "lax"
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Logout successful"
+        });
+
+    } catch (error) {
+        console.error("Logout error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+}
+
 export default {
     registerController,
     loginController,
-    getMeController
+    getMeController,
+    refreshTokenController,
+    logoutController
 }

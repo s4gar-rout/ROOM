@@ -1,8 +1,9 @@
 import roomModel from "../models/room.model.js";
 import userModel from "../models/user.model.js";
 import { uploadFile } from "../services/storage.service.js"
-//Create room controller
 
+
+//Create room controller
 export async function createRoomController(req, res) {
     try {
         const {
@@ -81,7 +82,6 @@ export async function createRoomController(req, res) {
 
 
 //Get all rooms
-
 export async function getAllRoomsController(req,res) {
         try {
         const { page = 1, limit = 10 } = req.query;
@@ -126,7 +126,40 @@ export async function getAllRoomsController(req,res) {
     }
 }
 
+
+//Get single room details
+export async function getSingleRoomDetailsController(req,res) {
+        try {
+        const { roomId } = req.params;
+
+        const room = await roomModel.findById(roomId)
+            .populate("owner", "username email contact");
+
+        // Room not found
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                message: "Room not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Room fetched successfully",
+            room,
+        });
+
+    } catch (error) {
+        console.error("Get Room By ID Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
 export default {
     createRoomController,
-    getAllRoomsController
+    getAllRoomsController,
+    getSingleRoomDetailsController
 }

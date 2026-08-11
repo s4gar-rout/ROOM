@@ -35,4 +35,14 @@ router.get(
 );
 
 
+
+/**
+ * @desc Get room by ID
+ * @route GET /api/rooms/:roomId
+ * @access Public
+ **/
+
+router.get("/:roomId", roomController.getSingleRoomDetailsController)
+
+
 export default router;

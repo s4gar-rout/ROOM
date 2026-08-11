@@ -29,6 +29,10 @@ if(!process.env.ADMIN_USERNAME || !process.env.ADMIN_EMAIL || !process.env.ADMIN
     throw new Error("Admin credentials are not defined in enviroment varriables")
 }
 
+if(!process.env.IMAGEKIT_PRIVATE_KEY ){
+    throw new Error("Imagekit private key is not defined in enviroment varriables")
+}
+
 export const config = {
     PORT: process.env.PORT,
     MONGO_URI: process.env.MONGO_URI,
@@ -40,4 +44,6 @@ export const config = {
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
     ADMIN_CONTACT: process.env.ADMIN_CONTACT,
+    IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
+
 }

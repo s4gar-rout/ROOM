@@ -35,20 +35,29 @@ router.get("/my-rooms", authMiddleware, requireRole("owner"), roomController.get
 
 /**
  * @desc Get room by ID
- * @route GET /api/rooms/:roomId
+ * @route GET /api/rooms/single/:roomId
  * @access Public
  **/
 
-router.get("/:roomId", roomController.getSingleRoomDetailsController)
+
+router.get("/single/:roomId", roomController.getSingleRoomDetailsController)
 
 
 
 /**
  * @desc Update room details
- * @route PATCH /api/rooms/:roomId
+ * @route PATCH /api/rooms/update/:roomId
  * @access Private/Owner
  **/
-router.patch("/:roomId",authMiddleware,requireRole("owner"),roomController.updateRoomController);
+router.patch("/update/:roomId",authMiddleware,requireRole("owner"),roomController.updateRoomController);
+
+
+/**
+ * @desc Delete room
+ * @route DELETE /api/rooms/delete/:roomId
+ * @access Private/Owner
+ **/
+router.delete("/delete/:roomId",authMiddleware,requireRole("owner"),roomController.deleteRoomController);
 
 
 

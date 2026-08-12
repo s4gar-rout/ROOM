@@ -269,11 +269,52 @@ export async function updateRoomController(req, res) {
 }
 
 
+//Delete room
+
+export async function deleteRoomController(req,res){
+     try {
+        const { roomId } = req.params;
+
+        const room = await roomModel.findById(roomId);
+
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                message: "Room not found",
+            });
+        }
+
+        // Ownership check
+        if (room.owner.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to delete this room",
+            });
+        }
+
+        await roomModel.findByIdAndDelete(roomId);
+
+        return res.status(200).json({
+            success: true,
+            message: "Room deleted successfully",
+        });
+
+    } catch (error) {
+        console.error("Delete Room Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
+
 
 export default {
     createRoomController,
     getAllRoomsController,
     getSingleRoomDetailsController,
     getMyRoomController,
-    updateRoomController
+    updateRoomController,
+    deleteRoomController,
 }

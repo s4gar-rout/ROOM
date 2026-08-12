@@ -43,11 +43,19 @@ const roomSchema = new mongoose.Schema(
             default: [],
         },
 
-        images: {
-            type: [String],
-            default: [],
-        },
-
+        images: [
+            {
+                url: {
+                    type: String,
+                    required: true
+                },
+                fileId: {
+                    type: String,
+                    required: true
+                }
+            }
+        ],
+        
         availability: {
             type: Boolean,
             default: true,

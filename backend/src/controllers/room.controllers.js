@@ -42,7 +42,10 @@ export async function createRoomController(req, res) {
                         folder: "rooms",
                     });
 
-                    return result.url;
+                    return {
+                        url: result.url,
+                        fileId: result.fileId,
+                    };
                 })
             );
         }

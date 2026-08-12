@@ -3,7 +3,7 @@ import userModel from "../models/user.model.js";
 import { uploadFile } from "../services/storage.service.js"
 
 
-//Create room controller
+//Create room 
 export async function createRoomController(req, res) {
     try {
         const {
@@ -82,8 +82,8 @@ export async function createRoomController(req, res) {
 
 
 //Get all rooms
-export async function getAllRoomsController(req,res) {
-        try {
+export async function getAllRoomsController(req, res) {
+    try {
         const { page = 1, limit = 10 } = req.query;
 
         const pageNumber = Math.max(1, parseInt(page));
@@ -128,8 +128,8 @@ export async function getAllRoomsController(req,res) {
 
 
 //Get single room details
-export async function getSingleRoomDetailsController(req,res) {
-        try {
+export async function getSingleRoomDetailsController(req, res) {
+    try {
         const { roomId } = req.params;
 
         const room = await roomModel.findById(roomId)
@@ -158,8 +158,122 @@ export async function getSingleRoomDetailsController(req,res) {
         });
     }
 }
+
+
+//Get my room 
+export async function getMyRoomController(req, res) {
+    try {
+        const ownerId = req.user._id;
+
+        const rooms = await roomModel.find({
+            owner: ownerId,
+        }).sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            success: true,
+            message: "Your rooms fetched successfully",
+            rooms,
+        });
+
+    } catch (error) {
+        console.error("Get My Rooms Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
+
+//Update room details
+export async function updateRoomController(req, res) {
+    try {
+        const { roomId } = req.params;
+
+        const {
+            title,
+            description,
+            rent,
+            location,
+            roomType,
+            facilities,
+            availability,
+        } = req.body;
+
+        // Find room
+        const room = await roomModel.findById(roomId);
+
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                message: "Room not found",
+            });
+        }
+
+        // Check ownership
+        if (room.owner.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to update this room",
+            });
+        }
+
+        // Update only provided fields
+        if (title !== undefined) room.title = title.trim();
+
+        if (description !== undefined) {
+            room.description = description.trim();
+        }
+
+        if (rent !== undefined) {
+            room.rent = Number(rent);
+        }
+
+        if (location !== undefined) {
+            room.location = location.trim();
+        }
+
+        if (roomType !== undefined) {
+            room.roomType = roomType;
+        }
+
+        if (facilities !== undefined) {
+            room.facilities =
+                typeof facilities === "string"
+                    ? JSON.parse(facilities)
+                    : facilities;
+        }
+
+        if (availability !== undefined) {
+            room.availability =
+                availability === true || availability === "true";
+        }
+
+        await room.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Room updated successfully",
+            room,
+        });
+
+    } catch (error) {
+        console.error("Update Room Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+
+    }
+}
+
+
+
 export default {
     createRoomController,
     getAllRoomsController,
-    getSingleRoomDetailsController
+    getSingleRoomDetailsController,
+    getMyRoomController,
+    updateRoomController
 }

@@ -5,6 +5,8 @@ import { requireRole } from "../middlewares/role.middleware.js";
 import upload from "../middlewares/upload.middleware.js";
 import { createRoomValidation } from "../validators/room.validator.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
+import { multerErrorHandler } from "../middlewares/multerError.middleware.js";
+
 const router = express.Router()
 
 
@@ -20,6 +22,7 @@ router.post(
     authMiddleware,
     requireRole("owner"),
     upload.array("images", 5),
+    multerErrorHandler,
     createRoomValidation,
     validateRequest,
     roomController.createRoomController

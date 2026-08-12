@@ -14,22 +14,7 @@ export async function createRoomController(req, res) {
             facilities,
         } = req.body;
 
-        // 1. Required fields
-        if (
-            !title ||
-            !description ||
-            rent === undefined ||
-            !location ||
-            !roomType
-        ) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    "Title, description, rent, location and room type are required",
-            });
-        }
-
-        // 2. Upload images to ImageKit
+        // Upload images to ImageKit
         let roomImages = [];
 
         if (req.files && req.files.length > 0) {
@@ -49,7 +34,17 @@ export async function createRoomController(req, res) {
             );
         }
 
-        // 3. Create room
+        // Parse facilities
+        let parsedFacilities = [];
+
+        if (facilities) {
+            parsedFacilities =
+                typeof facilities === "string"
+                    ? JSON.parse(facilities)
+                    : facilities;
+        }
+
+        // Create room
         const room = await roomModel.create({
             owner: req.user._id,
             title: title.trim(),
@@ -57,15 +52,10 @@ export async function createRoomController(req, res) {
             rent: Number(rent),
             location: location.trim(),
             roomType,
-            facilities: facilities
-                ? typeof facilities === "string"
-                    ? JSON.parse(facilities)
-                    : facilities
-                : [],
+            facilities: parsedFacilities,
             images: roomImages,
         });
 
-        // 4. Response
         return res.status(201).json({
             success: true,
             message: "Room created successfully",
@@ -81,7 +71,6 @@ export async function createRoomController(req, res) {
         });
     }
 }
-
 
 //Get all rooms
 export async function getAllRoomsController(req, res) {
@@ -207,14 +196,24 @@ export async function getAllRoomsController(req, res) {
 
 
 //Get single room details
+
 export async function getSingleRoomDetailsController(req, res) {
     try {
         const { roomId } = req.params;
 
+        // 1. Validate room ID
+        if (!mongoose.Types.ObjectId.isValid(roomId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid room ID",
+            });
+        }
+
+        // 2. Find room
         const room = await roomModel.findById(roomId)
             .populate("owner", "username email contact");
 
-        // Room not found
+        // 3. Room not found
         if (!room) {
             return res.status(404).json({
                 success: false,
@@ -222,6 +221,7 @@ export async function getSingleRoomDetailsController(req, res) {
             });
         }
 
+        // 4. Response
         return res.status(200).json({
             success: true,
             message: "Room fetched successfully",

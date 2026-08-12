@@ -3,6 +3,8 @@ import roomController from "../controllers/room.controllers.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { requireRole } from "../middlewares/role.middleware.js";
 import upload from "../middlewares/upload.middleware.js";
+import { createRoomValidation } from "../validators/room.validator.js";
+import { validateRequest } from "../middlewares/validate.middleware.js";
 const router = express.Router()
 
 
@@ -12,7 +14,15 @@ const router = express.Router()
  * @access Private/Owner
  **/
 
-router.post("/listings", authMiddleware, requireRole("owner"), upload.array("images", 5), roomController.createRoomController
+
+router.post(
+    "/listings",
+    authMiddleware,
+    requireRole("owner"),
+    upload.array("images", 5),
+    createRoomValidation,
+    validateRequest,
+    roomController.createRoomController
 );
 
 /** 
@@ -82,3 +92,4 @@ router.delete(
     roomController.deleteRoomImageController
 );
 export default router;
+

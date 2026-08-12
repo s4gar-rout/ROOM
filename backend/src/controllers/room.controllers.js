@@ -84,17 +84,79 @@ export async function createRoomController(req, res) {
 //Get all rooms
 export async function getAllRoomsController(req, res) {
     try {
-        const { page = 1, limit = 10 } = req.query;
+        const {
+            location,
+            roomType,
+            minRent,
+            maxRent,
+            availability,
+            search,
+            page = 1,
+            limit = 10,
+        } = req.query;
 
-        const pageNumber = Math.max(1, parseInt(page));
-        const limitNumber = Math.max(1, parseInt(limit));
+        const query = {};
+
+        // Location filter
+        if (location) {
+            query.location = {
+                $regex: location.trim(),
+                $options: "i",
+            };
+        }
+
+        // Room type filter
+        if (roomType) {
+            query.roomType = roomType;
+        }
+
+        // Rent filter
+        if (minRent || maxRent) {
+            query.rent = {};
+
+            if (minRent) {
+                query.rent.$gte = Number(minRent);
+            }
+
+            if (maxRent) {
+                query.rent.$lte = Number(maxRent);
+            }
+        }
+
+        // Availability filter
+        if (availability !== undefined) {
+            query.availability = availability === "true";
+        }
+
+        // Search title / description / location
+        if (search) {
+            query.$or = [
+                {
+                    title: {
+                        $regex: search,
+                        $options: "i",
+                    },
+                },
+                {
+                    description: {
+                        $regex: search,
+                        $options: "i",
+                    },
+                },
+                {
+                    location: {
+                        $regex: search,
+                        $options: "i",
+                    },
+                },
+            ];
+        }
+
+        // Pagination
+        const pageNumber = Math.max(1, Number(page));
+        const limitNumber = Math.max(1, Number(limit));
 
         const skip = (pageNumber - 1) * limitNumber;
-
-        // Only available rooms
-        const query = {
-            availability: true,
-        };
 
         const total = await roomModel.countDocuments(query);
 

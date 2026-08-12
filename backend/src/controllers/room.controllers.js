@@ -270,9 +270,8 @@ export async function updateRoomController(req, res) {
 
 
 //Delete room
-
-export async function deleteRoomController(req,res){
-     try {
+export async function deleteRoomController(req, res) {
+    try {
         const { roomId } = req.params;
 
         const room = await roomModel.findById(roomId);
@@ -309,6 +308,64 @@ export async function deleteRoomController(req,res){
     }
 }
 
+//Room availability toggle
+export async function updateRoomAvailabilityController(req, res) {
+    try {
+        const { roomId } = req.params;
+        const { availability } = req.body;
+
+        // Check value
+        if (typeof availability !== "boolean") {
+            return res.status(400).json({
+                success: false,
+                message: "Availability must be true or false",
+            });
+        }
+
+        // Find room
+        const room = await roomModel.findById(roomId);
+
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                message: "Room not found",
+            });
+        }
+
+        // Check owner
+        if (room.owner.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to update this room",
+            });
+        }
+
+        // Update availability
+        room.availability = availability;
+
+        await room.save();
+
+        return res.status(200).json({
+            success: true,
+            message: availability
+                ? "Room is now available"
+                : "Room is now unavailable",
+            room: {
+                id: room._id,
+                availability: room.availability,
+            },
+        });
+
+    } catch (error) {
+        console.error("Update Room Availability Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
+
 
 export default {
     createRoomController,
@@ -317,4 +374,5 @@ export default {
     getMyRoomController,
     updateRoomController,
     deleteRoomController,
+    updateRoomAvailabilityController,
 }

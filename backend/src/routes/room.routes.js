@@ -49,7 +49,7 @@ router.get("/single/:roomId", roomController.getSingleRoomDetailsController)
  * @route PATCH /api/rooms/update/:roomId
  * @access Private/Owner
  **/
-router.patch("/update/:roomId",authMiddleware,requireRole("owner"),roomController.updateRoomController);
+router.patch("/update/:roomId", authMiddleware, requireRole("owner"), roomController.updateRoomController);
 
 
 /**
@@ -57,8 +57,16 @@ router.patch("/update/:roomId",authMiddleware,requireRole("owner"),roomControlle
  * @route DELETE /api/rooms/delete/:roomId
  * @access Private/Owner
  **/
-router.delete("/delete/:roomId",authMiddleware,requireRole("owner"),roomController.deleteRoomController);
+router.delete("/delete/:roomId", authMiddleware, requireRole("owner"), roomController.deleteRoomController);
 
+
+
+/**
+ * @desc Update room availability
+ * @route PATCH /api/rooms/update-availability/:roomId
+ * @access Private/Owner
+ **/
+router.patch("/update-availability/:roomId", authMiddleware, requireRole("owner"), roomController.updateRoomAvailabilityController);
 
 
 export default router;

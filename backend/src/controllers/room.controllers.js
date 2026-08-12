@@ -91,6 +91,7 @@ export async function getAllRoomsController(req, res) {
             maxRent,
             availability,
             search,
+            sort,
             page = 1,
             limit = 10,
         } = req.query;
@@ -158,11 +159,25 @@ export async function getAllRoomsController(req, res) {
 
         const skip = (pageNumber - 1) * limitNumber;
 
+        // Sorting
+        let sortOption = {};
+
+        if (sort === "rentAsc") {
+            sortOption.rent = 1;
+        } else if (sort === "rentDesc") {
+            sortOption.rent = -1;
+        } else if (sort === "oldest") {
+            sortOption.createdAt = 1;
+        } else {
+            // Default: newest first
+            sortOption.createdAt = -1;
+        }
+
         const total = await roomModel.countDocuments(query);
 
         const rooms = await roomModel.find(query)
             .populate("owner", "username email contact")
-            .sort({ createdAt: -1 })
+            .sort(sortOption)
             .skip(skip)
             .limit(limitNumber);
 
@@ -246,6 +261,7 @@ export async function getMyRoomController(req, res) {
         });
     }
 }
+
 
 //Update room details
 export async function updateRoomController(req, res) {

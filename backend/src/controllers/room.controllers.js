@@ -1,7 +1,6 @@
 import roomModel from "../models/room.model.js";
 import userModel from "../models/user.model.js";
-import { uploadFile } from "../services/storage.service.js"
-
+import { uploadFile, deleteFile } from "../services/storage.service.js";
 
 //Create room 
 export async function createRoomController(req, res) {
@@ -447,6 +446,67 @@ export async function updateRoomAvailabilityController(req, res) {
     }
 }
 
+//Delete room images
+export async function deleteRoomImageController(req, res) {
+    try {
+        const { roomId, fileId } = req.params;
+
+        // 1. Find room
+        const room = await roomModel.findById(roomId);
+
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                message: "Room not found",
+            });
+        }
+
+        // 2. Check ownership
+        if (room.owner.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to modify this room",
+            });
+        }
+
+        // 3. Find image
+        const image = room.images.find(
+            (img) => img.fileId === fileId
+        );
+
+        if (!image) {
+            return res.status(404).json({
+                success: false,
+                message: "Image not found",
+            });
+        }
+
+        // 4. Delete image from ImageKit
+        await deleteFile(fileId);
+
+        // 5. Remove image from MongoDB
+        room.images = room.images.filter(
+            (img) => img.fileId !== fileId
+        );
+
+        await room.save();
+
+        // 6. Response
+        return res.status(200).json({
+            success: true,
+            message: "Room image deleted successfully",
+            room,
+        });
+
+    } catch (error) {
+        console.error("Delete Room Image Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
 
 export default {
     createRoomController,
@@ -456,4 +516,5 @@ export default {
     updateRoomController,
     deleteRoomController,
     updateRoomAvailabilityController,
+    deleteRoomImageController
 }

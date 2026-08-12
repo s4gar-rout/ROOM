@@ -69,4 +69,16 @@ router.delete("/delete/:roomId", authMiddleware, requireRole("owner"), roomContr
 router.patch("/update-availability/:roomId", authMiddleware, requireRole("owner"), roomController.updateRoomAvailabilityController);
 
 
+
+/**
+ * @desc Delete a single image from a room
+ * @route DELETE /api/rooms/delete-image/:roomId/:fileId
+ * @access Private/Owner
+ **/
+router.delete(
+    "/delete-image/:roomId/:fileId",
+    authMiddleware,
+    requireRole("owner"),
+    roomController.deleteRoomImageController
+);
 export default router;

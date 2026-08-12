@@ -13,3 +13,7 @@ export async function uploadFile({buffer,fileName,folder='rooms'}) {
     
     return result
 }
+
+export async function deleteFile(fileId) {
+    return await client.files.delete(fileId);
+}

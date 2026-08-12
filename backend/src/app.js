@@ -29,11 +29,13 @@ app.get("/", (req, res) => {
 import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import roomRoutes from "./routes/room.routes.js";
+import conversationRoutes from "./routes/conversation.routes.js";
 
 
 // Use routes
 app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/rooms', roomRoutes)
+app.use('/api/conversations', conversationRoutes)
 
 export default app

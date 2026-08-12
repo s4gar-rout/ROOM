@@ -49,21 +49,21 @@ export const authMiddleware = async (req, res, next) => {
 
     } catch (errors) {
 
-        if (error.name === "TokenExpiredError") {
+        if (errors.name === "TokenExpiredError") {
             return res.status(401).json({
                 success: false,
                 message: "Access token expired"
             });
         }
 
-        if (error.name === "JsonWebTokenError") {
+        if (errors.name === "JsonWebTokenError") {
             return res.status(401).json({
                 success: false,
                 message: "Invalid access token"
             });
         }
 
-        console.error("Auth Middleware Error:", error);
+        console.error("Auth Middleware Error:", errors);
 
         return res.status(500).json({
             success: false,
@@ -73,3 +73,5 @@ export const authMiddleware = async (req, res, next) => {
     }
 
 }
+
+export default authMiddleware

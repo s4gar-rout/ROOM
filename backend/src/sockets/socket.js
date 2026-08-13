@@ -87,13 +87,16 @@ export function initializeSocket(io) {
                     message
                 } = data;
 
-                if (!conversationId || !message?.trim()) {
-                    return socket.emit("messageError", {
-                        success: false,
-                        message:
-                            "Conversation ID and message are required",
-                    });
-                }
+         if (
+    !conversationId ||
+    !message?.trim() ||
+    message.trim().length > 1000
+) {
+    return socket.emit("messageError", {
+        success: false,
+        message: "Message is required and must not exceed 1000 characters",
+    });
+}
 
                 const conversation =
                     await ConversationModel.findById(conversationId);
@@ -131,6 +134,7 @@ export function initializeSocket(io) {
 
                         message: message.trim(),
                     });
+                    await newMessage.populate("sender", "username email");
 
                 // Receiver ko message
                 socket.to(conversationId).emit("receiveMessage", {

@@ -1,9 +1,13 @@
 import roomModel from "../models/room.model.js";
-import userModel from "../models/user.model.js";
 import { uploadFile, deleteFile } from "../services/storage.service.js";
 
-//Create room 
+// ===============================
+// Create Room
+// ===============================
+
 export async function createRoomController(req, res) {
+    const uploadedFileIds = [];
+
     try {
         const {
             title,
@@ -13,6 +17,16 @@ export async function createRoomController(req, res) {
             roomType,
             facilities,
         } = req.body;
+
+        // Parse facilities
+        let parsedFacilities = [];
+
+        if (facilities) {
+            parsedFacilities =
+                typeof facilities === "string"
+                    ? JSON.parse(facilities)
+                    : facilities;
+        }
 
         // Upload images to ImageKit
         let roomImages = [];
@@ -26,22 +40,14 @@ export async function createRoomController(req, res) {
                         folder: "rooms",
                     });
 
+                    uploadedFileIds.push(result.fileId);
+
                     return {
                         url: result.url,
                         fileId: result.fileId,
                     };
                 })
             );
-        }
-
-        // Parse facilities
-        let parsedFacilities = [];
-
-        if (facilities) {
-            parsedFacilities =
-                typeof facilities === "string"
-                    ? JSON.parse(facilities)
-                    : facilities;
         }
 
         // Create room
@@ -65,6 +71,13 @@ export async function createRoomController(req, res) {
     } catch (error) {
         console.error("Create Room Error:", error);
 
+        // Cleanup uploaded ImageKit files if DB operation fails
+        if (uploadedFileIds.length > 0) {
+            await Promise.allSettled(
+                uploadedFileIds.map((fileId) => deleteFile(fileId))
+            );
+        }
+
         return res.status(500).json({
             success: false,
             message: "Internal server error",
@@ -72,7 +85,11 @@ export async function createRoomController(req, res) {
     }
 }
 
-//Get all rooms
+
+// ===============================
+// Get All Rooms
+// ===============================
+
 export async function getAllRoomsController(req, res) {
     try {
         const {
@@ -89,10 +106,17 @@ export async function getAllRoomsController(req, res) {
 
         const query = {};
 
+        // Escape regex special characters
+        const escapeRegex = (value) => {
+            return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        };
+
         // Location filter
         if (location) {
+            const safeLocation = escapeRegex(location.trim());
+
             query.location = {
-                $regex: location.trim(),
+                $regex: safeLocation,
                 $options: "i",
             };
         }
@@ -122,22 +146,24 @@ export async function getAllRoomsController(req, res) {
 
         // Search title / description / location
         if (search) {
+            const safeSearch = escapeRegex(search.trim());
+
             query.$or = [
                 {
                     title: {
-                        $regex: search,
+                        $regex: safeSearch,
                         $options: "i",
                     },
                 },
                 {
                     description: {
-                        $regex: search,
+                        $regex: safeSearch,
                         $options: "i",
                     },
                 },
                 {
                     location: {
-                        $regex: search,
+                        $regex: safeSearch,
                         $options: "i",
                     },
                 },
@@ -145,8 +171,12 @@ export async function getAllRoomsController(req, res) {
         }
 
         // Pagination
-        const pageNumber = Math.max(1, Number(page));
-        const limitNumber = Math.max(1, Number(limit));
+        const pageNumber = Math.max(1, Number(page) || 1);
+
+        const limitNumber = Math.min(
+            50,
+            Math.max(1, Number(limit) || 10)
+        );
 
         const skip = (pageNumber - 1) * limitNumber;
 
@@ -166,8 +196,9 @@ export async function getAllRoomsController(req, res) {
 
         const total = await roomModel.countDocuments(query);
 
-        const rooms = await roomModel.find(query)
-            .populate("owner", "username email contact")
+        const rooms = await roomModel
+            .find(query)
+            .populate("owner", "username")
             .sort(sortOption)
             .skip(skip)
             .limit(limitNumber);
@@ -195,25 +226,18 @@ export async function getAllRoomsController(req, res) {
 }
 
 
-//Get single room details
+// ===============================
+// Get Single Room
+// ===============================
 
 export async function getSingleRoomDetailsController(req, res) {
     try {
         const { roomId } = req.params;
 
-        // 1. Validate room ID
-        if (!mongoose.Types.ObjectId.isValid(roomId)) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid room ID",
-            });
-        }
+        const room = await roomModel
+            .findById(roomId)
+            .populate("owner", "username");
 
-        // 2. Find room
-        const room = await roomModel.findById(roomId)
-            .populate("owner", "username email contact");
-
-        // 3. Room not found
         if (!room) {
             return res.status(404).json({
                 success: false,
@@ -221,7 +245,6 @@ export async function getSingleRoomDetailsController(req, res) {
             });
         }
 
-        // 4. Response
         return res.status(200).json({
             success: true,
             message: "Room fetched successfully",
@@ -239,14 +262,19 @@ export async function getSingleRoomDetailsController(req, res) {
 }
 
 
-//Get my room 
+// ===============================
+// Get My Rooms
+// ===============================
+
 export async function getMyRoomController(req, res) {
     try {
         const ownerId = req.user._id;
 
-        const rooms = await roomModel.find({
-            owner: ownerId,
-        }).sort({ createdAt: -1 });
+        const rooms = await roomModel
+            .find({
+                owner: ownerId,
+            })
+            .sort({ createdAt: -1 });
 
         return res.status(200).json({
             success: true,
@@ -265,7 +293,10 @@ export async function getMyRoomController(req, res) {
 }
 
 
-//Update room details
+// ===============================
+// Update Room
+// ===============================
+
 export async function updateRoomController(req, res) {
     try {
         const { roomId } = req.params;
@@ -280,7 +311,6 @@ export async function updateRoomController(req, res) {
             availability,
         } = req.body;
 
-        // Find room
         const room = await roomModel.findById(roomId);
 
         if (!room) {
@@ -290,8 +320,11 @@ export async function updateRoomController(req, res) {
             });
         }
 
-        // Check ownership
-        if (room.owner.toString() !== req.user._id.toString()) {
+        // Ownership check
+        if (
+            room.owner.toString() !==
+            req.user._id.toString()
+        ) {
             return res.status(403).json({
                 success: false,
                 message: "You are not authorized to update this room",
@@ -299,7 +332,9 @@ export async function updateRoomController(req, res) {
         }
 
         // Update only provided fields
-        if (title !== undefined) room.title = title.trim();
+        if (title !== undefined) {
+            room.title = title.trim();
+        }
 
         if (description !== undefined) {
             room.description = description.trim();
@@ -326,7 +361,8 @@ export async function updateRoomController(req, res) {
 
         if (availability !== undefined) {
             room.availability =
-                availability === true || availability === "true";
+                availability === true ||
+                availability === "true";
         }
 
         await room.save();
@@ -344,12 +380,14 @@ export async function updateRoomController(req, res) {
             success: false,
             message: "Internal server error",
         });
-
     }
 }
 
 
-//Delete room
+// ===============================
+// Delete Room
+// ===============================
+
 export async function deleteRoomController(req, res) {
     try {
         const { roomId } = req.params;
@@ -364,13 +402,26 @@ export async function deleteRoomController(req, res) {
         }
 
         // Ownership check
-        if (room.owner.toString() !== req.user._id.toString()) {
+        if (
+            room.owner.toString() !==
+            req.user._id.toString()
+        ) {
             return res.status(403).json({
                 success: false,
                 message: "You are not authorized to delete this room",
             });
         }
 
+        // Delete ImageKit images
+        if (room.images && room.images.length > 0) {
+            await Promise.allSettled(
+                room.images.map((image) =>
+                    deleteFile(image.fileId)
+                )
+            );
+        }
+
+        // Delete MongoDB document
         await roomModel.findByIdAndDelete(roomId);
 
         return res.status(200).json({
@@ -388,13 +439,16 @@ export async function deleteRoomController(req, res) {
     }
 }
 
-//Room availability toggle
+
+// ===============================
+// Update Room Availability
+// ===============================
+
 export async function updateRoomAvailabilityController(req, res) {
     try {
         const { roomId } = req.params;
         const { availability } = req.body;
 
-        // Check value
         if (typeof availability !== "boolean") {
             return res.status(400).json({
                 success: false,
@@ -402,7 +456,6 @@ export async function updateRoomAvailabilityController(req, res) {
             });
         }
 
-        // Find room
         const room = await roomModel.findById(roomId);
 
         if (!room) {
@@ -412,15 +465,17 @@ export async function updateRoomAvailabilityController(req, res) {
             });
         }
 
-        // Check owner
-        if (room.owner.toString() !== req.user._id.toString()) {
+        // Ownership check
+        if (
+            room.owner.toString() !==
+            req.user._id.toString()
+        ) {
             return res.status(403).json({
                 success: false,
                 message: "You are not authorized to update this room",
             });
         }
 
-        // Update availability
         room.availability = availability;
 
         await room.save();
@@ -437,7 +492,10 @@ export async function updateRoomAvailabilityController(req, res) {
         });
 
     } catch (error) {
-        console.error("Update Room Availability Error:", error);
+        console.error(
+            "Update Room Availability Error:",
+            error
+        );
 
         return res.status(500).json({
             success: false,
@@ -446,12 +504,15 @@ export async function updateRoomAvailabilityController(req, res) {
     }
 }
 
-//Delete room images
+
+// ===============================
+// Delete Room Image
+// ===============================
+
 export async function deleteRoomImageController(req, res) {
     try {
         const { roomId, fileId } = req.params;
 
-        // 1. Find room
         const room = await roomModel.findById(roomId);
 
         if (!room) {
@@ -461,15 +522,18 @@ export async function deleteRoomImageController(req, res) {
             });
         }
 
-        // 2. Check ownership
-        if (room.owner.toString() !== req.user._id.toString()) {
+        // Ownership check
+        if (
+            room.owner.toString() !==
+            req.user._id.toString()
+        ) {
             return res.status(403).json({
                 success: false,
                 message: "You are not authorized to modify this room",
             });
         }
 
-        // 3. Find image
+        // Find image
         const image = room.images.find(
             (img) => img.fileId === fileId
         );
@@ -481,17 +545,16 @@ export async function deleteRoomImageController(req, res) {
             });
         }
 
-        // 4. Delete image from ImageKit
+        // Delete ImageKit image
         await deleteFile(fileId);
 
-        // 5. Remove image from MongoDB
+        // Remove from MongoDB
         room.images = room.images.filter(
             (img) => img.fileId !== fileId
         );
 
         await room.save();
 
-        // 6. Response
         return res.status(200).json({
             success: true,
             message: "Room image deleted successfully",
@@ -499,7 +562,10 @@ export async function deleteRoomImageController(req, res) {
         });
 
     } catch (error) {
-        console.error("Delete Room Image Error:", error);
+        console.error(
+            "Delete Room Image Error:",
+            error
+        );
 
         return res.status(500).json({
             success: false,
@@ -507,6 +573,7 @@ export async function deleteRoomImageController(req, res) {
         });
     }
 }
+
 
 export default {
     createRoomController,
@@ -516,5 +583,5 @@ export default {
     updateRoomController,
     deleteRoomController,
     updateRoomAvailabilityController,
-    deleteRoomImageController
-}
+    deleteRoomImageController,
+};

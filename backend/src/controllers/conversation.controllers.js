@@ -7,7 +7,7 @@ export async function createConversationController(req, res) {
         const { roomId } = req.params;
 
         // Logged in buyer
-        const buyerId = req.user._id;
+        const tenantId = req.user._id;
 
         // Finding Room
         const room = await roomModel.findById(roomId);
@@ -19,17 +19,24 @@ export async function createConversationController(req, res) {
             });
         }
 
-        // Checking if buyer is owner
-        if (room.owner.toString() === buyerId.toString()) {
+        if (!room.availability) {
             return res.status(400).json({
                 success: false,
-                message: "You cannot chat with your own room",
+                message: "This room is currently unavailable",
             });
         }
 
+        // Checking if buyer is owner
+if (room.owner.toString() === tenantId.toString()) {
+    return res.status(400).json({
+        success: false,
+        message: "You cannot chat with your own room",
+    });
+}
+
         // Finding existing conversation
         let conversation = await ConversationModel.findOne({
-            buyer: buyerId,
+            buyer: tenantId,
             owner: room.owner,
             room: room._id,
         });
@@ -37,7 +44,7 @@ export async function createConversationController(req, res) {
         // Creating new Conversation
         if (!conversation) {
             conversation = await ConversationModel.create({
-                buyer: buyerId,
+                buyer: tenantId,
                 owner: room.owner,
                 room: room._id,
             });
@@ -60,8 +67,8 @@ export async function createConversationController(req, res) {
 }
 
 
-export async function getConversationMessageController(req,res) {
-     try {
+export async function getConversationMessageController(req, res) {
+    try {
         const { conversationId } = req.params;
 
         // 1. Conversation check
@@ -122,8 +129,8 @@ export async function getConversationMessageController(req,res) {
     }
 }
 
-export async function getMyConversationController(req,res) {
-      try {
+export async function getMyConversationController(req, res) {
+    try {
         const userId = req.user._id;
 
         const conversations = await ConversationModel.find({
@@ -137,21 +144,41 @@ export async function getMyConversationController(req,res) {
             .populate("room")
             .sort({ updatedAt: -1 });
 
+        const conversationsWithLastMessage = await Promise.all(
+            conversations.map(async (conversation) => {
+
+                const lastMessage = await MessageModel.findOne({
+                    conversation: conversation._id,
+                })
+                    .populate("sender", "username")
+                    .sort({ createdAt: -1 });
+
+                return {
+                    ...conversation.toObject(),
+                    lastMessage,
+                };
+            })
+        );
+
         return res.status(200).json({
             success: true,
-            count: conversations.length,
-            conversations,
+            count: conversationsWithLastMessage.length,
+            conversations: conversationsWithLastMessage,
         });
 
     } catch (error) {
-        console.error("Get My Conversations Error:", error);
+
+        console.error(
+            "Get My Conversations Error:",
+            error
+        );
 
         return res.status(500).json({
             success: false,
             message: "Internal server error",
         });
     }
-    
+
 }
 export default {
     createConversationController,

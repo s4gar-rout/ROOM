@@ -6,16 +6,21 @@ export const socketAuthMiddleware = async (socket, next) => {
     try {
         const cookieHeader = socket.handshake.headers.cookie;
 
+        console.log("Cookie Header:", cookieHeader);
+
         if (!cookieHeader) {
             return next(new Error("Access token not provided"));
         }
 
+        // Parse cookies manually
         const cookies = Object.fromEntries(
             cookieHeader.split("; ").map((cookie) => {
                 const [key, ...value] = cookie.split("=");
                 return [key, value.join("=")];
             })
         );
+
+        console.log("Cookies:", Object.keys(cookies));
 
         const token = cookies.accessToken;
 
@@ -27,6 +32,8 @@ export const socketAuthMiddleware = async (socket, next) => {
             token,
             config.JWT_ACCESS_SECRET
         );
+
+        console.log("Decoded user:", decoded.id);
 
         const user = await UserModel.findById(decoded.id);
 
@@ -44,6 +51,11 @@ export const socketAuthMiddleware = async (socket, next) => {
 
     } catch (error) {
 
+        console.error("========== SOCKET AUTH ERROR ==========");
+        console.error("Name:", error.name);
+        console.error("Message:", error.message);
+        console.error("=======================================");
+
         if (error.name === "TokenExpiredError") {
             return next(new Error("Access token expired"));
         }
@@ -51,8 +63,6 @@ export const socketAuthMiddleware = async (socket, next) => {
         if (error.name === "JsonWebTokenError") {
             return next(new Error("Invalid access token"));
         }
-
-        console.error("Socket Auth Error:", error);
 
         return next(new Error("Socket authentication failed"));
     }

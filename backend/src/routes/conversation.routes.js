@@ -1,31 +1,21 @@
 import express from "express";
 import ConversationController from "../controllers/conversation.controllers.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
+import { requireRole } from "../middlewares/role.middleware.js";
 
 const router = express.Router();
 
 
-/**
- * create conversation
- * method: POST
- * url: /api/conversation/:roomId
- * authentication: required
- */
+// Create conversation
 router.post(
     "/:roomId",
     authMiddleware,
+    requireRole("tenant"),
     ConversationController.createConversationController
 );
 
 
-
-
-/**
- * Get conversation messages
- * Method: GET
- * URL: /api/conversation/message/:conversationId
- * Authentication: Required
- */
+// Get conversation messages
 router.get(
     "/messages/:conversationId",
     authMiddleware,
@@ -33,12 +23,7 @@ router.get(
 );
 
 
-/**
- * Get My Conversations
- * Method: GET
- * URL: /api/conversation/my
- * Authentication: Required
- */
+// Get my conversations
 router.get(
     "/my",
     authMiddleware,
@@ -46,5 +31,4 @@ router.get(
 );
 
 
-
-export default router;  
+export default router;

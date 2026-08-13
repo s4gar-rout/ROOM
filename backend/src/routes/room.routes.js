@@ -3,7 +3,13 @@ import roomController from "../controllers/room.controllers.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { requireRole } from "../middlewares/role.middleware.js";
 import upload from "../middlewares/upload.middleware.js";
-import { createRoomValidation } from "../validators/room.validator.js";
+import {
+    createRoomValidation,
+    updateRoomValidation,
+    roomQueryValidation,
+    roomIdValidation,
+    deleteRoomImageValidation,
+} from "../validators/room.validator.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
 import { multerErrorHandler } from "../middlewares/multerError.middleware.js";
 
@@ -34,7 +40,11 @@ router.post(
  * @access Public
 **/
 
-router.get("/getall", roomController.getAllRoomsController
+router.get(
+    "/getall",
+    roomQueryValidation,
+    validateRequest,
+    roomController.getAllRoomsController
 );
 
 
@@ -53,7 +63,12 @@ router.get("/my-rooms", authMiddleware, requireRole("owner"), roomController.get
  **/
 
 
-router.get("/single/:roomId", roomController.getSingleRoomDetailsController)
+router.get(
+    "/single/:roomId",
+    roomIdValidation,
+    validateRequest,
+    roomController.getSingleRoomDetailsController
+);
 
 
 
@@ -62,7 +77,15 @@ router.get("/single/:roomId", roomController.getSingleRoomDetailsController)
  * @route PATCH /api/rooms/update/:roomId
  * @access Private/Owner
  **/
-router.patch("/update/:roomId", authMiddleware, requireRole("owner"), roomController.updateRoomController);
+router.patch(
+    "/update/:roomId",
+    authMiddleware,
+    requireRole("owner"),
+    roomIdValidation,
+    updateRoomValidation,
+    validateRequest,
+    roomController.updateRoomController
+);
 
 
 /**
@@ -70,7 +93,14 @@ router.patch("/update/:roomId", authMiddleware, requireRole("owner"), roomContro
  * @route DELETE /api/rooms/delete/:roomId
  * @access Private/Owner
  **/
-router.delete("/delete/:roomId", authMiddleware, requireRole("owner"), roomController.deleteRoomController);
+router.delete(
+    "/delete/:roomId",
+    authMiddleware,
+    requireRole("owner"),
+    roomIdValidation,
+    validateRequest,
+    roomController.deleteRoomController
+);
 
 
 
@@ -79,7 +109,14 @@ router.delete("/delete/:roomId", authMiddleware, requireRole("owner"), roomContr
  * @route PATCH /api/rooms/update-availability/:roomId
  * @access Private/Owner
  **/
-router.patch("/update-availability/:roomId", authMiddleware, requireRole("owner"), roomController.updateRoomAvailabilityController);
+router.patch(
+    "/update-availability/:roomId",
+    authMiddleware,
+    requireRole("owner"),
+    roomIdValidation,
+    validateRequest,
+    roomController.updateRoomAvailabilityController
+);
 
 
 
@@ -92,6 +129,8 @@ router.delete(
     "/delete-image/:roomId/:fileId",
     authMiddleware,
     requireRole("owner"),
+    deleteRoomImageValidation,
+    validateRequest,
     roomController.deleteRoomImageController
 );
 export default router;

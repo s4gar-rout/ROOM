@@ -3,19 +3,18 @@ import UserModel from "../models/user.model.js";
 import { config } from "../config/config.js";
 
 export const authMiddleware = async (req, res, next) => {
-
     try {
-
         // 1. Get access token from cookie
-        const token = req.cookies.accessToken;
+        const token = req.cookies?.accessToken;
 
         if (!token) {
             return res.status(401).json({
                 success: false,
-                message: "Access token not provided"
+                message: "Access token not provided",
             });
         }
-        // 2. Verify token
+
+        // 2. Verify access token
         const decoded = jwt.verify(
             token,
             config.JWT_ACCESS_SECRET
@@ -27,51 +26,47 @@ export const authMiddleware = async (req, res, next) => {
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: "User not found"
+                message: "User not found",
             });
         }
-
 
         // 4. Check blocked user
         if (user.isBlocked) {
             return res.status(403).json({
                 success: false,
-                message: "Your account has been blocked"
+                message: "Your account has been blocked",
             });
         }
 
-        // 5. Attach user to request
+        // 5. Attach authenticated user
         req.user = user;
 
         // 6. Continue
         next();
 
+    } catch (error) {
 
-    } catch (errors) {
-
-        if (errors.name === "TokenExpiredError") {
+        if (error.name === "TokenExpiredError") {
             return res.status(401).json({
                 success: false,
-                message: "Access token expired"
+                message: "Access token expired",
             });
         }
 
-        if (errors.name === "JsonWebTokenError") {
+        if (error.name === "JsonWebTokenError") {
             return res.status(401).json({
                 success: false,
-                message: "Invalid access token"
+                message: "Invalid access token",
             });
         }
 
-        console.error("Auth Middleware Error:", errors);
+        console.error("Auth Middleware Error:", error);
 
         return res.status(500).json({
             success: false,
-            message: "Internal server error"
+            message: "Internal server error",
         });
-
     }
+};
 
-}
-
-export default authMiddleware
+export default authMiddleware;

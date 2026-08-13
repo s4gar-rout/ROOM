@@ -21,6 +21,9 @@ const userSchema = new mongoose.Schema(
         contact: {
             type: String,
             trim: true,
+        }, isBlocked: {
+            type: Boolean,
+            default: false,
         },
 
         password: {
@@ -57,11 +60,6 @@ const userSchema = new mongoose.Schema(
             type: String,
             enum: ["local", "google"],
             default: "local",
-        },
-
-        ownerVerified: {
-            type: Boolean,
-            default: false,
         },
 
         otp: {

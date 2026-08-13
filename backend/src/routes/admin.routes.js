@@ -105,4 +105,18 @@ router.get(
     requireRole("admin"),
     adminController.getAllRoomsController
 );
+
+
+/**
+ * @desc Delete room
+ * @route DELETE /api/admin/rooms/:roomId
+ * @access Private/Admin
+ */
+
+router.delete(
+    "/rooms/:roomId",
+    authMiddleware,
+    requireRole("admin"),
+    adminController.deleteRoomController
+);
 export default router;

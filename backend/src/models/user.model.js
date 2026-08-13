@@ -61,6 +61,16 @@ const userSchema = new mongoose.Schema(
             enum: ["local", "google"],
             default: "local",
         },
+        avatar: {
+    url: {
+        type: String,
+        default: "",
+    },
+    fileId: {
+        type: String,
+        default: "",
+    },
+},
 
         otp: {
             type: String,

@@ -1,6 +1,6 @@
 import UserModel from "../models/user.model.js";
 import roomModel from '../models/room.model.js'
-
+import { deleteFile } from "../services/storage.service.js";
 // Request Owner Controller
 async function requestOwnerController(req, res) {
     try {
@@ -260,6 +260,48 @@ async function getAllRoomsController(req, res) {
         });
     }
 }
+
+// Delete Room - Admin
+async function deleteRoomController(req, res) {
+    try {
+        const { roomId } = req.params;
+
+        // 1. Find room
+        const room = await roomModel.findById(roomId);
+
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                message: "Room not found",
+            });
+        }
+
+        // 2. Delete images from ImageKit
+        if (room.images && room.images.length > 0) {
+            await Promise.all(
+                room.images.map((image) =>
+                    deleteFile(image.fileId)
+                )
+            );
+        }
+
+        // 3. Delete room from MongoDB
+        await roomModel.findByIdAndDelete(roomId);
+
+        return res.status(200).json({
+            success: true,
+            message: "Room deleted successfully",
+        });
+
+    } catch (error) {
+        console.error("Admin Delete Room Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
 export default {
     requestOwnerController,
     updateOwnerRequestController,
@@ -267,5 +309,6 @@ export default {
     unblockUserController,
     blockUserController,
     getAllUsersController,
-    getAllRoomsController
+    getAllRoomsController,
+    deleteRoomController
 }

@@ -2,15 +2,16 @@ import MessageModel from "../models/message.model.js";
 import ConversationModel from "../models/conversation.model.js";
 
 export function initializeSocket(io) {
-
     io.on("connection", (socket) => {
+        const userId = socket.user._id.toString();
 
-        console.log(
-            "User connected:",
-            socket.id,
-            "User:",
-            socket.user._id.toString()
-        );
+        // ==========================================
+        // PERSONAL USER ROOM
+        // ==========================================
+
+        // Har user apne personal room mein join hoga.
+        // Notifications isi room mein bhejenge.
+        socket.join(`user:${userId}`);
 
 
         // ==========================================
@@ -18,9 +19,7 @@ export function initializeSocket(io) {
         // ==========================================
 
         socket.on("joinConversation", async (conversationId) => {
-
             try {
-
                 const conversation =
                     await ConversationModel.findById(conversationId);
 
@@ -30,8 +29,6 @@ export function initializeSocket(io) {
                         message: "Conversation not found",
                     });
                 }
-
-                const userId = socket.user._id.toString();
 
                 const isBuyer =
                     conversation.buyer.toString() === userId;
@@ -50,17 +47,12 @@ export function initializeSocket(io) {
 
                 socket.join(conversationId);
 
-                console.log(
-                    `User ${userId} joined conversation ${conversationId}`
-                );
-
                 socket.emit("conversationJoined", {
                     success: true,
                     conversationId,
                 });
 
             } catch (error) {
-
                 console.error(
                     "Join Conversation Error:",
                     error
@@ -79,25 +71,27 @@ export function initializeSocket(io) {
         // ==========================================
 
         socket.on("sendMessage", async (data) => {
-
             try {
-
                 const {
                     conversationId,
-                    message
+                    message,
                 } = data;
 
-         if (
-    !conversationId ||
-    !message?.trim() ||
-    message.trim().length > 1000
-) {
-    return socket.emit("messageError", {
-        success: false,
-        message: "Message is required and must not exceed 1000 characters",
-    });
-}
+                // Message validation
+                if (
+                    !conversationId ||
+                    !message?.trim() ||
+                    message.trim().length > 1000
+                ) {
+                    return socket.emit("messageError", {
+                        success: false,
+                        message:
+                            "Message is required and must not exceed 1000 characters",
+                    });
+                }
 
+
+                // Find conversation
                 const conversation =
                     await ConversationModel.findById(conversationId);
 
@@ -108,8 +102,8 @@ export function initializeSocket(io) {
                     });
                 }
 
-                const userId = socket.user._id.toString();
 
+                // Check user access
                 const isBuyer =
                     conversation.buyer.toString() === userId;
 
@@ -124,28 +118,45 @@ export function initializeSocket(io) {
                     });
                 }
 
-                // Save message
+
+                // ==========================================
+                // SAVE MESSAGE
+                // ==========================================
+
                 const newMessage =
                     await MessageModel.create({
                         conversation: conversationId,
-
-                        // Sender server khud identify karega
                         sender: socket.user._id,
-
                         message: message.trim(),
                     });
-                    await newMessage.populate("sender", "username email");
 
-                // Receiver ko message
-                socket.to(conversationId).emit("receiveMessage", {
-                    _id: newMessage._id,
-                    conversation: newMessage.conversation,
-                    sender: newMessage.sender,
-                    message: newMessage.message,
-                    createdAt: newMessage.createdAt,
-                });
 
-                // Sender ko confirmation
+                // Populate sender information
+                await newMessage.populate(
+                    "sender",
+                    "username email"
+                );
+
+
+                // ==========================================
+                // SEND MESSAGE TO RECEIVER
+                // ==========================================
+
+                socket
+                    .to(conversationId)
+                    .emit("receiveMessage", {
+                        _id: newMessage._id,
+                        conversation: newMessage.conversation,
+                        sender: newMessage.sender,
+                        message: newMessage.message,
+                        createdAt: newMessage.createdAt,
+                    });
+
+
+                // ==========================================
+                // SEND CONFIRMATION TO SENDER
+                // ==========================================
+
                 socket.emit("messageSent", {
                     success: true,
                     message: {
@@ -158,7 +169,6 @@ export function initializeSocket(io) {
                 });
 
             } catch (error) {
-
                 console.error(
                     "Socket Send Message Error:",
                     error
@@ -177,13 +187,7 @@ export function initializeSocket(io) {
         // ==========================================
 
         socket.on("disconnect", (reason) => {
-
-            console.log(
-                "User disconnected:",
-                socket.id,
-                reason
-            );
-
+            // No debug logging
         });
 
     });

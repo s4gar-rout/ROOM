@@ -6,8 +6,7 @@ export const socketAuthMiddleware = async (socket, next) => {
     try {
         const cookieHeader = socket.handshake.headers.cookie;
 
-        console.log("Cookie Header:", cookieHeader);
-
+        // Check cookie header
         if (!cookieHeader) {
             return next(new Error("Access token not provided"));
         }
@@ -16,45 +15,46 @@ export const socketAuthMiddleware = async (socket, next) => {
         const cookies = Object.fromEntries(
             cookieHeader.split("; ").map((cookie) => {
                 const [key, ...value] = cookie.split("=");
+
                 return [key, value.join("=")];
             })
         );
 
-        console.log("Cookies:", Object.keys(cookies));
-
+        // Get access token
         const token = cookies.accessToken;
 
         if (!token) {
             return next(new Error("Access token not provided"));
         }
 
+        // Verify JWT
         const decoded = jwt.verify(
             token,
             config.JWT_ACCESS_SECRET
         );
 
-        console.log("Decoded user:", decoded.id);
-
+        // Find user
         const user = await UserModel.findById(decoded.id);
 
         if (!user) {
             return next(new Error("User not found"));
         }
 
+        // Check blocked user
         if (user.isBlocked) {
-            return next(new Error("Your account has been blocked"));
+            return next(
+                new Error("Your account has been blocked")
+            );
         }
 
+        // Attach user to socket
         socket.user = user;
 
         next();
 
     } catch (error) {
 
-        console.error("========== SOCKET AUTH ERROR ==========");
-        console.error("Name:", error.name);
-        console.error("Message:", error.message);
-        console.error("=======================================");
+        console.error("Socket Auth Error:", error);
 
         if (error.name === "TokenExpiredError") {
             return next(new Error("Access token expired"));
@@ -64,7 +64,9 @@ export const socketAuthMiddleware = async (socket, next) => {
             return next(new Error("Invalid access token"));
         }
 
-        return next(new Error("Socket authentication failed"));
+        return next(
+            new Error("Socket authentication failed")
+        );
     }
 };
 

@@ -22,6 +22,10 @@ const io = new Server(server, {
     },
 });
 
+app.set("io", io);
+
+initializeSocket(io);
+
 // Socket authentication
 io.use(socketAuthMiddleware);
 

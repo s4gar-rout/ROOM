@@ -33,6 +33,18 @@ if(!process.env.IMAGEKIT_PRIVATE_KEY ){
     throw new Error("Imagekit private key is not defined in enviroment varriables")
 }
 
+if (!process.env.BREVO_API_KEY) {
+    throw new Error(
+        "BREVO_API_KEY is not defined in environment variables"
+    );
+}
+
+if (!process.env.BREVO_EMAIL) {
+    throw new Error(
+        "BREVO_EMAIL is not defined in environment variables"
+    );
+}
+
 export const config = {
     PORT: process.env.PORT,
     MONGO_URI: process.env.MONGO_URI,
@@ -45,5 +57,7 @@ export const config = {
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
     ADMIN_CONTACT: process.env.ADMIN_CONTACT,
     IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
+    BREVO_API_KEY: process.env.BREVO_API_KEY,
+BREVO_EMAIL: process.env.BREVO_EMAIL,
 
 }

@@ -3,6 +3,7 @@ import authControllers from "../controllers/auth.controllers.js";
 import { loginValidator, registerValidator } from "../validators/auth.validator.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
+import passwordControllers from "../controllers/password.controllers.js";
 const router = express.Router();
 
 /**
@@ -48,5 +49,39 @@ router.post("/refresh", authControllers.refreshTokenController);
 
 router.post("/logout", authMiddleware, authControllers.logoutController);
 
+
+/**
+ * @route POST /api/auth/forgot-password
+ * @description Send password reset OTP
+ * @access Public
+ */
+
+router.post(
+    "/forgot-password",
+    passwordControllers.forgotPasswordController
+);
+
+
+/**
+ * @route POST /api/auth/verify-reset-otp
+ * @description Verify reset OTP
+ * @access Public
+ * **/
+router.post(
+    "/verify-reset-otp",
+    passwordControllers.verifyResetOtpController
+);
+
+
+/**
+ * @route POST /api/auth/reset-password
+ * @description Reset password using OTP
+ * @access Public
+ */
+
+router.post(
+    "/reset-password",
+    passwordControllers.resetPasswordController
+);
 
 export default router;

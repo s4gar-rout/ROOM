@@ -1,9 +1,36 @@
 import MessageModel from "../models/message.model.js";
 import ConversationModel from "../models/conversation.model.js";
 
+// ==========================================
+// ONLINE USERS TRACKING
+// ==========================================
+
+// userId => Set of socketIds
+// Multiple tabs/devices support karega
+const onlineUsers = new Map();
+
 export function initializeSocket(io) {
     io.on("connection", (socket) => {
         const userId = socket.user._id.toString();
+
+        // ==========================================
+        // ONLINE USER TRACKING
+        // ==========================================
+
+        if (!onlineUsers.has(userId)) {
+            onlineUsers.set(userId, new Set());
+        }
+
+        onlineUsers.get(userId).add(socket.id);
+
+        // User actually online hua
+        // Sirf first socket connect hone par emit hoga
+        if (onlineUsers.get(userId).size === 1) {
+            io.emit("userOnline", {
+                userId,
+            });
+        }
+
 
         // ==========================================
         // PERSONAL USER ROOM
@@ -62,6 +89,65 @@ export function initializeSocket(io) {
                     success: false,
                     message: "Failed to join conversation",
                 });
+            }
+        });
+
+
+        // ==========================================
+        // TYPING INDICATOR
+        // ==========================================
+
+        socket.on("typingStart", async (conversationId) => {
+            try {
+                if (!conversationId) return;
+
+                const conversation =
+                    await ConversationModel.findById(conversationId);
+
+                if (!conversation) return;
+
+                const isBuyer =
+                    conversation.buyer.toString() === userId;
+
+                const isOwner =
+                    conversation.owner.toString() === userId;
+
+                if (!isBuyer && !isOwner) return;
+
+                socket.to(conversationId).emit("userTyping", {
+                    userId,
+                    username: socket.user.username,
+                });
+
+            } catch (error) {
+                console.error("Typing Start Error:", error);
+            }
+        });
+
+
+        socket.on("typingStop", async (conversationId) => {
+            try {
+                if (!conversationId) return;
+
+                const conversation =
+                    await ConversationModel.findById(conversationId);
+
+                if (!conversation) return;
+
+                const isBuyer =
+                    conversation.buyer.toString() === userId;
+
+                const isOwner =
+                    conversation.owner.toString() === userId;
+
+                if (!isBuyer && !isOwner) return;
+
+                socket.to(conversationId).emit("userStoppedTyping", {
+                    userId,
+                });
+
+            } catch (error) {
+                console.error("Typing Stop Error:", error);
             }
         });
 
@@ -187,7 +273,23 @@ export function initializeSocket(io) {
         // ==========================================
 
         socket.on("disconnect", (reason) => {
-            // No debug logging
+            const userSockets = onlineUsers.get(userId);
+
+            if (!userSockets) {
+                return;
+            }
+
+            // Current socket remove
+            userSockets.delete(socket.id);
+
+            // Agar user ka koi aur socket connected nahi hai
+            if (userSockets.size === 0) {
+                onlineUsers.delete(userId);
+
+                io.emit("userOffline", {
+                    userId,
+                });
+            }
         });
 
     });

@@ -4,6 +4,7 @@ import { loginValidator, registerValidator } from "../validators/auth.validator.
 import { validateRequest } from "../middlewares/validate.middleware.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import passwordControllers from "../controllers/password.controllers.js";
+import { rateLimiter } from "../middlewares/rateLimit.middleware.js";
 const router = express.Router();
 
 /**
@@ -19,7 +20,17 @@ router.post("/register", registerValidator, validateRequest, authControllers.reg
  * @description Login a user
  * @access Public
  */
-router.post("/login", loginValidator, validateRequest, authControllers.loginController);
+router.post(
+    "/login",
+    rateLimiter({
+        keyPrefix: "login",
+        limit: 5,
+        windowInSeconds: 15 * 60,
+    }),
+    loginValidator,
+    validateRequest,
+    authControllers.loginController
+);
 
 
 
@@ -61,9 +72,13 @@ router.post(
 
 router.post(
     "/forgot-password",
+    rateLimiter({
+        keyPrefix: "forgot-password",
+        limit: 3,
+        windowInSeconds: 15 * 60,
+    }),
     passwordControllers.forgotPasswordController
 );
-
 
 /**
  * @route POST /api/auth/verify-reset-otp
@@ -72,9 +87,13 @@ router.post(
  * **/
 router.post(
     "/verify-reset-otp",
+    rateLimiter({
+        keyPrefix: "verify-reset-otp",
+        limit: 5,
+        windowInSeconds: 5 * 60,
+    }),
     passwordControllers.verifyResetOtpController
 );
-
 
 /**
  * @route POST /api/auth/reset-password

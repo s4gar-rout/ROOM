@@ -11,9 +11,9 @@ import connectToDB from "./config/db.js";
 
 import { initializeSocket } from "./sockets/socket.js";
 import socketAuthMiddleware from "./middlewares/socket.middleware.js";
-
+import { testRedisConnection } from "./services/redis.service.js";
 connectToDB();
-
+await testRedisConnection();
 const server = http.createServer(app);
 
 const io = new Server(server, {

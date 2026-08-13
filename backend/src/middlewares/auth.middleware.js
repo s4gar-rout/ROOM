@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import UserModel from "../models/user.model.js";
 import { config } from "../config/config.js";
+import redis from "../services/redis.service.js";
 
 export const authMiddleware = async (req, res, next) => {
     try {
@@ -19,6 +20,17 @@ export const authMiddleware = async (req, res, next) => {
             token,
             config.JWT_ACCESS_SECRET
         );
+        // check token blacklisted
+        const blacklistKey = `blacklist:access:${token}`;
+
+        const isBlacklisted = await redis.get(blacklistKey);
+
+        if (isBlacklisted) {
+            return res.status(401).json({
+                success: false,
+                message: "Access token has been revoked. Please login again",
+            });
+        }
 
         // 3. Find user
         const user = await UserModel.findById(decoded.id);

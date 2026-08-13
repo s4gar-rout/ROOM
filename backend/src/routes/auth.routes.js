@@ -47,7 +47,10 @@ router.post("/refresh", authControllers.refreshTokenController);
  * @access Private
  */
 
-router.post("/logout", authMiddleware, authControllers.logoutController);
+router.post(
+    "/logout",
+    authControllers.logoutController
+);
 
 
 /**

@@ -2,7 +2,7 @@ import UserModel from "../models/user.model.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/generateTokens.js";
 import { config } from "../config/config.js";
 import jwt from "jsonwebtoken";
-
+import redis from "../services/redis.service.js";
 
 // Register controller
 async function registerController(req, res) {
@@ -221,8 +221,8 @@ async function getMeController(req, res) {
 async function refreshTokenController(req, res) {
     try {
 
-        // 1. Get refresh token from cookie
-        const refreshToken = req.cookies.refreshToken;
+        // 1. Get refresh token
+        const refreshToken = req.cookies?.refreshToken;
 
         if (!refreshToken) {
             return res.status(401).json({
@@ -231,14 +231,28 @@ async function refreshTokenController(req, res) {
             });
         }
 
-        // 2. Verify refresh token
+        // 2. Check Redis blacklist
+        const blacklistKey =
+            `blacklist:refresh:${refreshToken}`;
+
+        const isBlacklisted =
+            await redis.get(blacklistKey);
+
+        if (isBlacklisted) {
+            return res.status(401).json({
+                success: false,
+                message:
+                    "Refresh token has been revoked. Please login again"
+            });
+        }
+
+        // 3. Verify JWT
         const decoded = jwt.verify(
             refreshToken,
             config.JWT_REFRESH_SECRET
         );
 
-
-        // 3. Find user
+        // 4. Find user
         const user = await UserModel.findById(decoded.id);
 
         if (!user) {
@@ -248,11 +262,11 @@ async function refreshTokenController(req, res) {
             });
         }
 
+        // 5. Generate new access token
+        const newAccessToken =
+            generateAccessToken(user);
 
-        // 4. Generate new access token
-        const newAccessToken = generateAccessToken(user);
-
-        // 5. Set new access token in cookie
+        // 6. Set new access token
         res.cookie("accessToken", newAccessToken, {
             httpOnly: true,
             secure: config.NODE_ENV === "production",
@@ -260,18 +274,18 @@ async function refreshTokenController(req, res) {
             maxAge: 15 * 60 * 1000
         });
 
-        // 6. Response
         return res.status(200).json({
             success: true,
             message: "Access token refreshed successfully"
         });
 
-
     } catch (errors) {
+
         if (errors.name === "TokenExpiredError") {
             return res.status(401).json({
                 success: false,
-                message: "Refresh token expired, please login again"
+                message:
+                    "Refresh token expired, please login again"
             });
         }
 
@@ -282,7 +296,10 @@ async function refreshTokenController(req, res) {
             });
         }
 
-        console.error("Refresh Token Error:", errors);
+        console.error(
+            "Refresh Token Error:",
+            errors
+        );
 
         return res.status(500).json({
             success: false,
@@ -291,9 +308,89 @@ async function refreshTokenController(req, res) {
     }
 }
 
-
+//Logout Controller
 async function logoutController(req, res) {
     try {
+
+        const accessToken = req.cookies?.accessToken;
+        const refreshToken = req.cookies?.refreshToken;
+
+        // ==========================================
+        // BLACKLIST ACCESS TOKEN
+        // ==========================================
+
+        if (accessToken) {
+            try {
+                const decodedAccessToken = jwt.verify(
+                    accessToken,
+                    config.JWT_ACCESS_SECRET
+                );
+
+                const currentTime = Math.floor(Date.now() / 1000);
+
+                const remainingTime =
+                    decodedAccessToken.exp - currentTime;
+
+                if (remainingTime > 0) {
+
+                    const accessBlacklistKey =
+                        `blacklist:access:${accessToken}`;
+
+                    await redis.set(
+                        accessBlacklistKey,
+                        "revoked",
+                        {
+                            ex: remainingTime,
+                        }
+                    );
+                }
+
+            } catch (error) {
+                // Access token already expired/invalid
+            }
+        }
+
+
+        // ==========================================
+        // BLACKLIST REFRESH TOKEN
+        // ==========================================
+
+        if (refreshToken) {
+            try {
+                const decodedRefreshToken = jwt.verify(
+                    refreshToken,
+                    config.JWT_REFRESH_SECRET
+                );
+
+                const currentTime = Math.floor(Date.now() / 1000);
+
+                const remainingTime =
+                    decodedRefreshToken.exp - currentTime;
+
+                if (remainingTime > 0) {
+
+                    const refreshBlacklistKey =
+                        `blacklist:refresh:${refreshToken}`;
+
+                    await redis.set(
+                        refreshBlacklistKey,
+                        "revoked",
+                        {
+                            ex: remainingTime,
+                        }
+                    );
+                }
+
+            } catch (error) {
+                // Refresh token already expired/invalid
+            }
+        }
+
+
+        // ==========================================
+        // CLEAR COOKIES
+        // ==========================================
+
         res.clearCookie("accessToken", {
             httpOnly: true,
             secure: config.NODE_ENV === "production",
@@ -306,12 +403,14 @@ async function logoutController(req, res) {
             sameSite: "lax"
         });
 
+
         return res.status(200).json({
             success: true,
             message: "Logout successful"
         });
 
     } catch (error) {
+
         console.error("Logout error:", error);
 
         return res.status(500).json({

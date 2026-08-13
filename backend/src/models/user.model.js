@@ -62,26 +62,14 @@ const userSchema = new mongoose.Schema(
             default: "local",
         },
         avatar: {
-    url: {
-        type: String,
-        default: "",
-    },
-    fileId: {
-        type: String,
-        default: "",
-    },
-},
-
-        otp: {
-            type: String,
-        },
-
-        otpExpiresAt: {
-            type: Date,
-        },
-
-        otpCooldownExpiresAt: {
-            type: Date,
+            url: {
+                type: String,
+                default: "",
+            },
+            fileId: {
+                type: String,
+                default: "",
+            },
         },
     },
     {

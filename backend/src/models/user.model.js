@@ -62,6 +62,11 @@ const userSchema = new mongoose.Schema(
             default: "local",
         },
         avatar: {
+            type: {
+                type: String,
+                enum: ["default", "custom"],
+                default: "default",
+            },
             url: {
                 type: String,
                 default: "",
@@ -70,7 +75,7 @@ const userSchema = new mongoose.Schema(
                 type: String,
                 default: "",
             },
-        },
+        }
     },
     {
         timestamps: true,

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { ArrowUpRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 import { registerUser } from "../services/auth.service";
 
 type RegisterFormData = {
@@ -18,6 +20,8 @@ type RegisterErrors = Partial<
 >;
 
 export default function RegisterForm() {
+  const router = useRouter();
+
   const [formData, setFormData] =
     useState<RegisterFormData>({
       username: "",
@@ -42,9 +46,6 @@ export default function RegisterForm() {
   const [serverError, setServerError] =
     useState("");
 
-  const [successMessage, setSuccessMessage] =
-    useState("");
-
   /* =====================================================
      INPUT CHANGE
   ====================================================== */
@@ -67,7 +68,6 @@ export default function RegisterForm() {
     }
 
     setServerError("");
-    setSuccessMessage("");
   };
 
   /* =====================================================
@@ -148,7 +148,6 @@ export default function RegisterForm() {
     e.preventDefault();
 
     setServerError("");
-    setSuccessMessage("");
 
     const isValid = validateForm();
 
@@ -176,18 +175,20 @@ export default function RegisterForm() {
         response
       );
 
-      setSuccessMessage(
-        response.message ||
-        "Account created successfully."
-      );
+      /*
+       * IMPORTANT
+       *
+       * Registration successful hone ke baad
+       * user ko directly complete-profile page
+       * par bhejna hai.
+       *
+       * Yahin user:
+       * 1. Profile photo upload karega
+       * 2. User / Owner select karega
+       */
 
-      setFormData({
-        username: "",
-        email: "",
-        contact: "",
-        password: "",
-        confirmPassword: "",
-      });
+      router.replace("/complete-profile");
+
     } catch (error: any) {
       console.error(
         "Registration error:",
@@ -199,6 +200,7 @@ export default function RegisterForm() {
         "Something went wrong. Please try again.";
 
       setServerError(message);
+
     } finally {
       setIsLoading(false);
     }
@@ -211,10 +213,12 @@ export default function RegisterForm() {
   const inputClass = (
     field: keyof RegisterFormData
   ) =>
-    `w-full border-b ${errors[field]
-      ? "border-red-500"
-      : "border-[#1C1B18]/25 focus:border-[#174D35]"
+    `w-full border-b ${
+      errors[field]
+        ? "border-red-500"
+        : "border-[#1C1B18]/25 focus:border-[#174D35]"
     } bg-transparent py-3 text-sm font-medium text-[#1C1B18] outline-none transition-colors placeholder:font-medium placeholder:text-[#756A5C]`;
+
   const labelClass =
     "mb-0.5 block text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A]";
 
@@ -227,21 +231,18 @@ export default function RegisterForm() {
       noValidate
       className="space-y-4"
     >
+
       {/* Server Error */}
+
       {serverError && (
         <div className="mb-3 border border-red-500/20 bg-red-500/5 px-3 py-2 text-[10px] font-medium leading-4 text-red-600">
           {serverError}
         </div>
       )}
 
-      {/* Success */}
-      {successMessage && (
-        <div className="mb-3 border border-[#174D35]/20 bg-[#174D35]/5 px-3 py-2 text-[10px] font-medium leading-4 text-[#174D35]">
-          {successMessage}
-        </div>
-      )}
 
       {/* Username */}
+
       <div>
         <label
           htmlFor="username"
@@ -268,7 +269,9 @@ export default function RegisterForm() {
         )}
       </div>
 
+
       {/* Email */}
+
       <div>
         <label
           htmlFor="email"
@@ -295,7 +298,9 @@ export default function RegisterForm() {
         )}
       </div>
 
+
       {/* Contact */}
+
       <div>
         <label
           htmlFor="contact"
@@ -328,7 +333,6 @@ export default function RegisterForm() {
             }
 
             setServerError("");
-            setSuccessMessage("");
           }}
           placeholder="10-digit mobile number"
           inputMode="numeric"
@@ -343,7 +347,9 @@ export default function RegisterForm() {
         )}
       </div>
 
+
       {/* Password */}
+
       <div>
         <label
           htmlFor="password"
@@ -353,6 +359,7 @@ export default function RegisterForm() {
         </label>
 
         <div className="relative">
+
           <input
             id="password"
             type={
@@ -386,6 +393,7 @@ export default function RegisterForm() {
               <Eye size={15} />
             )}
           </button>
+
         </div>
 
         {errors.password && (
@@ -395,7 +403,9 @@ export default function RegisterForm() {
         )}
       </div>
 
+
       {/* Confirm Password */}
+
       <div>
         <label
           htmlFor="confirmPassword"
@@ -405,6 +415,7 @@ export default function RegisterForm() {
         </label>
 
         <div className="relative">
+
           <input
             id="confirmPassword"
             type={
@@ -440,6 +451,7 @@ export default function RegisterForm() {
               <Eye size={15} />
             )}
           </button>
+
         </div>
 
         {errors.confirmPassword && (
@@ -449,12 +461,15 @@ export default function RegisterForm() {
         )}
       </div>
 
+
       {/* Submit */}
+
       <button
         type="submit"
         disabled={isLoading}
         className="group mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#174D35] px-5 text-xs font-semibold uppercase tracking-[0.16em] text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40 disabled:cursor-not-allowed disabled:opacity-60"
       >
+
         {isLoading
           ? "Creating..."
           : "Enter ROOM"}
@@ -465,18 +480,25 @@ export default function RegisterForm() {
             className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
           />
         )}
+
       </button>
 
+
       {/* Login */}
-<p className="pt-1 text-center text-[11px] font-medium text-[#5F554A]">
-  Already have a place?{" "}
-  <Link
-    href="/login"
-    className="font-semibold text-[#174D35] underline underline-offset-4"
-  >
-    Sign in
-  </Link>
-</p>
+
+      <p className="pt-1 text-center text-[11px] font-medium text-[#5F554A]">
+
+        Already have a place?{" "}
+
+        <Link
+          href="/login"
+          className="font-semibold text-[#174D35] underline underline-offset-4"
+        >
+          Sign in
+        </Link>
+
+      </p>
+
     </form>
   );
 }

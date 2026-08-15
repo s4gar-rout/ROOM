@@ -1,8 +1,11 @@
 import express from "express";
 
 import profileControllers from "../controllers/profile.controllers.js";
+
 import { authMiddleware } from "../middlewares/auth.middleware.js";
+
 import upload from "../middlewares/upload.middleware.js";
+
 import { multerErrorHandler } from "../middlewares/multerError.middleware.js";
 
 import {
@@ -11,7 +14,9 @@ import {
     avatarValidation,
 } from "../validators/profile.validator.js";
 
-import { validateRequest } from "../middlewares/validate.middleware.js";
+import {
+    validateRequest,
+} from "../middlewares/validate.middleware.js";
 
 const router = express.Router();
 
@@ -54,7 +59,7 @@ router.patch(
 
 
 // ==========================================
-// UPDATE AVATAR
+// UPLOAD PROFILE PHOTO
 // ==========================================
 
 router.patch(
@@ -66,6 +71,5 @@ router.patch(
     validateRequest,
     profileControllers.updateAvatarController
 );
-
 
 export default router;

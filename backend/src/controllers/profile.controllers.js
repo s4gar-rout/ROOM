@@ -1,6 +1,8 @@
 import UserModel from "../models/user.model.js";
-import bcrypt from "bcryptjs";
-import { uploadFile, deleteFile } from "../services/storage.service.js";
+import {
+    uploadFile,
+    deleteFile,
+} from "../services/storage.service.js";
 
 // ==========================================
 // GET MY PROFILE
@@ -41,7 +43,7 @@ export async function getMyProfileController(req, res) {
 
 export async function updateProfileController(req, res) {
     try {
-        const { username, contact } = req.body;
+        const { username, contact, role } = req.body;
 
         const user = await UserModel.findById(req.user._id);
 
@@ -52,14 +54,18 @@ export async function updateProfileController(req, res) {
             });
         }
 
-        // Update username
+        // ======================================
+        // USERNAME
+        // ======================================
+
         if (username !== undefined) {
             const normalizedUsername = username.trim();
 
-            const existingUsername = await UserModel.findOne({
-                username: normalizedUsername,
-                _id: { $ne: user._id },
-            });
+            const existingUsername =
+                await UserModel.findOne({
+                    username: normalizedUsername,
+                    _id: { $ne: user._id },
+                });
 
             if (existingUsername) {
                 return res.status(409).json({
@@ -71,16 +77,68 @@ export async function updateProfileController(req, res) {
             user.username = normalizedUsername;
         }
 
-        // Update contact
+        // ======================================
+        // CONTACT
+        // ======================================
+
         if (contact !== undefined) {
             user.contact = contact.trim();
+        }
+
+        // ======================================
+        // ROLE
+        // ======================================
+
+        if (role !== undefined) {
+            if (!["user", "owner"].includes(role)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid role",
+                });
+            }
+
+            // -------------------------------
+            // NORMAL USER
+            // -------------------------------
+
+            if (role === "user") {
+                user.role = "user";
+
+                if ("ownerVerified" in user) {
+                    user.ownerVerified = false;
+                }
+
+                if ("ownerRequestStatus" in user) {
+                    user.ownerRequestStatus = "NONE";
+                }
+            }
+
+            // -------------------------------
+            // OWNER REQUEST
+            // -------------------------------
+
+            if (role === "owner") {
+                user.role = "owner";
+
+                if ("ownerVerified" in user) {
+                    user.ownerVerified = false;
+                }
+
+                if ("ownerRequestStatus" in user) {
+                    user.ownerRequestStatus = "PENDING";
+                }
+            }
         }
 
         await user.save();
 
         return res.status(200).json({
             success: true,
-            message: "Profile updated successfully",
+            message:
+                role === "owner"
+                    ? "Owner verification request submitted"
+                    : "Profile updated successfully",
+
             user: {
                 id: user._id,
                 username: user.username,
@@ -88,12 +146,86 @@ export async function updateProfileController(req, res) {
                 contact: user.contact,
                 role: user.role,
                 ownerVerified: user.ownerVerified,
+                ownerRequestStatus:
+                    user.ownerRequestStatus,
                 avatar: user.avatar,
             },
         });
 
     } catch (error) {
         console.error("Update Profile Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
+
+
+// ==========================================
+// UPDATE AVATAR
+// ==========================================
+
+export async function updateAvatarController(req, res) {
+    try {
+        console.log("========== AVATAR DEBUG ==========");
+        console.log("FILE:", req.file);
+        console.log("BODY:", req.body);
+        console.log("USER:", req.user?._id);
+        console.log("===================================");
+
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "Avatar image is required",
+            });
+        }
+
+        const user = await UserModel.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        const result = await uploadFile({
+            buffer: req.file.buffer,
+            fileName: `avatar-${user._id}-${Date.now()}`,
+            folder: "avatars",
+        });
+
+        if (user.avatar?.fileId) {
+            try {
+                await deleteFile(user.avatar.fileId);
+            } catch (error) {
+                console.error(
+                    "Old Avatar Delete Error:",
+                    error
+                );
+            }
+        }
+
+        user.avatar = {
+            url: result.url,
+            fileId: result.fileId,
+        };
+
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Avatar updated successfully",
+            avatar: user.avatar,
+        });
+
+    } catch (error) {
+        console.error(
+            "Update Avatar Error:",
+            error
+        );
 
         return res.status(500).json({
             success: false,
@@ -140,7 +272,6 @@ export async function changePasswordController(req, res) {
             });
         }
 
-        // Google account
         if (!user.password) {
             return res.status(400).json({
                 success: false,
@@ -190,74 +321,9 @@ export async function changePasswordController(req, res) {
 }
 
 
-// ==========================================
-// UPDATE AVATAR
-// ==========================================
-
-export async function updateAvatarController(req, res) {
-    try {
-        if (!req.file) {
-            return res.status(400).json({
-                success: false,
-                message: "Avatar image is required",
-            });
-        }
-
-        const user = await UserModel.findById(req.user._id);
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found",
-            });
-        }
-
-        // Upload new avatar
-        const result = await uploadFile({
-            buffer: req.file.buffer,
-            fileName: `avatar-${user._id}-${Date.now()}`,
-            folder: "avatars",
-        });
-
-        // Delete old avatar from ImageKit
-        if (user.avatar?.fileId) {
-            try {
-                await deleteFile(user.avatar.fileId);
-            } catch (error) {
-                console.error(
-                    "Old Avatar Delete Error:",
-                    error
-                );
-            }
-        }
-
-        user.avatar = {
-            url: result.url,
-            fileId: result.fileId,
-        };
-
-        await user.save();
-
-        return res.status(200).json({
-            success: true,
-            message: "Avatar updated successfully",
-            avatar: user.avatar,
-        });
-
-    } catch (error) {
-        console.error("Update Avatar Error:", error);
-
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-        });
-    }
-}
-
-
 export default {
     getMyProfileController,
     updateProfileController,
     updateAvatarController,
-    changePasswordController
-}
+    changePasswordController,
+};

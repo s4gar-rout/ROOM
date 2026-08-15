@@ -1,0 +1,48 @@
+import { Rental } from "../types/rental";
+
+export const featuredRentals: Rental[] = [
+  {
+    id: "rental-001",
+    title: "Peaceful Private Room",
+    location: "Jharsuguda",
+    area: "Shanti Nagar",
+    rent: 6500,
+    deposit: 13000,
+    propertyType: "Room",
+    furnished: "Furnished",
+    availableFrom: "2026-09-01",
+  },
+  {
+    id: "rental-002",
+    title: "Modern 1BHK",
+    location: "Jharsuguda",
+    area: "Beheramal",
+    rent: 9000,
+    deposit: 18000,
+    propertyType: "1BHK",
+    furnished: "Semi-Furnished",
+    availableFrom: "2026-09-05",
+  },
+  {
+    id: "rental-003",
+    title: "Comfortable Studio Room",
+    location: "Jharsuguda",
+    area: "Station Road",
+    rent: 5500,
+    deposit: 11000,
+    propertyType: "Room",
+    furnished: "Furnished",
+    availableFrom: "2026-09-10",
+  },
+  {
+    id: "rental-004",
+    title: "Cozy Semi-Furnished Room",
+    location: "Jharsuguda",
+    area: "Sarbahal",
+    rent: 7000,
+    deposit: 14000,
+    propertyType: "Room",
+    furnished: "Semi-Furnished",
+    availableFrom: "2026-09-15",
+  },
+];

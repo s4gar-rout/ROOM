@@ -57,6 +57,12 @@ if (!process.env.UPSTASH_REDIS_REST_TOKEN) {
     );
 }
 
+if(!process.env.FRONTEND_URL){
+    throw new Error(
+        "FRONTEND_URL is not defined in environment variables"
+    )
+}
+
 export const config = {
     PORT: process.env.PORT,
     MONGO_URI: process.env.MONGO_URI,
@@ -73,5 +79,6 @@ export const config = {
     BREVO_EMAIL: process.env.BREVO_EMAIL,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+    FRONTEND_URL: process.env.FRONTEND_URL,
 
 }

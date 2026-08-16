@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import LoginForm from "../components/LoginForm";
@@ -106,7 +107,9 @@ export default function LoginPage() {
                 </h1>
               </div>
 
-              <LoginForm />
+              <Suspense fallback={<div className="h-40 w-full animate-pulse bg-[#174D35]/5 rounded-md" />}>
+                <LoginForm />
+              </Suspense>
 
               {/* Bottom */}
               <div className="mt-7 border-t border-[#1C1B18]/10 pt-4">

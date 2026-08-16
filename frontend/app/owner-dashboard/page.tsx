@@ -15,10 +15,7 @@ import {
 
 import { useRouter } from "next/navigation";
 
-import {
-  getCurrentUser,
-  logoutUser,
-} from "@/features/auth/services/auth.service";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 import {
   deleteRoom,
@@ -35,8 +32,7 @@ import type { User } from "@/types/auth.types";
 export default function OwnerDashboardPage() {
   const router = useRouter();
 
-  const [user, setUser] =
-    useState<User | null>(null);
+  const { user, loading: authLoading, isAuthenticated, logout: globalLogout } = useAuth();
 
   const [rooms, setRooms] =
     useState<Room[]>([]);
@@ -66,29 +62,16 @@ export default function OwnerDashboardPage() {
   const loadDashboard = async () => {
     try {
       setServerError("");
-
-      const [currentUser, myRooms] =
-        await Promise.all([
-          getCurrentUser(),
-          getMyRooms(),
-        ]);
-
-      setUser(currentUser);
+      const myRooms = await getMyRooms();
       setRooms(myRooms);
     } catch (error: any) {
-      console.error(
-        "Dashboard error:",
-        error
-      );
-
+      console.error("Dashboard error:", error);
       if (error?.response?.status === 401) {
-        router.replace("/login");
+        router.replace(`/login?returnUrl=${encodeURIComponent(window.location.pathname)}`);
         return;
       }
-
       setServerError(
-        error?.response?.data?.message ||
-          "Unable to load dashboard."
+        error?.response?.data?.message || "Unable to load dashboard."
       );
     } finally {
       setLoading(false);
@@ -97,8 +80,15 @@ export default function OwnerDashboardPage() {
   };
 
   useEffect(() => {
-    loadDashboard();
-  }, []);
+    if (!authLoading && !isAuthenticated) {
+      router.replace(`/login?returnUrl=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+    
+    if (isAuthenticated) {
+      loadDashboard();
+    }
+  }, [isAuthenticated, authLoading]);
 
   // ==========================================
   // STATS
@@ -206,8 +196,7 @@ export default function OwnerDashboardPage() {
     try {
       setLoggingOut(true);
 
-      await logoutUser();
-
+      await globalLogout();
       router.replace("/login");
     } catch (error) {
       console.error(
@@ -225,31 +214,23 @@ export default function OwnerDashboardPage() {
   // LOADING
   // ==========================================
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <main className="min-h-screen bg-[#F8F4EA] px-5 py-8">
-
         <div className="mx-auto max-w-6xl animate-pulse">
-
           <div className="h-5 w-20 rounded-full bg-[#174D35]/10" />
-
           <div className="mt-12 h-12 w-64 rounded-full bg-[#174D35]/10" />
-
           <div className="mt-8 grid gap-4 md:grid-cols-3">
-
             <div className="h-28 rounded-[20px] bg-[#174D35]/5" />
-
             <div className="h-28 rounded-[20px] bg-[#174D35]/5" />
-
             <div className="h-28 rounded-[20px] bg-[#174D35]/5" />
-
           </div>
-
         </div>
-
       </main>
     );
   }
+
+  if (!isAuthenticated) return null;
 
   const isVerified =
     user?.ownerVerified === true;

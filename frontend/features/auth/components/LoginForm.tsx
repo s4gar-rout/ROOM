@@ -7,7 +7,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { loginUser } from "../services/auth.service";
 
@@ -22,6 +22,8 @@ type LoginErrors = Partial<
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get("returnUrl");
 
   const [formData, setFormData] =
     useState<LoginFormData>({
@@ -157,15 +159,8 @@ export default function LoginForm() {
         /*
          * Both verified and unverified owners
          * can access the dashboard.
-         *
-         * Room listing permission is handled
-         * inside the owner dashboard.
          */
-
-        router.replace(
-          "/owner-dashboard"
-        );
-
+        router.replace(returnUrl || "/owner-dashboard");
         return;
       }
 
@@ -174,7 +169,7 @@ export default function LoginForm() {
       // ========================================
 
       if (user.role === "tenant") {
-        router.replace("/");
+        router.replace(returnUrl || "/");
         return;
       }
 

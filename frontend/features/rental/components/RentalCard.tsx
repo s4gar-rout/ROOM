@@ -27,13 +27,13 @@ export default function RentalCard({
       : null;
 
   return (
-    <article className="group overflow-hidden rounded-3xl border border-[#174D35]/10 bg-white">
+    <article className="group overflow-hidden rounded-[2px] border border-[#1C1B18]/15 bg-transparent transition-all duration-300 hover:border-[#174D35]/30">
 
       {/* ================================
           IMAGE
       ================================= */}
 
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#DDE7DD]">
+      <div className="relative aspect-[4/3] overflow-hidden bg-[#1C1B18]/5 border-b border-[#1C1B18]/15">
 
         {image ? (
           <img
@@ -42,24 +42,24 @@ export default function RentalCard({
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-sm font-medium text-[#174D35]/50">
-            No image available
+          <div className="absolute inset-0 flex items-center justify-center font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5F554A]">
+            No image
           </div>
         )}
 
         {/* Room Type */}
 
-        <span className="absolute left-4 top-4 rounded-full bg-[#F8F4EA] px-3 py-1.5 text-xs font-semibold text-[#174D35]">
+        <span className="absolute left-3 top-3 rounded-[2px] bg-[#F8F4EA] px-2.5 py-1 font-sans text-[9px] font-semibold uppercase tracking-[0.16em] text-[#174D35] shadow-sm">
           {roomTypeLabel}
         </span>
 
         {/* Availability */}
 
         <span
-          className={`absolute right-4 top-4 rounded-full px-3 py-1.5 text-[10px] font-semibold ${
+          className={`absolute right-3 top-3 rounded-[2px] px-2.5 py-1 font-sans text-[9px] font-semibold uppercase tracking-[0.16em] shadow-sm ${
             room.availability
               ? "bg-[#174D35] text-[#F8F4EA]"
-              : "bg-[#1C1B18]/75 text-white"
+              : "bg-[#1C1B18] text-white"
           }`}
         >
           {room.availability
@@ -71,7 +71,7 @@ export default function RentalCard({
 
         <Link
           href={`/rental/${room._id}`}
-          className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#F8F4EA] text-[#174D35] opacity-0 transition-all duration-300 group-hover:opacity-100"
+          className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#F8F4EA] text-[#174D35] shadow-sm opacity-0 transition-all duration-300 group-hover:opacity-100 hover:bg-[#174D35] hover:text-[#F8F4EA]"
           aria-label={`View ${room.title}`}
         >
           <ArrowUpRight size={18} />
@@ -90,14 +90,14 @@ export default function RentalCard({
 
           <div className="min-w-0">
 
-            <h3 className="font-serif text-base leading-tight text-[#1C1B18] sm:text-[18px]">
+            <h3 className="font-serif text-lg leading-tight tracking-[-0.02em] text-[#1C1B18]">
               {room.title}
             </h3>
 
-            <div className="mt-1.5 flex items-center gap-1 text-xs font-medium text-[#756A5C] sm:text-sm">
+            <div className="mt-2 flex items-center gap-1.5 font-sans text-[9px] font-medium uppercase tracking-[0.15em] text-[#5F554A]">
 
               <MapPin
-                size={13}
+                size={12}
                 className="shrink-0"
               />
 
@@ -112,11 +112,11 @@ export default function RentalCard({
 
           <div className="shrink-0 text-right">
 
-            <p className="text-base font-bold text-[#174D35] sm:text-lg">
+            <p className="font-serif text-[18px] tracking-tight text-[#174D35]">
               ₹{room.rent.toLocaleString("en-IN")}
             </p>
 
-            <p className="text-[10px] font-medium text-[#756A5C] sm:text-xs">
+            <p className="mt-0.5 font-sans text-[8px] font-semibold uppercase tracking-[0.15em] text-[#5F554A]">
               / month
             </p>
 
@@ -129,21 +129,21 @@ export default function RentalCard({
 
         {room.facilities &&
           room.facilities.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-1.5 border-t border-[#174D35]/10 pt-3">
+            <div className="mt-5 flex flex-wrap gap-1.5 border-t border-[#1C1B18]/10 pt-4">
 
               {room.facilities
                 .slice(0, 3)
                 .map((facility) => (
                   <span
                     key={facility}
-                    className="rounded-full bg-[#F8F4EA] px-2.5 py-1 text-[10px] font-medium text-[#756A5C] sm:text-xs"
+                    className="rounded-[2px] border border-[#1C1B18]/15 bg-transparent px-2 py-1 font-sans text-[8px] font-semibold uppercase tracking-[0.15em] text-[#5F554A]"
                   >
                     {facility}
                   </span>
                 ))}
 
               {room.facilities.length > 3 && (
-                <span className="rounded-full bg-[#F8F4EA] px-2.5 py-1 text-[10px] font-medium text-[#756A5C] sm:text-xs">
+                <span className="rounded-[2px] border border-[#1C1B18]/15 bg-transparent px-2 py-1 font-sans text-[8px] font-semibold uppercase tracking-[0.15em] text-[#5F554A]">
                   +{room.facilities.length - 3}
                 </span>
               )}

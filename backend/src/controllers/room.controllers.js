@@ -139,10 +139,8 @@ export async function getAllRoomsController(req, res) {
             }
         }
 
-        // Availability filter
-        if (availability !== undefined) {
-            query.availability = availability === "true";
-        }
+        // Availability filter (Tenants should only see available rooms)
+        query.availability = true;
 
         // Search title / description / location
         if (search) {

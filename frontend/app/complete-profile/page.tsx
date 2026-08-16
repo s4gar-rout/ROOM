@@ -135,7 +135,7 @@ export default function CompleteProfilePage() {
       }
 
       // 4. User
-      router.replace("/rooms");
+      router.replace("/rentals");
     } catch (error: any) {
       console.error(
         "Complete Profile Error:",
@@ -571,7 +571,7 @@ export default function CompleteProfilePage() {
 
             <button
               type="button"
-              onClick={() => router.replace("/rooms")}
+              onClick={() => router.replace("/rentals")}
               className="group mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-[10px] font-bold uppercase tracking-[0.2em] text-[#F8F4EA] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#123D2A] hover:shadow-md"
             >
               Continue exploring

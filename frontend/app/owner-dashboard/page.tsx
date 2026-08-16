@@ -260,7 +260,7 @@ export default function OwnerDashboardPage() {
 
             <button
               onClick={() =>
-                router.push("/rooms")
+                router.push("/rentals")
               }
               className="group flex items-center gap-1.5 rounded-full px-3 py-2 text-[9px] font-bold uppercase tracking-[0.14em] text-[#1C1B18]/70 transition hover:bg-[#174D35]/5 hover:text-[#174D35]"
             >

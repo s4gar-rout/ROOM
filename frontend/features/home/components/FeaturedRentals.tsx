@@ -1,34 +1,80 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 
 import RentalCard from "@/features/rental/components/RentalCard";
-import { featuredRentals } from "@/features/rental/data/mock-data";
+import { getAllRooms } from "@/features/rental/services/rental.service";
+import type { Room } from "@/features/rental/types/rental";
 
 export default function FeaturedRentals() {
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchFeaturedRooms = async () => {
+      try {
+        setIsLoading(true);
+        setError("");
+
+        const response = await getAllRooms({
+          availability: true,
+          page: 1,
+          limit: 4,
+          sort: "newest",
+        });
+
+        setRooms(response.rooms || []);
+      } catch (error) {
+        console.error(
+          "Failed to fetch featured rooms:",
+          error
+        );
+
+        setError("Unable to load rentals right now.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFeaturedRooms();
+  }, []);
+
   return (
     <section className="bg-[#F8F4EA] px-4 py-12 sm:px-6 md:py-16">
       <div className="mx-auto max-w-6xl">
 
+        {/* ==========================================
+            HEADER
+        ========================================== */}
+
         <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+
           <div className="max-w-lg">
+
             <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.3em] text-[#174D35]">
               Featured rentals
             </p>
 
-            <h2 className="font-serif text-2xl sm:text-3xl leading-tight tracking-[-0.025em] text-[#1C1B18] md:text-4xl">
+            <h2 className="font-serif text-2xl leading-tight tracking-[-0.025em] text-[#1C1B18] sm:text-3xl md:text-4xl">
               Places worth{" "}
-              <em className="text-[#174D35]">calling home.</em>
+              <em className="text-[#174D35]">
+                calling home.
+              </em>
             </h2>
 
-            <p className="mt-2 max-w-md text-xs sm:text-sm leading-6 text-[#756A5C]">
-              Explore comfortable rooms and homes from local owners,
-              available for long-term living.
+            <p className="mt-2 max-w-md text-xs leading-6 text-[#756A5C] sm:text-sm">
+              Explore comfortable rooms and homes from
+              local owners, available for long-term living.
             </p>
+
           </div>
 
           <Link
             href="/rentals"
-            className="group flex w-fit items-center gap-1.5 text-xs sm:text-sm font-medium text-[#174D35]"
+            className="group flex w-fit items-center gap-1.5 text-xs font-medium text-[#174D35] sm:text-sm"
           >
             View all rentals
 
@@ -37,14 +83,92 @@ export default function FeaturedRentals() {
               className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
             />
           </Link>
+
         </div>
 
-        {/* 4 Rental Cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {featuredRentals.map((rental) => (
-            <RentalCard key={rental.id} rental={rental} />
-          ))}
-        </div>
+        {/* ==========================================
+            LOADING
+        ========================================== */}
+
+        {isLoading && (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="overflow-hidden rounded-3xl border border-[#174D35]/10 bg-white"
+              >
+
+                <div className="aspect-[4/3] animate-pulse bg-[#DDE7DD]" />
+
+                <div className="space-y-3 p-4 sm:p-5">
+
+                  <div className="h-5 w-3/4 animate-pulse rounded-full bg-[#DDE7DD]" />
+
+                  <div className="h-4 w-1/2 animate-pulse rounded-full bg-[#DDE7DD]" />
+
+                  <div className="h-4 w-1/3 animate-pulse rounded-full bg-[#DDE7DD]" />
+
+                </div>
+
+              </div>
+            ))}
+
+          </div>
+        )}
+
+        {/* ==========================================
+            ERROR
+        ========================================== */}
+
+        {!isLoading && error && (
+          <div className="rounded-3xl border border-red-500/10 bg-white px-5 py-8 text-center">
+
+            <p className="text-sm font-semibold text-red-600">
+              {error}
+            </p>
+
+          </div>
+        )}
+
+        {/* ==========================================
+            EMPTY
+        ========================================== */}
+
+        {!isLoading &&
+          !error &&
+          rooms.length === 0 && (
+            <div className="rounded-3xl border border-[#174D35]/10 bg-white px-5 py-10 text-center">
+
+              <p className="font-serif text-xl text-[#1C1B18]">
+                No rooms available yet.
+              </p>
+
+              <p className="mt-2 text-sm font-medium text-[#756A5C]">
+                New listings will appear here soon.
+              </p>
+
+            </div>
+          )}
+
+        {/* ==========================================
+            ROOMS
+        ========================================== */}
+
+        {!isLoading &&
+          !error &&
+          rooms.length > 0 && (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+              {rooms.map((room) => (
+                <RentalCard
+                  key={room._id}
+                  room={room}
+                />
+              ))}
+
+            </div>
+          )}
 
       </div>
     </section>

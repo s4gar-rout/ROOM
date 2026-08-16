@@ -298,6 +298,7 @@ export async function getMyRoomController(req, res) {
 // ===============================
 
 export async function updateRoomController(req, res) {
+    const uploadedFileIds = [];
     try {
         const { roomId } = req.params;
 
@@ -328,6 +329,38 @@ export async function updateRoomController(req, res) {
             return res.status(403).json({
                 success: false,
                 message: "You are not authorized to update this room",
+            });
+        }
+
+        // Handle new images upload if provided
+        let newRoomImages = [];
+        if (req.files && req.files.length > 0) {
+            newRoomImages = await Promise.all(
+                req.files.map(async (file) => {
+                    const result = await uploadFile({
+                        buffer: file.buffer,
+                        fileName: file.originalname,
+                        folder: "rooms",
+                    });
+                    uploadedFileIds.push(result.fileId);
+                    return {
+                        url: result.url,
+                        fileId: result.fileId,
+                    };
+                })
+            );
+        }
+
+        // Validate max limit of 5 images
+        if (room.images.length + newRoomImages.length > 5) {
+            if (uploadedFileIds.length > 0) {
+                await Promise.allSettled(
+                    uploadedFileIds.map((fileId) => deleteFile(fileId))
+                );
+            }
+            return res.status(400).json({
+                success: false,
+                message: "A room listing can have a maximum of 5 images",
             });
         }
 
@@ -365,6 +398,10 @@ export async function updateRoomController(req, res) {
                 availability === "true";
         }
 
+        if (newRoomImages.length > 0) {
+            room.images.push(...newRoomImages);
+        }
+
         await room.save();
 
         return res.status(200).json({
@@ -375,6 +412,13 @@ export async function updateRoomController(req, res) {
 
     } catch (error) {
         console.error("Update Room Error:", error);
+
+        // Cleanup newly uploaded ImageKit files if operation fails
+        if (uploadedFileIds.length > 0) {
+            await Promise.allSettled(
+                uploadedFileIds.map((fileId) => deleteFile(fileId))
+            );
+        }
 
         return res.status(500).json({
             success: false,
@@ -485,10 +529,7 @@ export async function updateRoomAvailabilityController(req, res) {
             message: availability
                 ? "Room is now available"
                 : "Room is now unavailable",
-            room: {
-                id: room._id,
-                availability: room.availability,
-            },
+            room,
         });
 
     } catch (error) {

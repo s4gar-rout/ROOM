@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowUpRight, Eye, EyeOff } from "lucide-react";
+import {
+  ArrowUpRight,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import Link from "next/link";
-import { loginUser } from "../services/auth.service";
+import { useRouter } from "next/navigation";
 
+import { loginUser } from "../services/auth.service";
 
 type LoginFormData = {
   email: string;
@@ -16,16 +21,29 @@ type LoginErrors = Partial<
 >;
 
 export default function LoginForm() {
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: "",
-    password: "",
-  });
+  const router = useRouter();
 
-  const [errors, setErrors] = useState<LoginErrors>({});
-  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] =
+    useState<LoginFormData>({
+      email: "",
+      password: "",
+    });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
+  const [errors, setErrors] =
+    useState<LoginErrors>({});
+
+  const [showPassword, setShowPassword] =
+    useState(false);
+
+  const [isLoading, setIsLoading] =
+    useState(false);
+
+  const [serverError, setServerError] =
+    useState("");
+
+  // ==========================================
+  // HANDLE CHANGE
+  // ==========================================
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -37,84 +55,164 @@ export default function LoginForm() {
       [name]: value,
     }));
 
-    if (errors[name as keyof LoginFormData]) {
+    if (
+      errors[name as keyof LoginFormData]
+    ) {
       setErrors((prev) => ({
         ...prev,
         [name]: "",
       }));
     }
+
+    if (serverError) {
+      setServerError("");
+    }
   };
+
+  // ==========================================
+  // VALIDATION
+  // ==========================================
 
   const validateForm = () => {
     const newErrors: LoginErrors = {};
 
-    const email = formData.email.trim();
+    const email =
+      formData.email.trim();
 
     if (!email) {
-      newErrors.email = "Email is required";
+      newErrors.email =
+        "Email is required";
     } else if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+        email
+      )
     ) {
-      newErrors.email = "Enter a valid email address";
+      newErrors.email =
+        "Enter a valid email address";
     }
 
     if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 8) {
+      newErrors.password =
+        "Password is required";
+    } else if (
+      formData.password.length < 8
+    ) {
       newErrors.password =
         "Password must be at least 8 characters";
     }
 
     setErrors(newErrors);
 
-    return Object.keys(newErrors).length === 0;
+    return (
+      Object.keys(newErrors).length === 0
+    );
   };
 
-const handleSubmit = async (
-  e: React.FormEvent<HTMLFormElement>
-) => {
-  e.preventDefault();
+  // ==========================================
+  // LOGIN
+  // ==========================================
 
-  setServerError("");
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
 
-  const isValid = validateForm();
+    setServerError("");
 
-  if (!isValid) return;
+    if (!validateForm()) {
+      return;
+    }
 
-  try {
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-    const response = await loginUser({
-      email: formData.email.trim(),
-      password: formData.password,
-    });
+      const response =
+        await loginUser({
+          email:
+            formData.email.trim(),
+          password:
+            formData.password,
+        });
 
-    console.log("Login successful:", response);
+      console.log(
+        "Login successful:",
+        response
+      );
 
-    // Next step:
-    // redirect to dashboard/home
-    // and maintain authenticated user state
+      const user = response?.user;
 
-  } catch (error: any) {
-    console.error("Login error:", error);
+      if (!user) {
+        setServerError(
+          "Login successful, but user information was not received."
+        );
 
-    const message =
-      error?.response?.data?.message ||
-      "Invalid email or password.";
+        return;
+      }
 
-    setServerError(message);
+      // ========================================
+      // OWNER
+      // ========================================
 
-  } finally {
-    setIsLoading(false);
-  }
-};
+      if (user.role === "owner") {
+        /*
+         * Both verified and unverified owners
+         * can access the dashboard.
+         *
+         * Room listing permission is handled
+         * inside the owner dashboard.
+         */
+
+        router.replace(
+          "/owner-dashboard"
+        );
+
+        return;
+      }
+
+      // ========================================
+      // TENANT
+      // ========================================
+
+      if (user.role === "tenant") {
+        router.replace("/");
+        return;
+      }
+
+      // ========================================
+      // UNKNOWN ROLE
+      // ========================================
+
+      setServerError(
+        "Your account role is not configured correctly."
+      );
+    } catch (error: any) {
+      console.error(
+        "Login error:",
+        error
+      );
+
+      const message =
+        error?.response?.data
+          ?.message ||
+        "Invalid email or password.";
+
+      setServerError(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ==========================================
+  // STYLES
+  // ==========================================
 
   const inputClass = (
     field: keyof LoginFormData
   ) =>
-    `w-full border-b ${errors[field]
-      ? "border-red-500"
-      : "border-[#1C1B18]/25 focus:border-[#174D35]"
+    `w-full border-b ${
+      errors[field]
+        ? "border-red-500"
+        : "border-[#1C1B18]/25 focus:border-[#174D35]"
     } bg-transparent py-3 text-sm font-medium text-[#1C1B18] outline-none transition-colors placeholder:font-medium placeholder:text-[#756A5C]`;
 
   const labelClass =
@@ -129,9 +227,13 @@ const handleSubmit = async (
       noValidate
       className="space-y-5"
     >
-      {/* Email */}
+      {/* EMAIL */}
+
       <div>
-        <label htmlFor="email" className={labelClass}>
+        <label
+          htmlFor="email"
+          className={labelClass}
+        >
           01 / Email
         </label>
 
@@ -143,15 +245,20 @@ const handleSubmit = async (
           onChange={handleChange}
           placeholder="you@example.com"
           autoComplete="email"
-          className={inputClass("email")}
+          className={inputClass(
+            "email"
+          )}
         />
 
         {errors.email && (
-          <p className={errorClass}>{errors.email}</p>
+          <p className={errorClass}>
+            {errors.email}
+          </p>
         )}
       </div>
 
-      {/* Password */}
+      {/* PASSWORD */}
+
       <div>
         <div className="mb-1 flex items-center justify-between">
           <label
@@ -172,22 +279,36 @@ const handleSubmit = async (
         <div className="relative">
           <input
             id="password"
-            type={showPassword ? "text" : "password"}
+            type={
+              showPassword
+                ? "text"
+                : "password"
+            }
             name="password"
-            value={formData.password}
+            value={
+              formData.password
+            }
             onChange={handleChange}
             placeholder="Your password"
             autoComplete="current-password"
-            className={`${inputClass("password")} pr-8`}
+            className={`${inputClass(
+              "password"
+            )} pr-8`}
           />
 
           <button
             type="button"
             onClick={() =>
-              setShowPassword((prev) => !prev)
+              setShowPassword(
+                (prev) => !prev
+              )
             }
             className="absolute right-0 top-1/2 -translate-y-1/2 text-[#5F554A] transition-colors hover:text-[#174D35]"
-            aria-label="Toggle password visibility"
+            aria-label={
+              showPassword
+                ? "Hide password"
+                : "Show password"
+            }
           >
             {showPassword ? (
               <EyeOff size={15} />
@@ -204,29 +325,35 @@ const handleSubmit = async (
         )}
       </div>
 
+      {/* SERVER ERROR */}
+
       {serverError && (
-  <div className="mb-4 border border-red-500/20 bg-red-500/5 px-4 py-3 text-[11px] font-medium text-red-600">
-    {serverError}
-  </div>
-)}
+        <div className="mb-4 border border-red-500/20 bg-red-500/5 px-4 py-3 text-[11px] font-medium text-red-600">
+          {serverError}
+        </div>
+      )}
 
-      {/* Submit */}
-<button
-  type="submit"
-  disabled={isLoading}
-  className="group mt-7 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#174D35] px-5 text-xs font-semibold uppercase tracking-[0.16em] text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40 disabled:cursor-not-allowed disabled:opacity-60"
->
-  {isLoading ? "Signing in..." : "Enter ROOM"}
+      {/* SUBMIT */}
 
-  {!isLoading && (
-    <ArrowUpRight
-      size={16}
-      className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-    />
-  )}
-</button>
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="group mt-7 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#174D35] px-5 text-xs font-semibold uppercase tracking-[0.16em] text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {isLoading
+          ? "Signing in..."
+          : "Enter ROOM"}
 
-      {/* Register */}
+        {!isLoading && (
+          <ArrowUpRight
+            size={16}
+            className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+          />
+        )}
+      </button>
+
+      {/* REGISTER */}
+
       <p className="pt-1 text-center text-[11px] font-medium text-[#5F554A]">
         New to ROOM?{" "}
         <Link

@@ -20,8 +20,7 @@ export interface VerifyResetOtpPayload {
   otp: string;
 }
 
-export interface VerifyResetOtpResponse
-  extends AuthResponse {
+export interface VerifyResetOtpResponse extends AuthResponse {
   resetToken?: string;
 }
 
@@ -66,45 +65,51 @@ export const loginUser = async (
 // GET CURRENT USER
 // ==========================================
 
+interface CurrentUserResponse {
+  success: boolean;
+  user: User;
+}
+
 export const getCurrentUser = async (): Promise<User> => {
-  const response = await api.get<User>(
+  const response = await api.get<CurrentUserResponse>(
     "/auth/me"
   );
 
-  return response.data;
+  return response.data.user;
 };
 
 // ==========================================
 // LOGOUT
 // ==========================================
 
-export const logoutUser = async (): Promise<AuthResponse> => {
-  const response = await api.post<AuthResponse>(
-    "/auth/logout"
-  );
+export const logoutUser =
+  async (): Promise<AuthResponse> => {
+    const response =
+      await api.post<AuthResponse>(
+        "/auth/logout"
+      );
 
-  return response.data;
-};
+    return response.data;
+  };
 
 // ==========================================
 // FORGOT PASSWORD
-// POST /auth/forgot-password
 // ==========================================
 
 export const forgotPassword = async (
   data: ForgotPasswordPayload
 ): Promise<AuthResponse> => {
-  const response = await api.post<AuthResponse>(
-    "/auth/forgot-password",
-    data
-  );
+  const response =
+    await api.post<AuthResponse>(
+      "/auth/forgot-password",
+      data
+    );
 
   return response.data;
 };
 
 // ==========================================
 // VERIFY RESET OTP
-// POST /auth/verify-reset-otp
 // ==========================================
 
 export const verifyResetOtp = async (
@@ -121,16 +126,16 @@ export const verifyResetOtp = async (
 
 // ==========================================
 // RESET PASSWORD
-// POST /auth/reset-password
 // ==========================================
 
 export const resetPassword = async (
   data: ResetPasswordPayload
 ): Promise<AuthResponse> => {
-  const response = await api.post<AuthResponse>(
-    "/auth/reset-password",
-    data
-  );
+  const response =
+    await api.post<AuthResponse>(
+      "/auth/reset-password",
+      data
+    );
 
   return response.data;
 };

@@ -10,12 +10,34 @@ export interface LoginPayload {
   password: string;
 }
 
+export type UserRole = "owner" | "tenant";
+
+export type OwnerRequestStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "REJECTED";
+
+export interface UserAvatar {
+  url: string;
+  fileId: string;
+  type?: "default" | "uploaded";
+}
+
 export interface User {
   _id: string;
   username: string;
   email: string;
   contact: string;
-  role?: "buyer" | "seller";
+
+  role: UserRole;
+
+  ownerRequestStatus?: OwnerRequestStatus;
+
+  ownerVerified?: boolean;
+
+  avatar?: UserAvatar;
+
+  authProvider?: "local" | "google";
 }
 
 export interface AuthResponse {

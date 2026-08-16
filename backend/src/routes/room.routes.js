@@ -81,6 +81,8 @@ router.patch(
     "/update/:roomId",
     authMiddleware,
     requireRole("owner"),
+    upload.array("images", 5),
+    multerErrorHandler,
     roomIdValidation,
     updateRoomValidation,
     validateRequest,

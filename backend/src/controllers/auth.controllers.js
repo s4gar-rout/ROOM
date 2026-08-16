@@ -64,14 +64,16 @@ async function registerController(req, res) {
             httpOnly: true,
             secure: config.NODE_ENV === "production",
             sameSite: "lax",
-            maxAge: 15 * 60 * 1000
+            maxAge: 15 * 60 * 1000,
+            path: "/"
         });
 
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: config.NODE_ENV === "production",
             sameSite: "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            path: "/"
         });
 
 
@@ -81,6 +83,7 @@ async function registerController(req, res) {
             message: "User registered successfully",
             user: {
                 id: user._id,
+                _id: user._id,
                 username: user.username,
                 email: user.email,
                 contact: user.contact,
@@ -103,93 +106,152 @@ async function registerController(req, res) {
 
 // Login controller
 async function loginController(req, res) {
-
     try {
-
         const { email, password } = req.body;
 
-        // 1. Required fields
+        // ==========================================
+        // 1. REQUIRED FIELDS
+        // ==========================================
+
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
-                message: "Email and password are required"
-            })
+                message: "Email and password are required",
+            });
         }
 
+        // ==========================================
+        // 2. NORMALIZE EMAIL
+        // ==========================================
 
-        // 2. Normalize
-        const normalizedEmail = email.toLowerCase().trim();
+        const normalizedEmail =
+            email.toLowerCase().trim();
 
-        // 3. Find user
-        const user = await UserModel.findOne({ email: normalizedEmail }).select("+password");
+        // ==========================================
+        // 3. FIND USER
+        // ==========================================
+
+        const user = await UserModel
+            .findOne({
+                email: normalizedEmail,
+            })
+            .select("+password");
 
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: "Invalid email or password"
+                message: "Invalid email or password",
             });
         }
 
-        // 4. Check password
-        const isMatch = await user.comparePassword(password);
+        // ==========================================
+        // 4. CHECK PASSWORD
+        // ==========================================
+
+        const isMatch =
+            await user.comparePassword(password);
 
         if (!isMatch) {
             return res.status(401).json({
                 success: false,
-                message: "Invalid email or password"
+                message: "Invalid email or password",
             });
         }
 
-        // 5. Check blocked user
+        // ==========================================
+        // 5. CHECK BLOCKED USER
+        // ==========================================
+
         if (user.isBlocked) {
             return res.status(403).json({
                 success: false,
-                message: "Your account has been blocked"
+                message: "Your account has been blocked",
             });
         }
 
+        // ==========================================
+        // 6. GENERATE TOKENS
+        // ==========================================
 
-        // 6. Generate tokens
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
+        const accessToken =
+            generateAccessToken(user);
+
+        const refreshToken =
+            generateRefreshToken(user);
+
+        // ==========================================
+        // 7. ACCESS TOKEN COOKIE
+        // ==========================================
 
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
-            secure: config.NODE_ENV === "production",
+            secure:
+                config.NODE_ENV === "production",
             sameSite: "lax",
-            maxAge: 15 * 60 * 1000
+            maxAge: 15 * 60 * 1000,
+            path: "/",
         });
+
+        // ==========================================
+        // 8. REFRESH TOKEN COOKIE
+        // ==========================================
 
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: config.NODE_ENV === "production",
+            secure:
+                config.NODE_ENV === "production",
             sameSite: "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            maxAge:
+                7 * 24 * 60 * 60 * 1000,
+            path: "/",
         });
 
-        // 7. Response
+        // ==========================================
+        // 9. RESPONSE
+        // ==========================================
+
         return res.status(200).json({
             success: true,
             message: "Login successful",
+
             user: {
                 id: user._id,
+                _id: user._id,
                 username: user.username,
                 email: user.email,
                 contact: user.contact,
+
+                // IMPORTANT
                 role: user.role,
-                authProvider: user.authProvider
-            }
+
+                // OWNER VERIFICATION
+                ownerRequestStatus:
+                    user.ownerRequestStatus,
+
+                ownerVerified:
+                    user.ownerVerified,
+
+                // AVATAR
+                avatar: user.avatar,
+
+                authProvider:
+                    user.authProvider,
+            },
         });
 
-
     } catch (error) {
-        console.log("Login error:", error)
+        console.error(
+            "Login error:",
+            error
+        );
+
         return res.status(500).json({
             success: false,
-            message: "Internal server error"
-        })
+            message: "Internal server error",
+        });
     }
 }
+
 
 
 // Getme Controller
@@ -199,6 +261,7 @@ async function getMeController(req, res) {
             success: true,
             user: {
                 id: req.user._id,
+                _id: req.user._id,
                 username: req.user.username,
                 email: req.user.email,
                 contact: req.user.contact,
@@ -220,11 +283,11 @@ async function getMeController(req, res) {
 // Refresh token controller
 async function refreshTokenController(req, res) {
     try {
-
         // 1. Get refresh token
         const refreshToken = req.cookies?.refreshToken;
 
         if (!refreshToken) {
+            res.clearCookie("accessToken", { path: "/" });
             return res.status(401).json({
                 success: false,
                 message: "Refresh token not provided"
@@ -239,6 +302,8 @@ async function refreshTokenController(req, res) {
             await redis.get(blacklistKey);
 
         if (isBlacklisted) {
+            res.clearCookie("accessToken", { path: "/" });
+            res.clearCookie("refreshToken", { path: "/" });
             return res.status(401).json({
                 success: false,
                 message:
@@ -256,6 +321,8 @@ async function refreshTokenController(req, res) {
         const user = await UserModel.findById(decoded.id);
 
         if (!user) {
+            res.clearCookie("accessToken", { path: "/" });
+            res.clearCookie("refreshToken", { path: "/" });
             return res.status(401).json({
                 success: false,
                 message: "User not found"
@@ -271,7 +338,8 @@ async function refreshTokenController(req, res) {
             httpOnly: true,
             secure: config.NODE_ENV === "production",
             sameSite: "lax",
-            maxAge: 15 * 60 * 1000
+            maxAge: 15 * 60 * 1000,
+            path: "/"
         });
 
         return res.status(200).json({
@@ -280,6 +348,8 @@ async function refreshTokenController(req, res) {
         });
 
     } catch (errors) {
+        res.clearCookie("accessToken", { path: "/" });
+        res.clearCookie("refreshToken", { path: "/" });
 
         if (errors.name === "TokenExpiredError") {
             return res.status(401).json({
@@ -394,13 +464,15 @@ async function logoutController(req, res) {
         res.clearCookie("accessToken", {
             httpOnly: true,
             secure: config.NODE_ENV === "production",
-            sameSite: "lax"
+            sameSite: "lax",
+            path: "/"
         });
 
         res.clearCookie("refreshToken", {
             httpOnly: true,
             secure: config.NODE_ENV === "production",
-            sameSite: "lax"
+            sameSite: "lax",
+            path: "/"
         });
 
 

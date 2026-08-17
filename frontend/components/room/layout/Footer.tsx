@@ -9,7 +9,7 @@ const exploreLinks = [
 
 const ownerLinks = [
   { label: "List a home", href: "/owner/add-rental" },
-  { label: "Owner dashboard", href: "/owner" },
+  { label: "Owner dashboard", href: "/owner-dashboard" },
   { label: "My listings", href: "/owner/listings" },
 ];
 

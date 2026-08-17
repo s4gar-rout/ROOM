@@ -15,6 +15,7 @@ const notificationSchema = new mongoose.Schema(
                 "OWNER_REQUEST_REJECTED",
                 "ROOM_UNAVAILABLE",
                 "ROOM_AVAILABLE",
+                "NEW_MESSAGE",
             ],
             required: true,
         },
@@ -37,18 +38,55 @@ const notificationSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+
+        conversation: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Conversation",
+            default: null,
+        },
+
+        sender: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
+
+        room: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Room",
+            default: null,
+        },
+
+        // Used to make NEW_MESSAGE notifications idempotent.
+        message: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Message",
+            default: null,
+        },
     },
     {
         timestamps: true,
     }
 );
 
-// Faster retrieval of user's notifications
 notificationSchema.index({
     user: 1,
     isRead: 1,
     createdAt: -1,
 });
+
+// A message should create at most one notification for a user.
+// Sparse keeps older/non-message notifications valid.
+notificationSchema.index(
+    { user: 1, type: 1, message: 1 },
+    {
+        unique: true,
+        partialFilterExpression: {
+            type: "NEW_MESSAGE",
+            message: { $type: "objectId" },
+        },
+    }
+);
 
 const NotificationModel = mongoose.model(
     "Notification",

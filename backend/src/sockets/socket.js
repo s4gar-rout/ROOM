@@ -1,21 +1,22 @@
-import MessageModel from "../models/message.model.js";
+import mongoose from "mongoose";
 import ConversationModel from "../models/conversation.model.js";
+import {
+    sendMessage,
+    markConversationAsRead,
+    isParticipant,
+    getConversationRoomId,
+} from "../services/conversation.service.js";
 
-// ==========================================
-// ONLINE USERS TRACKING
-// ==========================================
-
-// userId => Set of socketIds
-// Multiple tabs/devices support karega
 const onlineUsers = new Map();
+
+export function isUserOnline(userId) {
+    const sockets = onlineUsers.get(userId.toString());
+    return Boolean(sockets && sockets.size > 0);
+}
 
 export function initializeSocket(io) {
     io.on("connection", (socket) => {
         const userId = socket.user._id.toString();
-
-        // ==========================================
-        // ONLINE USER TRACKING
-        // ==========================================
 
         if (!onlineUsers.has(userId)) {
             onlineUsers.set(userId, new Set());
@@ -23,274 +24,250 @@ export function initializeSocket(io) {
 
         onlineUsers.get(userId).add(socket.id);
 
-        // User actually online hua
-        // Sirf first socket connect hone par emit hoga
         if (onlineUsers.get(userId).size === 1) {
-            io.emit("userOnline", {
-                userId,
-            });
+            io.emit("user:online", { userId });
         }
 
-
-        // ==========================================
-        // PERSONAL USER ROOM
-        // ==========================================
-
-        // Har user apne personal room mein join hoga.
-        // Notifications isi room mein bhejenge.
         socket.join(`user:${userId}`);
 
-
-        // ==========================================
-        // JOIN CONVERSATION
-        // ==========================================
-
-        socket.on("joinConversation", async (conversationId) => {
+        socket.on("conversation:join", async (conversationId) => {
             try {
+                if (
+                    !conversationId ||
+                    !mongoose.Types.ObjectId.isValid(
+                        conversationId
+                    )
+                ) {
+                    return socket.emit("conversation:error", {
+                        message: "Invalid conversation ID",
+                    });
+                }
+
                 const conversation =
-                    await ConversationModel.findById(conversationId);
+                    await ConversationModel.findById(
+                        conversationId
+                    );
 
                 if (!conversation) {
-                    return socket.emit("conversationError", {
-                        success: false,
+                    return socket.emit("conversation:error", {
                         message: "Conversation not found",
                     });
                 }
 
-                const isBuyer =
-                    conversation.buyer.toString() === userId;
-
-                const isOwner =
-                    conversation.owner.toString() === userId;
-
-                // User conversation ka part nahi hai
-                if (!isBuyer && !isOwner) {
-                    return socket.emit("conversationError", {
-                        success: false,
+                if (!isParticipant(conversation, userId)) {
+                    return socket.emit("conversation:error", {
                         message:
                             "You are not allowed to join this conversation",
                     });
                 }
 
-                socket.join(conversationId);
+                const roomId =
+                    getConversationRoomId(conversationId);
 
-                socket.emit("conversationJoined", {
-                    success: true,
+                socket.join(roomId);
+
+                socket.emit("conversation:joined", {
                     conversationId,
                 });
-
             } catch (error) {
                 console.error(
                     "Join Conversation Error:",
                     error
                 );
 
-                socket.emit("conversationError", {
-                    success: false,
-                    message: "Failed to join conversation",
+                socket.emit("conversation:error", {
+                    message:
+                        "Failed to join conversation",
                 });
             }
         });
 
-
-        // ==========================================
-        // TYPING INDICATOR
-        // ==========================================
-
-        socket.on("typingStart", async (conversationId) => {
-            try {
-                if (!conversationId) return;
-
-                const conversation =
-                    await ConversationModel.findById(conversationId);
-
-                if (!conversation) return;
-
-                const isBuyer =
-                    conversation.buyer.toString() === userId;
-
-                const isOwner =
-                    conversation.owner.toString() === userId;
-
-                if (!isBuyer && !isOwner) return;
-
-                socket.to(conversationId).emit("userTyping", {
-                    userId,
-                    username: socket.user.username,
-                });
-
-            } catch (error) {
-                console.error("Typing Start Error:", error);
-            }
-        });
-
-
-        socket.on("typingStop", async (conversationId) => {
-            try {
-                if (!conversationId) return;
-
-                const conversation =
-                    await ConversationModel.findById(conversationId);
-
-                if (!conversation) return;
-
-                const isBuyer =
-                    conversation.buyer.toString() === userId;
-
-                const isOwner =
-                    conversation.owner.toString() === userId;
-
-                if (!isBuyer && !isOwner) return;
-
-                socket.to(conversationId).emit("userStoppedTyping", {
-                    userId,
-                });
-
-            } catch (error) {
-                console.error("Typing Stop Error:", error);
-            }
-        });
-
-
-        // ==========================================
-        // SEND MESSAGE
-        // ==========================================
-
-        socket.on("sendMessage", async (data) => {
-            try {
-                const {
-                    conversationId,
-                    message,
-                } = data;
-
-                // Message validation
+        socket.on(
+            "conversation:leave",
+            (conversationId) => {
                 if (
                     !conversationId ||
-                    !message?.trim() ||
-                    message.trim().length > 1000
+                    !mongoose.Types.ObjectId.isValid(
+                        conversationId
+                    )
                 ) {
-                    return socket.emit("messageError", {
-                        success: false,
-                        message:
-                            "Message is required and must not exceed 1000 characters",
-                    });
+                    return;
                 }
 
-
-                // Find conversation
-                const conversation =
-                    await ConversationModel.findById(conversationId);
-
-                if (!conversation) {
-                    return socket.emit("messageError", {
-                        success: false,
-                        message: "Conversation not found",
-                    });
-                }
-
-
-                // Check user access
-                const isBuyer =
-                    conversation.buyer.toString() === userId;
-
-                const isOwner =
-                    conversation.owner.toString() === userId;
-
-                if (!isBuyer && !isOwner) {
-                    return socket.emit("messageError", {
-                        success: false,
-                        message:
-                            "You are not allowed to send messages in this conversation",
-                    });
-                }
-
-
-                // ==========================================
-                // SAVE MESSAGE
-                // ==========================================
-
-                const newMessage =
-                    await MessageModel.create({
-                        conversation: conversationId,
-                        sender: socket.user._id,
-                        message: message.trim(),
-                    });
-
-
-                // Populate sender information
-                await newMessage.populate(
-                    "sender",
-                    "username email"
+                socket.leave(
+                    getConversationRoomId(conversationId)
                 );
+            }
+        );
 
+        socket.on(
+            "typing:start",
+            async (conversationId) => {
+                try {
+                    if (
+                        !conversationId ||
+                        !mongoose.Types.ObjectId.isValid(
+                            conversationId
+                        )
+                    ) {
+                        return;
+                    }
 
-                // ==========================================
-                // SEND MESSAGE TO RECEIVER
-                // ==========================================
+                    const conversation =
+                        await ConversationModel.findById(
+                            conversationId
+                        );
 
-                socket
-                    .to(conversationId)
-                    .emit("receiveMessage", {
-                        _id: newMessage._id,
-                        conversation: newMessage.conversation,
-                        sender: newMessage.sender,
-                        message: newMessage.message,
-                        createdAt: newMessage.createdAt,
-                    });
+                    if (
+                        !conversation ||
+                        !isParticipant(
+                            conversation,
+                            userId
+                        )
+                    ) {
+                        return;
+                    }
 
+                    socket
+                        .to(
+                            getConversationRoomId(
+                                conversationId
+                            )
+                        )
+                        .emit("typing:start", {
+                            userId,
+                            username:
+                                socket.user.username,
+                            conversationId,
+                        });
+                } catch (error) {
+                    console.error(
+                        "Typing Start Error:",
+                        error
+                    );
+                }
+            }
+        );
 
-                // ==========================================
-                // SEND CONFIRMATION TO SENDER
-                // ==========================================
+        socket.on(
+            "typing:stop",
+            async (conversationId) => {
+                try {
+                    if (
+                        !conversationId ||
+                        !mongoose.Types.ObjectId.isValid(
+                            conversationId
+                        )
+                    ) {
+                        return;
+                    }
 
-                socket.emit("messageSent", {
-                    success: true,
-                    message: {
-                        _id: newMessage._id,
-                        conversation: newMessage.conversation,
-                        sender: newMessage.sender,
-                        message: newMessage.message,
-                        createdAt: newMessage.createdAt,
-                    },
+                    const conversation =
+                        await ConversationModel.findById(
+                            conversationId
+                        );
+
+                    if (
+                        !conversation ||
+                        !isParticipant(
+                            conversation,
+                            userId
+                        )
+                    ) {
+                        return;
+                    }
+
+                    socket
+                        .to(
+                            getConversationRoomId(
+                                conversationId
+                            )
+                        )
+                        .emit("typing:stop", {
+                            userId,
+                            conversationId,
+                        });
+                } catch (error) {
+                    console.error(
+                        "Typing Stop Error:",
+                        error
+                    );
+                }
+            }
+        );
+
+        socket.on("message:send", async (data = {}) => {
+            try {
+                const { conversationId, message } =
+                    data;
+
+                const newMessage = await sendMessage({
+                    conversationId,
+                    senderId: socket.user._id,
+                    text: message,
+                    io,
                 });
 
+                // The message:new event is already broadcast by
+                // sendMessage(). This event is only an acknowledgement
+                // to the sending socket.
+                socket.emit("message:sent", {
+                    success: true,
+                    message: newMessage,
+                });
             } catch (error) {
                 console.error(
                     "Socket Send Message Error:",
                     error
                 );
 
-                socket.emit("messageError", {
-                    success: false,
-                    message: "Failed to send message",
+                socket.emit("message:error", {
+                    message:
+                        error.message ||
+                        "Failed to send message",
                 });
             }
         });
 
+        socket.on(
+            "message:read",
+            async (conversationId) => {
+                try {
+                    if (
+                        !conversationId ||
+                        !mongoose.Types.ObjectId.isValid(
+                            conversationId
+                        )
+                    ) {
+                        return;
+                    }
 
-        // ==========================================
-        // DISCONNECT
-        // ==========================================
-
-        socket.on("disconnect", (reason) => {
-            const userSockets = onlineUsers.get(userId);
-
-            if (!userSockets) {
-                return;
+                    await markConversationAsRead(
+                        conversationId,
+                        socket.user._id,
+                        io
+                    );
+                } catch (error) {
+                    console.error(
+                        "Socket Mark Read Error:",
+                        error
+                    );
+                }
             }
+        );
 
-            // Current socket remove
+        socket.on("disconnect", () => {
+            const userSockets =
+                onlineUsers.get(userId);
+
+            if (!userSockets) return;
+
             userSockets.delete(socket.id);
 
-            // Agar user ka koi aur socket connected nahi hai
             if (userSockets.size === 0) {
                 onlineUsers.delete(userId);
-
-                io.emit("userOffline", {
-                    userId,
-                });
+                io.emit("user:offline", { userId });
             }
         });
-
     });
 }

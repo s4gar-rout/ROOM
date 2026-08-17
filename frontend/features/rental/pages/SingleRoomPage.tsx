@@ -10,6 +10,7 @@ import {
   MessageCircle,
   ChevronLeft,
   ChevronRight,
+  X,
 } from "lucide-react";
 
 import { getSingleRoom } from "@/features/rental/services/rental.service";
@@ -25,6 +26,7 @@ export default function SingleRoomPage({
   const router = useRouter();
 
   const {
+    user,
     isAuthenticated,
     loading: authLoading,
   } = useAuth();
@@ -34,6 +36,7 @@ export default function SingleRoomPage({
   const [error, setError] = useState("");
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [chatLoading, setChatLoading] = useState(false);
+  const [restrictionModal, setRestrictionModal] = useState({ isOpen: false, title: "", message: "" });
 
   // ============================================================
   // FETCH ROOM
@@ -73,8 +76,28 @@ export default function SingleRoomPage({
   // ============================================================
 
   const handleChat = async () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
       router.push(`/login?redirect=/rentals/${roomId}`);
+      return;
+    }
+
+    const roomOwnerId = typeof room?.owner === "string" ? room.owner : room?.owner?._id;
+
+    if (user._id === roomOwnerId) {
+      setRestrictionModal({
+        isOpen: true,
+        title: "Cannot Message This Room",
+        message: "You are the owner of this room. You cannot message yourself. Tenants can contact you about this listing."
+      });
+      return;
+    }
+
+    if (user.role === "owner" && user._id !== roomOwnerId) {
+      setRestrictionModal({
+        isOpen: true,
+        title: "Messaging Not Available",
+        message: "Owners cannot contact other owners. Only tenants can contact room owners about their listings."
+      });
       return;
     }
 
@@ -86,8 +109,9 @@ export default function SingleRoomPage({
       if (res?.success && res?.conversation?._id) {
         router.push(`/messages/${res.conversation._id}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to start chat:", err);
+      // Optional: you can show an error toast here if one exists
     } finally {
       setChatLoading(false);
     }
@@ -844,24 +868,35 @@ export default function SingleRoomPage({
 
                 <div className="flex items-center gap-3">
 
-                  <div
-                    className="
-                      flex
-                      h-11
-                      w-11
-                      shrink-0
-                      items-center
-                      justify-center
-                      border
-                      border-[#174D35]/20
-                      bg-[#174D35]/5
-                      font-serif
-                      text-lg
-                      text-[#174D35]
-                    "
-                  >
-                    {ownerInitial}
-                  </div>
+                  {owner?.avatar?.url ? (
+                    <Image
+                      src={owner.avatar.url}
+                      alt={ownerName}
+                      width={44}
+                      height={44}
+                      className="h-11 w-11 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="
+                        flex
+                        h-11
+                        w-11
+                        shrink-0
+                        items-center
+                        justify-center
+                        border
+                        border-[#174D35]/20
+                        bg-[#174D35]/5
+                        font-serif
+                        text-lg
+                        text-[#174D35]
+                        rounded-full
+                      "
+                    >
+                      {ownerInitial}
+                    </div>
+                  )}
 
                   <div>
                     <h3
@@ -958,6 +993,40 @@ export default function SingleRoomPage({
           </aside>
         </div>
       </div>
+
+      {/* ========================================================
+          RESTRICTION MODAL
+      ======================================================== */}
+      {restrictionModal.isOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-[20px] bg-[#F8F4EA] p-6 shadow-2xl relative">
+            <button
+              onClick={() => setRestrictionModal({ ...restrictionModal, isOpen: false })}
+              className="absolute right-4 top-4 text-[#1C1B18]/50 hover:text-[#1C1B18] transition-colors"
+            >
+              <X size={20} />
+            </button>
+
+            <h2 className="font-serif text-2xl font-medium text-[#1C1B18]">
+              {restrictionModal.title}
+            </h2>
+            
+            <p className="mt-3 text-sm text-[#5F554A] leading-relaxed">
+              {restrictionModal.message}
+            </p>
+
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setRestrictionModal({ ...restrictionModal, isOpen: false })}
+                className="rounded-full bg-[#174D35] px-6 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-[#F8F4EA] hover:bg-[#14422D] transition-colors"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </main>
   );
 }

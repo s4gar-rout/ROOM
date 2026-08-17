@@ -24,7 +24,7 @@ router.post(
     "/login",
     rateLimiter({
         keyPrefix: "login",
-        limit: 5,
+        limit: 50,
         windowInSeconds: 15 * 60,
     }),
     loginValidator,

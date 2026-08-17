@@ -5,30 +5,52 @@ import { requireRole } from "../middlewares/role.middleware.js";
 
 const router = express.Router();
 
-
-// Create conversation
-router.post(
-    "/:roomId",
-    authMiddleware,
-    requireRole("tenant"),
-    ConversationController.createConversationController
-);
-
-
-// Get conversation messages
 router.get(
-    "/messages/:conversationId",
+    "/unread-count",
     authMiddleware,
-    ConversationController.getConversationMessageController
+    ConversationController.getUnreadCountController
 );
 
-
-// Get my conversations
 router.get(
     "/my",
     authMiddleware,
     ConversationController.getMyConversationController
 );
 
+router.get(
+    "/single/:conversationId",
+    authMiddleware,
+    ConversationController.getSingleConversationController
+);
+
+router.post(
+    "/:roomId",
+    authMiddleware,
+    ConversationController.createConversationController
+);
+
+router.get(
+    "/messages/:conversationId",
+    authMiddleware,
+    ConversationController.getConversationMessageController
+);
+
+router.post(
+    "/messages/:conversationId",
+    authMiddleware,
+    ConversationController.sendMessageController
+);
+
+router.patch(
+    "/messages/:conversationId/read",
+    authMiddleware,
+    ConversationController.markAsReadController
+);
+
+router.delete(
+    "/messages/:conversationId/:messageId",
+    authMiddleware,
+    ConversationController.deleteMessageController
+);
 
 export default router;

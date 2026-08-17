@@ -90,43 +90,17 @@ export async function updateProfileController(req, res) {
         // ======================================
 
         if (role !== undefined) {
-            if (!["user", "owner"].includes(role)) {
+            if (!["user", "tenant", "owner"].includes(role)) {
                 return res.status(400).json({
                     success: false,
                     message: "Invalid role",
                 });
             }
 
-            // -------------------------------
-            // NORMAL USER
-            // -------------------------------
-
-            if (role === "user") {
-                user.role = "user";
-
-                if ("ownerVerified" in user) {
-                    user.ownerVerified = false;
-                }
-
-                if ("ownerRequestStatus" in user) {
-                    user.ownerRequestStatus = "NONE";
-                }
-            }
-
-            // -------------------------------
-            // OWNER REQUEST
-            // -------------------------------
-
-            if (role === "owner") {
+            if (role === "user" || role === "tenant") {
+                user.role = "tenant";
+            } else if (role === "owner") {
                 user.role = "owner";
-
-                if ("ownerVerified" in user) {
-                    user.ownerVerified = false;
-                }
-
-                if ("ownerRequestStatus" in user) {
-                    user.ownerRequestStatus = "PENDING";
-                }
             }
         }
 
@@ -134,10 +108,7 @@ export async function updateProfileController(req, res) {
 
         return res.status(200).json({
             success: true,
-            message:
-                role === "owner"
-                    ? "Owner verification request submitted"
-                    : "Profile updated successfully",
+            message: "Profile updated successfully",
 
             user: {
                 id: user._id,

@@ -85,10 +85,15 @@ export default function OwnerDashboardPage() {
       return;
     }
     
-    if (isAuthenticated) {
+    if (!authLoading && isAuthenticated && user?.role !== "owner") {
+      router.replace("/");
+      return;
+    }
+
+    if (isAuthenticated && user?.role === "owner") {
       loadDashboard();
     }
-  }, [isAuthenticated, authLoading]);
+  }, [isAuthenticated, authLoading, user?.role, router]);
 
   // ==========================================
   // STATS
@@ -230,14 +235,6 @@ export default function OwnerDashboardPage() {
     );
   }
 
-  if (!isAuthenticated) return null;
-
-  const isVerified =
-    user?.ownerVerified === true;
-
-  const isPending =
-    !isVerified;
-
   return (
     <main className="min-h-screen bg-[#F8F4EA] text-[#1C1B18]">
 
@@ -331,92 +328,24 @@ export default function OwnerDashboardPage() {
           <div>
 
             <button
-              disabled={!isVerified}
               onClick={() => {
-                if (isVerified) {
-                  router.push(
-                    "/owner-dashboard/add-room"
-                  );
-                }
+                router.push("/owner-dashboard/add-room");
               }}
-              className={`group inline-flex h-10 items-center gap-2 rounded-full px-5 text-[9px] font-bold uppercase tracking-[0.16em] transition ${
-                isVerified
-                  ? "bg-[#174D35] text-[#F8F4EA] hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40"
-                  : "cursor-not-allowed bg-[#D9D4C8] text-[#8B8377]"
-              }`}
+              className="group inline-flex h-10 items-center gap-2 rounded-full px-5 text-[9px] font-bold uppercase tracking-[0.16em] transition bg-[#174D35] text-[#F8F4EA] hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40"
             >
-
-              {!isVerified && (
-                <Lock size={12} />
-              )}
 
               Add a room
 
-              {isVerified && (
-                <ArrowUpRight
-                  size={13}
-                  className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                />
-              )}
+              <ArrowUpRight
+                size={13}
+                className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              />
 
             </button>
-
-            {!isVerified && (
-              <p className="mt-2 max-w-[240px] text-[9px] font-semibold leading-4 text-[#756A5C]">
-                Your owner account is awaiting admin
-                approval.
-              </p>
-            )}
 
           </div>
 
         </section>
-
-        {/* ======================================
-            VERIFICATION
-        ====================================== */}
-
-        {isPending && (
-          <section className="mt-7 flex items-center gap-3 rounded-[18px] border border-[#174D35]/10 bg-[#EEF2E9] px-4 py-3.5">
-
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#174D35]/10 text-[#174D35]">
-              <Lock size={14} />
-            </div>
-
-            <div>
-              <p className="text-[9px] font-bold uppercase tracking-[0.17em] text-[#174D35]">
-                Owner verification pending
-              </p>
-
-              <p className="mt-1 text-[10px] leading-4 text-[#5F554A]">
-                Admin approval is required before
-                creating room listings.
-              </p>
-            </div>
-
-          </section>
-        )}
-
-        {isVerified && (
-          <section className="mt-7 flex items-center gap-3 rounded-[18px] border border-[#174D35]/10 bg-[#EEF2E9] px-4 py-3.5">
-
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#174D35]/10 text-[#174D35]">
-              <Check size={14} />
-            </div>
-
-            <div>
-              <p className="text-[9px] font-bold uppercase tracking-[0.17em] text-[#174D35]">
-                Owner account verified
-              </p>
-
-              <p className="mt-1 text-[10px] leading-4 text-[#5F554A]">
-                You can create and manage your room
-                listings.
-              </p>
-            </div>
-
-          </section>
-        )}
 
         {/* ======================================
             ERROR
@@ -465,7 +394,7 @@ export default function OwnerDashboardPage() {
         </section>
 
         {/* ======================================
-            LISTINGS
+            LISTINGS & MESSAGES
         ====================================== */}
 
         <section className="mt-10">
@@ -556,25 +485,21 @@ export default function OwnerDashboardPage() {
               </h2>
 
               <p className="mt-2 max-w-sm text-[10px] leading-5 text-[#756A5C]">
-                {isVerified
-                  ? "Start by adding your first room listing."
-                  : "Your room listing will become available after owner approval."}
+                Start by adding your first room listing.
               </p>
 
-              {isVerified && (
-                <button
-                  onClick={() =>
-                    router.push(
-                      "/owner-dashboard/add-room"
-                    )
-                  }
-                  className="mt-4 flex h-9 items-center gap-2 rounded-full bg-[#174D35] px-5 text-[9px] font-bold uppercase tracking-[0.15em] text-[#F8F4EA]"
-                >
-                  Add your first room
+              <button
+                onClick={() =>
+                  router.push(
+                    "/owner-dashboard/add-room"
+                  )
+                }
+                className="mt-4 flex h-9 items-center gap-2 rounded-full bg-[#174D35] px-5 text-[9px] font-bold uppercase tracking-[0.15em] text-[#F8F4EA]"
+              >
+                Add your first room
 
-                  <ArrowUpRight size={13} />
-                </button>
-              )}
+                <ArrowUpRight size={13} />
+              </button>
 
             </div>
           )}

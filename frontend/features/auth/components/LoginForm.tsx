@@ -8,8 +8,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 import { loginUser } from "../services/auth.service";
+import { useAuth } from "../hooks/useAuth";
 
 type LoginFormData = {
   email: string;
@@ -24,6 +26,8 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl");
+
+  const { user: authUser, loading: authLoading, setUser } = useAuth();
 
   const [formData, setFormData] =
     useState<LoginFormData>({
@@ -42,6 +46,20 @@ export default function LoginForm() {
 
   const [serverError, setServerError] =
     useState("");
+
+  // ==========================================
+  // ALREADY LOGGED IN
+  // ==========================================
+
+  useEffect(() => {
+    if (!authLoading && authUser) {
+      if (authUser.role === "owner") {
+        router.replace(returnUrl || "/owner-dashboard");
+      } else if (authUser.role === "tenant") {
+        router.replace(returnUrl || "/");
+      }
+    }
+  }, [authUser, authLoading, router, returnUrl]);
 
   // ==========================================
   // HANDLE CHANGE
@@ -150,6 +168,9 @@ export default function LoginForm() {
 
         return;
       }
+
+      // Update global context so the next page knows we're logged in
+      setUser(user);
 
       // ========================================
       // OWNER

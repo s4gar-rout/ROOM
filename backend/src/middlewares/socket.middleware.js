@@ -4,24 +4,19 @@ import { config } from "../config/config.js";
 
 export const socketAuthMiddleware = async (socket, next) => {
     try {
-        const cookieHeader = socket.handshake.headers.cookie;
-
-        // Check cookie header
-        if (!cookieHeader) {
-            return next(new Error("Access token not provided"));
+        // Get access token from cookie or auth object
+        let token = socket.handshake.auth?.token;
+        
+        if (!token && socket.handshake.headers.cookie) {
+            const cookies = socket.handshake.headers.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'accessToken') {
+                    token = value;
+                    break;
+                }
+            }
         }
-
-        // Parse cookies manually
-        const cookies = Object.fromEntries(
-            cookieHeader.split("; ").map((cookie) => {
-                const [key, ...value] = cookie.split("=");
-
-                return [key, value.join("=")];
-            })
-        );
-
-        // Get access token
-        const token = cookies.accessToken;
 
         if (!token) {
             return next(new Error("Access token not provided"));

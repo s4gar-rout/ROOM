@@ -16,11 +16,13 @@ import {
   updateProfile,
   updateAvatar,
 } from "../../features/auth/services/profile.service";
+import { useAuth } from "../../features/auth/hooks/useAuth";
 
 type Role = "user" | "owner";
 
 export default function CompleteProfilePage() {
   const router = useRouter();
+  const { refreshUser } = useAuth();
 
   // ==========================================
   // STATE
@@ -37,9 +39,6 @@ export default function CompleteProfilePage() {
   const [loading, setLoading] = useState(false);
 
   const [error, setError] = useState("");
-
-  const [showOwnerPopup, setShowOwnerPopup] =
-    useState(false);
 
   // ==========================================
   // HANDLE IMAGE
@@ -124,17 +123,17 @@ export default function CompleteProfilePage() {
       await updateAvatar(profileFile);
 
       // 2. Save role
-      await updateProfile({
-        role,
-      });
+      await updateProfile({ role });
 
-      // 3. Owner
+      // 3. Refresh user state so navbar updates
+      await refreshUser();
+
+      // 4. Redirect based on role
       if (role === "owner") {
-        setShowOwnerPopup(true);
+        router.replace("/owner-dashboard");
         return;
       }
 
-      // 4. User
       router.replace("/rentals");
     } catch (error: any) {
       console.error(
@@ -489,106 +488,6 @@ export default function CompleteProfilePage() {
         </div>
 
       </section>
-
-      {/* ========================================
-          OWNER VERIFICATION POPUP
-      ======================================== */}
-
-      {showOwnerPopup && (
-
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1C1B18]/40 px-5 py-6 backdrop-blur-sm">
-
-          <div className="relative w-full max-w-[420px] rounded-[26px] border border-[#1C1B18]/10 bg-[#F8F4EA] p-6 shadow-[0_24px_80px_rgba(28,27,24,0.16)] sm:p-8">
-
-            {/* CLOSE */}
-
-            <button
-              type="button"
-              onClick={() => setShowOwnerPopup(false)}
-              aria-label="Close"
-              className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full border border-[#1C1B18]/10 text-[#6A6258] transition-all duration-300 hover:bg-[#174D35] hover:text-[#F8F4EA]"
-            >
-              <X size={14} />
-            </button>
-
-            {/* ICON */}
-
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#174D35] text-[#F8F4EA]">
-              <Check
-                size={19}
-                strokeWidth={1.8}
-              />
-            </div>
-
-            {/* LABEL */}
-
-            <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.27em] text-[#174D35]">
-              Request submitted
-            </p>
-
-            {/* TITLE */}
-
-            <h2 className="mt-3 max-w-[350px] font-serif text-[32px] font-medium leading-[0.98] tracking-[-0.04em] sm:text-[35px]">
-              Your owner request
-              <br />
-              is{" "}
-              <em className="text-[#174D35]">
-                under review.
-              </em>
-            </h2>
-
-            {/* DESCRIPTION */}
-
-            <p className="mt-5 text-[12px] font-medium leading-6 text-[#62594F]">
-              Your profile has been saved.
-              Our admin team will verify your
-              account before you can list a room.
-            </p>
-
-            {/* STATUS */}
-
-            <div className="mt-6 rounded-2xl border border-[#174D35]/10 bg-[#EDE6D9] px-5 py-4">
-
-              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#174D35]">
-                Current status
-              </p>
-
-              <div className="mt-2 flex items-center justify-between gap-4">
-
-                <p className="text-[11px] font-semibold text-[#5F554A]">
-                  Pending admin verification
-                </p>
-
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F8F4EA]">
-                  <span className="h-2 w-2 rounded-full bg-[#174D35]" />
-                </span>
-
-              </div>
-
-            </div>
-
-            {/* CONTINUE */}
-
-            <button
-              type="button"
-              onClick={() => router.replace("/rentals")}
-              className="group mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-[10px] font-bold uppercase tracking-[0.2em] text-[#F8F4EA] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#123D2A] hover:shadow-md"
-            >
-              Continue exploring
-            </button>
-
-            {/* NOTE */}
-
-            <p className="mt-5 border-t border-[#1C1B18]/10 pt-4 text-center text-[9px] font-medium leading-5 text-[#756A5C]">
-              You can continue exploring rooms while
-              your request is being reviewed.
-            </p>
-
-          </div>
-
-        </div>
-
-      )}
 
     </main>
   );

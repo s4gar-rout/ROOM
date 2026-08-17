@@ -1,5 +1,7 @@
 import NotificationModel from "../models/notification.model.js";
 
+const USER_SELECT = "username email avatar";
+const ROOM_SELECT = "title images rent location availability";
 
 // ==========================================
 // GET MY NOTIFICATIONS
@@ -7,18 +9,25 @@ import NotificationModel from "../models/notification.model.js";
 
 async function getMyNotificationsController(req, res) {
     try {
-        const notifications = await NotificationModel.find({
-            user: req.user._id,
-        }).sort({
-            createdAt: -1,
-        });
+        const notifications =
+            await NotificationModel.find({
+                user: req.user._id,
+            })
+                .populate("sender", USER_SELECT)
+                .populate("room", ROOM_SELECT)
+                .populate("conversation")
+                .populate("message", "message createdAt")
+                .sort({ createdAt: -1 })
+                .lean();
 
         return res.status(200).json({
             success: true,
             count: notifications.length,
+            unreadCount: notifications.filter(
+                (notification) => !notification.isRead
+            ).length,
             notifications,
         });
-
     } catch (error) {
         console.error(
             "Get Notifications Error:",
@@ -32,12 +41,14 @@ async function getMyNotificationsController(req, res) {
     }
 }
 
-
 // ==========================================
 // MARK NOTIFICATION AS READ
 // ==========================================
 
-async function markNotificationAsReadController(req, res) {
+async function markNotificationAsReadController(
+    req,
+    res
+) {
     try {
         const { notificationId } = req.params;
 
@@ -48,12 +59,18 @@ async function markNotificationAsReadController(req, res) {
                     user: req.user._id,
                 },
                 {
-                    isRead: true,
+                    $set: {
+                        isRead: true,
+                    },
                 },
                 {
                     new: true,
                 }
-            );
+            )
+                .populate("sender", USER_SELECT)
+                .populate("room", ROOM_SELECT)
+                .populate("conversation")
+                .populate("message", "message createdAt");
 
         if (!notification) {
             return res.status(404).json({
@@ -67,7 +84,6 @@ async function markNotificationAsReadController(req, res) {
             message: "Notification marked as read",
             notification,
         });
-
     } catch (error) {
         console.error(
             "Mark Notification Read Error:",
@@ -80,7 +96,6 @@ async function markNotificationAsReadController(req, res) {
         });
     }
 }
-
 
 export default {
     getMyNotificationsController,

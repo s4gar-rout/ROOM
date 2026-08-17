@@ -2,7 +2,27 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
-  withCredentials: true,
+});
+
+export let currentAccessToken: string | null = null;
+
+export const setAccessToken = (token: string | null) => {
+  currentAccessToken = token;
+};
+
+export const getAccessToken = () => currentAccessToken;
+
+api.interceptors.request.use((config) => {
+  if (currentAccessToken) {
+    config.headers.Authorization = `Bearer ${currentAccessToken}`;
+  }
+  if (typeof window !== "undefined") {
+    const sessionId = sessionStorage.getItem("roomSessionId");
+    if (sessionId) {
+      config.headers["x-session-id"] = sessionId;
+    }
+  }
+  return config;
 });
 
 let isRefreshing = false;
@@ -30,7 +50,9 @@ api.interceptors.response.use(
       error.response?.status === 401 &&
       !originalRequest._retry &&
       !originalRequest.url?.includes("/auth/refresh") &&
-      !originalRequest.url?.includes("/auth/login")
+      !originalRequest.url?.includes("/auth/login") &&
+      !originalRequest.url?.includes("/auth/register") &&
+      !originalRequest.url?.includes("/auth/me")
     ) {
       originalRequest._retry = true;
 
@@ -50,17 +72,22 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await api.post("/auth/refresh");
+        const refreshResponse = await api.post("/auth/refresh");
+        const newAccessToken = refreshResponse.data.accessToken;
+        if (newAccessToken) {
+            setAccessToken(newAccessToken);
+        }
         isRefreshing = false;
         processQueue(null);
+        // Retry the original request
         return api(originalRequest);
       } catch (refreshError) {
         isRefreshing = false;
         processQueue(refreshError);
 
-        // Redirect to login if token refresh fails
-        if (typeof window !== "undefined") {
-          window.location.href = "/login";
+        // Redirect to login if token refresh fails, and we are not already there
+        if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+          window.location.replace("/login");
         }
         return Promise.reject(refreshError);
       }

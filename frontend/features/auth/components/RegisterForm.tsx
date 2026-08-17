@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { registerUser } from "../services/auth.service";
+import { useAuth } from "../hooks/useAuth";
 
 type RegisterFormData = {
   username: string;
@@ -21,6 +22,7 @@ type RegisterErrors = Partial<
 
 export default function RegisterForm() {
   const router = useRouter();
+  const { setUser } = useAuth();
 
   const [formData, setFormData] =
     useState<RegisterFormData>({
@@ -174,6 +176,10 @@ export default function RegisterForm() {
         "Registration successful:",
         response
       );
+
+      if (response.user) {
+        setUser(response.user);
+      }
 
       /*
        * IMPORTANT

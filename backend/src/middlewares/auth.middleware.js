@@ -5,8 +5,9 @@ import redis from "../services/redis.service.js";
 
 export const authMiddleware = async (req, res, next) => {
     try {
-        // 1. Get access token from cookie
-        const token = req.cookies?.accessToken;
+        // 1. Get access token from header
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
 
         if (!token) {
             return res.status(401).json({

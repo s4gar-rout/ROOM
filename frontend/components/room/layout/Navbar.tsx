@@ -24,7 +24,7 @@ export default function Navbar() {
           </Link>
 
           <Link
-            href="/owner"
+            href="/owner-dashboard"
             className="text-sm md:text-[16px] text-[#756A5C] transition-colors hover:text-[#174D35]"
           >
             For owners

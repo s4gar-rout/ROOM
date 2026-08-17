@@ -6,50 +6,6 @@ import { userIdValidation } from "../validators/admin.validator.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
 const router = express.Router();
 
-
-/**
- * @desc Request owner role
- * @route POST /api/admin/request-owner
- * @access Private/Tenant
- */
-router.post(
-    "/request-owner",
-    authMiddleware,
-    requireRole("tenant"),
-    adminController.requestOwnerController
-);
-
-/*
- * @desc Update owner request
- * @route PATCH /api/admin/owner-request/:userId
- * @access Private/Admin
- */
-
-router.patch(
-    "/owner-request/:userId",
-    authMiddleware,
-    requireRole("admin"),
-    userIdValidation,
-    validateRequest,
-    adminController.updateOwnerRequestController
-);
-
-
-/**
- * @desc Get pending owner requests
- * @route GET /api/admin/owner-requests/pending
- * @access Private/Admin
- */
-
-router.get(
-    "/owner-requests/pending",
-    authMiddleware,
-    requireRole("admin"),
-    adminController.getPendingOwnerRequestsController
-);
-
-
-
 /**
  * @desc Block user
  * @route PATCH /api/admin/users/:userId/block

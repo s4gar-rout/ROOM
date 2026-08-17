@@ -12,24 +12,22 @@ import connectToDB from "./config/db.js";
 import { initializeSocket } from "./sockets/socket.js";
 import socketAuthMiddleware from "./middlewares/socket.middleware.js";
 import { testRedisConnection } from "./services/redis.service.js";
+
 connectToDB();
 await testRedisConnection();
+
 const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "*",
+        origin: config.FRONTEND_URL,
+        credentials: true,
     },
 });
 
 app.set("io", io);
 
-initializeSocket(io);
-
-// Socket authentication
 io.use(socketAuthMiddleware);
-
-// Socket events
 initializeSocket(io);
 
 server.listen(config.PORT, () => {

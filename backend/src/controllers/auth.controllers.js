@@ -3,6 +3,7 @@ import { generateAccessToken, generateRefreshToken } from "../utils/generateToke
 import { config } from "../config/config.js";
 import jwt from "jsonwebtoken";
 import redis from "../services/redis.service.js";
+import crypto from "crypto";
 
 // Register controller
 async function registerController(req, res) {
@@ -58,29 +59,21 @@ async function registerController(req, res) {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
+        const sessionId = crypto.randomUUID();
 
-
-        res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            secure: config.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 15 * 60 * 1000,
-            path: "/"
-        });
-
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: config.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-            path: "/"
-        });
-
+        // Store refresh session in Redis with 7 days expiry
+        await redis.set(
+            `session:${sessionId}`,
+            refreshToken,
+            { ex: 7 * 24 * 60 * 60 }
+        );
 
         // 6. Response
         return res.status(201).json({
             success: true,
             message: "User registered successfully",
+            sessionId,
+            accessToken,
             user: {
                 id: user._id,
                 _id: user._id,
@@ -179,32 +172,13 @@ async function loginController(req, res) {
         const refreshToken =
             generateRefreshToken(user);
 
-        // ==========================================
-        // 7. ACCESS TOKEN COOKIE
-        // ==========================================
+        const sessionId = crypto.randomUUID();
 
-        res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            secure:
-                config.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 15 * 60 * 1000,
-            path: "/",
-        });
-
-        // ==========================================
-        // 8. REFRESH TOKEN COOKIE
-        // ==========================================
-
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure:
-                config.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge:
-                7 * 24 * 60 * 60 * 1000,
-            path: "/",
-        });
+        await redis.set(
+            `session:${sessionId}`,
+            refreshToken,
+            { ex: 7 * 24 * 60 * 60 }
+        );
 
         // ==========================================
         // 9. RESPONSE
@@ -213,6 +187,8 @@ async function loginController(req, res) {
         return res.status(200).json({
             success: true,
             message: "Login successful",
+            sessionId,
+            accessToken,
 
             user: {
                 id: user._id,
@@ -223,13 +199,6 @@ async function loginController(req, res) {
 
                 // IMPORTANT
                 role: user.role,
-
-                // OWNER VERIFICATION
-                ownerRequestStatus:
-                    user.ownerRequestStatus,
-
-                ownerVerified:
-                    user.ownerVerified,
 
                 // AVATAR
                 avatar: user.avatar,
@@ -266,7 +235,7 @@ async function getMeController(req, res) {
                 email: req.user.email,
                 contact: req.user.contact,
                 role: req.user.role,
-                ownerVerified: req.user.ownerVerified
+                avatar: req.user.avatar
             }
         });
 
@@ -283,14 +252,22 @@ async function getMeController(req, res) {
 // Refresh token controller
 async function refreshTokenController(req, res) {
     try {
-        // 1. Get refresh token
-        const refreshToken = req.cookies?.refreshToken;
+        // 1. Get sessionId
+        const sessionId = req.headers["x-session-id"] || req.body?.sessionId;
 
-        if (!refreshToken) {
-            res.clearCookie("accessToken", { path: "/" });
+        if (!sessionId) {
             return res.status(401).json({
                 success: false,
-                message: "Refresh token not provided"
+                message: "Session ID not provided"
+            });
+        }
+
+        const refreshToken = await redis.get(`session:${sessionId}`);
+
+        if (!refreshToken) {
+            return res.status(401).json({
+                success: false,
+                message: "Session expired or invalid"
             });
         }
 
@@ -302,8 +279,7 @@ async function refreshTokenController(req, res) {
             await redis.get(blacklistKey);
 
         if (isBlacklisted) {
-            res.clearCookie("accessToken", { path: "/" });
-            res.clearCookie("refreshToken", { path: "/" });
+            await redis.del(`session:${sessionId}`);
             return res.status(401).json({
                 success: false,
                 message:
@@ -321,8 +297,7 @@ async function refreshTokenController(req, res) {
         const user = await UserModel.findById(decoded.id);
 
         if (!user) {
-            res.clearCookie("accessToken", { path: "/" });
-            res.clearCookie("refreshToken", { path: "/" });
+            await redis.del(`session:${sessionId}`);
             return res.status(401).json({
                 success: false,
                 message: "User not found"
@@ -333,23 +308,17 @@ async function refreshTokenController(req, res) {
         const newAccessToken =
             generateAccessToken(user);
 
-        // 6. Set new access token
-        res.cookie("accessToken", newAccessToken, {
-            httpOnly: true,
-            secure: config.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 15 * 60 * 1000,
-            path: "/"
-        });
-
         return res.status(200).json({
             success: true,
-            message: "Access token refreshed successfully"
+            message: "Access token refreshed successfully",
+            accessToken: newAccessToken
         });
 
     } catch (errors) {
-        res.clearCookie("accessToken", { path: "/" });
-        res.clearCookie("refreshToken", { path: "/" });
+        const sessionId = req.headers["x-session-id"] || req.body?.sessionId;
+        if (sessionId) {
+            await redis.del(`session:${sessionId}`);
+        }
 
         if (errors.name === "TokenExpiredError") {
             return res.status(401).json({
@@ -381,9 +350,14 @@ async function refreshTokenController(req, res) {
 //Logout Controller
 async function logoutController(req, res) {
     try {
+        const authHeader = req.headers.authorization;
+        const accessToken = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
+        const sessionId = req.headers["x-session-id"] || req.body?.sessionId;
 
-        const accessToken = req.cookies?.accessToken;
-        const refreshToken = req.cookies?.refreshToken;
+        let refreshToken = null;
+        if (sessionId) {
+            refreshToken = await redis.get(`session:${sessionId}`);
+        }
 
         // ==========================================
         // BLACKLIST ACCESS TOKEN
@@ -458,23 +432,12 @@ async function logoutController(req, res) {
 
 
         // ==========================================
-        // CLEAR COOKIES
+        // CLEAR SESSION
         // ==========================================
 
-        res.clearCookie("accessToken", {
-            httpOnly: true,
-            secure: config.NODE_ENV === "production",
-            sameSite: "lax",
-            path: "/"
-        });
-
-        res.clearCookie("refreshToken", {
-            httpOnly: true,
-            secure: config.NODE_ENV === "production",
-            sameSite: "lax",
-            path: "/"
-        });
-
+        if (sessionId) {
+            await redis.del(`session:${sessionId}`);
+        }
 
         return res.status(200).json({
             success: true,

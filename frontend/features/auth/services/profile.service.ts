@@ -16,15 +16,7 @@ export interface ProfileUser {
   email: string;
   contact?: string;
 
-  role: "user" | "owner" | "admin";
-
-  ownerVerified?: boolean;
-
-  ownerRequestStatus?:
-    | "NONE"
-    | "PENDING"
-    | "APPROVED"
-    | "REJECTED";
+  role: "user" | "tenant" | "owner" | "admin";
 
   avatar?: UserAvatar;
 }
@@ -63,7 +55,7 @@ export const getMyProfile =
 
 export const updateProfile = async (
   data: {
-    role?: "user" | "owner";
+    role?: "user" | "tenant" | "owner";
     username?: string;
     contact?: string;
   }

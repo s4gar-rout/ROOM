@@ -1,18 +1,47 @@
 "use client";
 
 import Link from "next/link";
-import { UserRound, LogOut, User as UserIcon, Edit2, ChevronDown, Menu } from "lucide-react";
+import { UserRound, LogOut, User as UserIcon, Edit2, ChevronDown, Menu, MessageCircle } from "lucide-react";
 import { useAuth } from "../../features/auth/hooks/useAuth";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { getUnreadCount } from "@/features/conversation/services/conversation.service";
+import { useConversationSocket } from "@/features/conversation/hooks/useConversationSocket";
+import { chatStore } from "@/features/conversation/store";
+import BecomeOwnerModal from "@/features/auth/components/BecomeOwnerModal";
 
 export default function Navbar() {
   const { user, loading, isAuthenticated, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [becomeOwnerModalOpen, setBecomeOwnerModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setUnreadCount(0);
+      return;
+    }
+    getUnreadCount().then((data) => setUnreadCount(data.unreadCount || 0)).catch(() => undefined);
+  }, [isAuthenticated]);
+
+  useConversationSocket({
+    enabled: isAuthenticated,
+    onConversationUpdated: (payload) => {
+      if (payload.conversationId === chatStore.activeConversationId) return;
+      getUnreadCount().then((data) => setUnreadCount(data.unreadCount || 0)).catch(() => undefined);
+    },
+    onNotification: (payload) => {
+      if (payload.conversation === chatStore.activeConversationId) return;
+      getUnreadCount().then((data) => setUnreadCount(data.unreadCount || 0)).catch(() => undefined);
+    },
+    onConversationRead: () => {
+      getUnreadCount().then((data) => setUnreadCount(data.unreadCount || 0)).catch(() => undefined);
+    },
+  });
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -44,28 +73,77 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden items-center gap-10 md:flex">
-          <Link
-            href="/rentals"
-            className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
-          >
-            Find a home
-          </Link>
+        {isAuthenticated && user?.role === "owner" ? (
+          <div className="hidden items-center gap-10 md:flex">
+            <Link
+              href="/"
+              className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
+            >
+              Home
+            </Link>
 
-          <Link
-            href="/owner"
-            className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
-          >
-            For owners
-          </Link>
+            <Link
+              href="/rentals"
+              className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
+            >
+              Find Room
+            </Link>
 
-          <Link
-            href="/messages"
-            className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
-          >
-            Messages
-          </Link>
-        </div>
+            <Link
+              href="/owner-dashboard"
+              className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
+            >
+              Dashboard
+            </Link>
+
+            <Link
+              href="/messages"
+              className="relative flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
+            >
+              Messages
+              {unreadCount > 0 ? (
+                <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#174D35] px-1 text-[8px] font-bold tracking-normal text-[#F8F4EA]">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              ) : null}
+            </Link>
+          </div>
+        ) : (
+          <div className="hidden items-center gap-10 md:flex">
+            <Link
+              href="/"
+              className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
+            >
+              Home
+            </Link>
+
+            <Link
+              href="/rentals"
+              className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
+            >
+              Find Room
+            </Link>
+
+            <Link
+              href="/messages"
+              className="relative flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
+            >
+              Messages
+              {unreadCount > 0 ? (
+                <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#174D35] px-1 text-[8px] font-bold tracking-normal text-[#F8F4EA]">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              ) : null}
+            </Link>
+
+            <button
+              onClick={() => setBecomeOwnerModalOpen(true)}
+              className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
+            >
+              Become a Owner
+            </button>
+          </div>
+        )}
 
         {/* Right side */}
         <div className="flex items-center gap-5">
@@ -140,12 +218,14 @@ export default function Navbar() {
             </Link>
           )}
 
-          <Link
-            href="/owner/add-rental"
-            className="flex h-10 items-center justify-center rounded-full bg-[#174D35] px-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40"
-          >
-            List a home
-          </Link>
+          {!(isAuthenticated && user?.role === "owner") && (
+            <Link
+              href="/owner/add-rental"
+              className="flex h-10 items-center justify-center rounded-full bg-[#174D35] px-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40"
+            >
+              List a home
+            </Link>
+          )}
 
           {/* Mobile Menu Toggle */}
           <button 
@@ -160,9 +240,27 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-[#F8F4EA] border-b border-[#DED7C9] shadow-md flex flex-col py-4 px-4 gap-4 z-40">
-          <Link href="/rentals" onClick={() => setMobileMenuOpen(false)} className="text-[#1C1B18] font-medium">Find a home</Link>
-          <Link href="/owner" onClick={() => setMobileMenuOpen(false)} className="text-[#1C1B18] font-medium">For owners</Link>
-          <Link href="/messages" onClick={() => setMobileMenuOpen(false)} className="text-[#1C1B18] font-medium">Messages</Link>
+          {isAuthenticated && user?.role === "owner" ? (
+            <>
+              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="text-[#1C1B18] font-medium">Home</Link>
+              <Link href="/rentals" onClick={() => setMobileMenuOpen(false)} className="text-[#1C1B18] font-medium">Find Room</Link>
+              <Link href="/owner-dashboard" onClick={() => setMobileMenuOpen(false)} className="text-[#1C1B18] font-medium">Dashboard</Link>
+              <Link href="/messages" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2 text-[#1C1B18] font-medium">
+                <MessageCircle size={17} /> Messages
+                {unreadCount > 0 ? <span className="rounded-full bg-[#174D35] px-2 py-0.5 text-[9px] font-bold text-[#F8F4EA]">{unreadCount > 99 ? "99+" : unreadCount}</span> : null}
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="text-[#1C1B18] font-medium">Home</Link>
+              <Link href="/rentals" onClick={() => setMobileMenuOpen(false)} className="text-[#1C1B18] font-medium">Find Room</Link>
+              <Link href="/messages" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2 text-[#1C1B18] font-medium">
+                <MessageCircle size={17} /> Messages
+                {unreadCount > 0 ? <span className="rounded-full bg-[#174D35] px-2 py-0.5 text-[9px] font-bold text-[#F8F4EA]">{unreadCount > 99 ? "99+" : unreadCount}</span> : null}
+              </Link>
+              <button onClick={() => { setMobileMenuOpen(false); setBecomeOwnerModalOpen(true); }} className="text-left text-[#1C1B18] font-medium">Become a Owner</button>
+            </>
+          )}
           
           <div className="w-full h-px bg-[#DED7C9] my-2"></div>
 
@@ -198,6 +296,11 @@ export default function Navbar() {
           )}
         </div>
       )}
+
+      <BecomeOwnerModal 
+        isOpen={becomeOwnerModalOpen} 
+        onClose={() => setBecomeOwnerModalOpen(false)} 
+      />
     </header>
   );
 }

@@ -39,16 +39,6 @@ const userSchema = new mongoose.Schema(
             default: "tenant",
         },
 
-        ownerRequestStatus: {
-            type: String,
-            enum: ["NONE", "PENDING", "APPROVED", "REJECTED"],
-            default: "NONE",
-        },
-
-        ownerVerified: {
-            type: Boolean,
-            default: false,
-        },
 
         googleId: {
             type: String,

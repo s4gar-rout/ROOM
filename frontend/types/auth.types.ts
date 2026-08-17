@@ -12,10 +12,6 @@ export interface LoginPayload {
 
 export type UserRole = "owner" | "tenant";
 
-export type OwnerRequestStatus =
-  | "PENDING"
-  | "APPROVED"
-  | "REJECTED";
 
 export interface UserAvatar {
   url: string;
@@ -30,10 +26,6 @@ export interface User {
   contact: string;
 
   role: UserRole;
-
-  ownerRequestStatus?: OwnerRequestStatus;
-
-  ownerVerified?: boolean;
 
   avatar?: UserAvatar;
 

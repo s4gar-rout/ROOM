@@ -14,6 +14,11 @@ export interface RoomImage {
 export interface RoomOwner {
   _id: string;
   username: string;
+  email?: string;
+  avatar?: {
+    url: string;
+    fileId: string;
+  };
 }
 
 // ==========================================

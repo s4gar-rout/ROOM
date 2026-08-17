@@ -1,11 +1,18 @@
-import api from "@/lib/axios";
+import api, { setAccessToken } from "@/lib/axios";
 
 import type {
-  AuthResponse,
   LoginPayload,
   RegisterPayload,
   User,
 } from "../../../types/auth.types";
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  user?: User;
+  sessionId?: string;
+  accessToken?: string;
+}
 
 // ==========================================
 // AUTH TYPES
@@ -43,6 +50,13 @@ export const registerUser = async (
     data
   );
 
+  if (response.data.sessionId) {
+    sessionStorage.setItem("roomSessionId", response.data.sessionId);
+  }
+  if (response.data.accessToken) {
+    setAccessToken(response.data.accessToken);
+  }
+
   return response.data;
 };
 
@@ -57,6 +71,13 @@ export const loginUser = async (
     "/auth/login",
     data
   );
+
+  if (response.data.sessionId) {
+    sessionStorage.setItem("roomSessionId", response.data.sessionId);
+  }
+  if (response.data.accessToken) {
+    setAccessToken(response.data.accessToken);
+  }
 
   return response.data;
 };
@@ -88,6 +109,9 @@ export const logoutUser =
       await api.post<AuthResponse>(
         "/auth/logout"
       );
+
+    sessionStorage.removeItem("roomSessionId");
+    setAccessToken(null);
 
     return response.data;
   };

@@ -70,7 +70,7 @@ export default function RentalCard({
         {/* View Button */}
 
         <Link
-          href={`/rental/${room._id}`}
+          href={`/rentals/${room._id}`}
           className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#F8F4EA] text-[#174D35] shadow-sm opacity-0 transition-all duration-300 group-hover:opacity-100 hover:bg-[#174D35] hover:text-[#F8F4EA]"
           aria-label={`View ${room.title}`}
         >

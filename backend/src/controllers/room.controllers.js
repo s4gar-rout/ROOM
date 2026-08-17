@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import roomModel from "../models/room.model.js";
 import { uploadFile, deleteFile } from "../services/storage.service.js";
 
@@ -232,9 +233,16 @@ export async function getSingleRoomDetailsController(req, res) {
     try {
         const { roomId } = req.params;
 
+        if (!mongoose.isValidObjectId(roomId)) {
+            return res.status(404).json({
+                success: false,
+                message: "Room not found",
+            });
+        }
+
         const room = await roomModel
             .findById(roomId)
-            .populate("owner", "username");
+            .populate("owner", "username email avatar");
 
         if (!room) {
             return res.status(404).json({

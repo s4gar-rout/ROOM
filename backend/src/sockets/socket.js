@@ -5,6 +5,8 @@ import {
     markConversationAsRead,
     isParticipant,
     getConversationRoomId,
+    deleteMessageForMe,
+    deleteMessageForEveryone,
 } from "../services/conversation.service.js";
 
 const onlineUsers = new Map();
@@ -208,9 +210,8 @@ export function initializeSocket(io) {
                     io,
                 });
 
-                // The message:new event is already broadcast by
-                // sendMessage(). This event is only an acknowledgement
-                // to the sending socket.
+                // message:new is already broadcast by sendMessage().
+                // This acknowledgement is only for the sending socket.
                 socket.emit("message:sent", {
                     success: true,
                     message: newMessage,
@@ -255,6 +256,76 @@ export function initializeSocket(io) {
                 }
             }
         );
+
+        /**
+         * message:delete:me
+         * Payload: { conversationId, messageId }
+         * Deletes the message only for the requesting user.
+         * Emits "message:deleted:forme" back to the user's private room.
+         */
+        socket.on("message:delete:me", async (data = {}) => {
+            try {
+                const { conversationId, messageId } = data;
+
+                if (
+                    !conversationId ||
+                    !messageId ||
+                    !mongoose.Types.ObjectId.isValid(conversationId) ||
+                    !mongoose.Types.ObjectId.isValid(messageId)
+                ) {
+                    return socket.emit("message:error", {
+                        message: "Invalid conversation or message ID",
+                    });
+                }
+
+                await deleteMessageForMe({
+                    conversationId,
+                    messageId,
+                    userId: socket.user._id,
+                    io,
+                });
+            } catch (error) {
+                console.error("Socket Delete For Me Error:", error);
+                socket.emit("message:error", {
+                    message: error.message || "Failed to delete message",
+                });
+            }
+        });
+
+        /**
+         * message:delete:everyone
+         * Payload: { conversationId, messageId }
+         * Deletes the message for all participants (sender only).
+         * Emits "message:deleted:foreveryone" to the conversation room.
+         */
+        socket.on("message:delete:everyone", async (data = {}) => {
+            try {
+                const { conversationId, messageId } = data;
+
+                if (
+                    !conversationId ||
+                    !messageId ||
+                    !mongoose.Types.ObjectId.isValid(conversationId) ||
+                    !mongoose.Types.ObjectId.isValid(messageId)
+                ) {
+                    return socket.emit("message:error", {
+                        message: "Invalid conversation or message ID",
+                    });
+                }
+
+                await deleteMessageForEveryone({
+                    conversationId,
+                    messageId,
+                    userId: socket.user._id,
+                    io,
+                });
+            } catch (error) {
+                console.error("Socket Delete For Everyone Error:", error);
+                socket.emit("message:error", {
+                    message: error.message || "Failed to delete message",
+                });
+            }
+        });
 
         socket.on("disconnect", () => {
             const userSockets =

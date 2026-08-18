@@ -3,14 +3,13 @@ import { ArrowUpRight } from "lucide-react";
 
 const exploreLinks = [
   { label: "Find a home", href: "/rentals" },
-  { label: "Saved rentals", href: "/saved" },
   { label: "Messages", href: "/messages" },
 ];
 
 const ownerLinks = [
-  { label: "List a home", href: "/owner/add-rental" },
+  { label: "List a home", href: "/owner-dashboard/add-room" },
   { label: "Owner dashboard", href: "/owner-dashboard" },
-  { label: "My listings", href: "/owner/listings" },
+  { label: "My listings", href: "/owner-dashboard/rooms" },
 ];
 
 export default function Footer() {

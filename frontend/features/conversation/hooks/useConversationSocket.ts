@@ -17,7 +17,14 @@ interface Options {
   onMessage?: (message: Message) => void;
   onRead?: (payload: { conversationId: string; readBy: string; readAt: string }) => void;
   onTyping?: (typing: boolean, userId: string) => void;
+  /** Legacy: message globally deleted (isDeleted or isDeletedForEveryone via old code) */
   onMessageDeleted?: (payload: { conversationId: string; messageId: string }) => void;
+  /** message:deleted:forme — only the requesting user receives this */
+  onMessageDeletedForMe?: (payload: { conversationId: string; messageId: string }) => void;
+  /** message:deleted:foreveryone — both participants receive this */
+  onMessageDeletedForEveryone?: (payload: { conversationId: string; messageId: string; lastMessage?: string; lastMessageAt?: string; deletedFor?: string }) => void;
+  /** conversation:cleared — only the requesting user receives this */
+  onConversationCleared?: (payload: { conversationId: string; clearedAt: string }) => void;
   onError?: (message: string) => void;
   onConversationUpdated?: (payload: any) => void;
   onConversationRead?: (payload: any) => void;
@@ -50,6 +57,9 @@ export function useConversationSocket({
   onRead,
   onTyping,
   onMessageDeleted,
+  onMessageDeletedForMe,
+  onMessageDeletedForEveryone,
+  onConversationCleared,
   onError,
   onConversationUpdated,
   onConversationRead,
@@ -57,10 +67,34 @@ export function useConversationSocket({
 }: Options) {
   const socketRef = useRef<SocketLike | null>(null);
   const conversationRef = useRef(conversationId);
-  const handlersRef = useRef({ onMessage, onRead, onTyping, onMessageDeleted, onError, onConversationUpdated, onConversationRead, onNotification });
+  const handlersRef = useRef({
+    onMessage,
+    onRead,
+    onTyping,
+    onMessageDeleted,
+    onMessageDeletedForMe,
+    onMessageDeletedForEveryone,
+    onConversationCleared,
+    onError,
+    onConversationUpdated,
+    onConversationRead,
+    onNotification,
+  });
 
   conversationRef.current = conversationId;
-  handlersRef.current = { onMessage, onRead, onTyping, onMessageDeleted, onError, onConversationUpdated, onConversationRead, onNotification };
+  handlersRef.current = {
+    onMessage,
+    onRead,
+    onTyping,
+    onMessageDeleted,
+    onMessageDeletedForMe,
+    onMessageDeletedForEveryone,
+    onConversationCleared,
+    onError,
+    onConversationUpdated,
+    onConversationRead,
+    onNotification,
+  };
 
   useEffect(() => {
     if (!enabled) return;
@@ -73,21 +107,44 @@ export function useConversationSocket({
         if (cancelled) return;
         socketRef.current = socket;
 
-        const handleConnectError = (error: Error) => handlersRef.current.onError?.(error.message);
-        const handleMessage = (message: Message) => handlersRef.current.onMessage?.(message);
-        const handleRead = (payload: any) => handlersRef.current.onRead?.(payload);
-        const handleTypingStart = (payload: any) => handlersRef.current.onTyping?.(true, payload.userId);
-        const handleTypingStop = (payload: any) => handlersRef.current.onTyping?.(false, payload.userId);
-        const handleConversationUpdated = (payload: any) => handlersRef.current.onConversationUpdated?.(payload);
-        const handleConversationRead = (payload: any) => handlersRef.current.onConversationRead?.(payload);
-        const handleNotification = (payload: any) => handlersRef.current.onNotification?.(payload);
+        const handleConnectError = (error: Error) =>
+          handlersRef.current.onError?.(error.message);
+        const handleMessage = (message: Message) =>
+          handlersRef.current.onMessage?.(message);
+        const handleRead = (payload: any) =>
+          handlersRef.current.onRead?.(payload);
+        const handleTypingStart = (payload: any) =>
+          handlersRef.current.onTyping?.(true, payload.userId);
+        const handleTypingStop = (payload: any) =>
+          handlersRef.current.onTyping?.(false, payload.userId);
+        const handleConversationUpdated = (payload: any) =>
+          handlersRef.current.onConversationUpdated?.(payload);
+        const handleConversationRead = (payload: any) =>
+          handlersRef.current.onConversationRead?.(payload);
+        const handleNotification = (payload: any) =>
+          handlersRef.current.onNotification?.(payload);
 
-        const handleMessageDeleted = (payload: any) => handlersRef.current.onMessageDeleted?.(payload);
+        // Legacy: kept for backward compat with any old socket events.
+        const handleMessageDeleted = (payload: any) =>
+          handlersRef.current.onMessageDeleted?.(payload);
+
+        // New granular delete events.
+        const handleMessageDeletedForMe = (payload: any) =>
+          handlersRef.current.onMessageDeletedForMe?.(payload);
+        const handleMessageDeletedForEveryone = (payload: any) =>
+          handlersRef.current.onMessageDeletedForEveryone?.(payload);
+
+        // Conversation cleared for this user.
+        const handleConversationCleared = (payload: any) =>
+          handlersRef.current.onConversationCleared?.(payload);
 
         socket.on("connect_error", handleConnectError);
         socket.on("message:new", handleMessage);
         socket.on("message:read:update", handleRead);
         socket.on("message:deleted", handleMessageDeleted);
+        socket.on("message:deleted:forme", handleMessageDeletedForMe);
+        socket.on("message:deleted:foreveryone", handleMessageDeletedForEveryone);
+        socket.on("conversation:cleared", handleConversationCleared);
         socket.on("typing:start", handleTypingStart);
         socket.on("typing:stop", handleTypingStop);
         socket.on("conversation:updated", handleConversationUpdated);
@@ -103,6 +160,9 @@ export function useConversationSocket({
           socket.off("message:new", handleMessage);
           socket.off("message:read:update", handleRead);
           socket.off("message:deleted", handleMessageDeleted);
+          socket.off("message:deleted:forme", handleMessageDeletedForMe);
+          socket.off("message:deleted:foreveryone", handleMessageDeletedForEveryone);
+          socket.off("conversation:cleared", handleConversationCleared);
           socket.off("typing:start", handleTypingStart);
           socket.off("typing:stop", handleTypingStop);
           socket.off("conversation:updated", handleConversationUpdated);
@@ -111,7 +171,10 @@ export function useConversationSocket({
         };
       })
       .catch((error) => {
-        if (!cancelled) handlersRef.current.onError?.(error?.message || "Unable to connect to chat");
+        if (!cancelled)
+          handlersRef.current.onError?.(
+            error?.message || "Unable to connect to chat"
+          );
       });
 
     return () => {
@@ -141,7 +204,10 @@ export function useConversationSocket({
 
   const setTyping = (typing: boolean) => {
     if (!socketRef.current || !conversationId) return false;
-    socketRef.current.emit(typing ? "typing:start" : "typing:stop", conversationId);
+    socketRef.current.emit(
+      typing ? "typing:start" : "typing:stop",
+      conversationId
+    );
     return true;
   };
 

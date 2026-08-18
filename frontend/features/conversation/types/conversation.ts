@@ -1,8 +1,6 @@
 import type { User } from "@/types/auth.types";
 
 // ── Room as populated by the backend ──────────────────────────────────────
-// Matches the ROOM_SELECT = "title images rent location availability" projection
-// in conversation.controllers.js
 
 export interface ConversationRoom {
   _id: string;
@@ -17,19 +15,12 @@ export interface ConversationRoom {
 
 export interface Conversation {
   _id: string;
-  /**
-   * Always populated after createConversation / getMyConversations.
-   * May arrive as a bare ObjectId string for legacy edge cases, so we keep
-   * the union — but components should type-narrow with `getRoomInfo()`.
-   */
   room: ConversationRoom | string | null;
   owner: User | string;
   buyer: User | string;
-  /** Derived by the backend formatConversation() helper — the other participant. */
   otherUser?: User | null;
   lastMessage?: string;
   lastMessageAt?: string | null;
-  /** Derived unread count for the current user (owner or tenant). */
   unreadCount?: number;
   createdAt?: string;
   updatedAt?: string;
@@ -43,8 +34,22 @@ export interface Message {
   message: string;
   read: boolean;
   readAt?: string | null;
+  /**
+   * Legacy flag. Treat as isDeletedForEveryone on the frontend.
+   * The backend normalises this before sending, but kept for safety.
+   */
   isDeleted?: boolean;
+  /**
+   * True when the sender deleted this message for everyone.
+   * Both participants see "This message was deleted".
+   */
   isDeletedForEveryone?: boolean;
+  /**
+   * Array of userIds who chose "Delete for me".
+   * The backend already filters these out before sending, but the field
+   * may arrive for optimistic-UI purposes in real-time payloads.
+   */
+  deletedFor?: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -78,7 +83,7 @@ export interface UnreadResponse {
   unreadCount: number;
 }
 
-// ── Utility ────────────────────────────────────────────────────────────────
+// ── Utilities ──────────────────────────────────────────────────────────────
 
 /**
  * Safely extract the populated room object from a conversation.
@@ -87,11 +92,17 @@ export interface UnreadResponse {
 export function getRoomInfo(
   conversation: Conversation
 ): ConversationRoom | null {
-  if (
-    conversation.room &&
-    typeof conversation.room === "object"
-  ) {
+  if (conversation.room && typeof conversation.room === "object") {
     return conversation.room as ConversationRoom;
   }
   return null;
+}
+
+/**
+ * Normalise a populated user or bare ObjectId string into a string ID.
+ */
+export function getUserId(
+  value: Conversation["owner"] | Message["sender"]
+): string {
+  return typeof value === "string" ? value : (value as User)._id;
 }

@@ -8,7 +8,10 @@ import {
     getTotalUnreadCount,
     isParticipant,
     getUnreadCountForUser,
-    deleteMessage,
+    deleteMessageForMe,
+    deleteMessageForEveryone,
+    clearConversationForUser,
+    getMessagesForUser,
 } from "../services/conversation.service.js";
 
 const USER_SELECT = "username email avatar";
@@ -38,14 +41,30 @@ function formatConversation(conversation, currentUserId) {
 
     const otherUser = isOwner ? obj.buyer : obj.owner;
 
+    let finalLastMessage = obj.lastMessage || "";
+    let finalLastMessageAt = obj.lastMessageAt;
+
+    // Check if the user cleared this conversation AFTER the last message was sent
+    if (obj.clearedAt) {
+        const userClearedAt = obj.clearedAt instanceof Map 
+            ? obj.clearedAt.get(currentId) 
+            : obj.clearedAt[currentId];
+
+        if (userClearedAt && finalLastMessageAt) {
+            if (new Date(finalLastMessageAt).getTime() <= new Date(userClearedAt).getTime()) {
+                finalLastMessage = "";
+            }
+        }
+    }
+
     return {
         _id: obj._id,
         room: obj.room,
         owner: obj.owner,
         buyer: obj.buyer,
         otherUser,
-        lastMessage: obj.lastMessage || "",
-        lastMessageAt: obj.lastMessageAt,
+        lastMessage: finalLastMessage,
+        lastMessageAt: finalLastMessageAt,
         unreadCount: getUnreadCountForUser(obj, currentUserId),
         createdAt: obj.createdAt,
         updatedAt: obj.updatedAt,
@@ -168,44 +187,15 @@ export async function getConversationMessageController(req, res) {
             Math.max(1, parseInt(req.query.limit, 10) || 30)
         );
 
-        const skip = (page - 1) * limit;
-
-        const conversation =
-            await ConversationModel.findById(conversationId);
-
-        if (!conversation) {
-            return res.status(404).json({
-                success: false,
-                message: "Conversation not found",
-            });
-        }
-
         const userId = req.user._id;
 
-        if (!isParticipant(conversation, userId)) {
-            return res.status(403).json({
-                success: false,
-                message:
-                    "You are not allowed to view this conversation",
-            });
-        }
-
-        const [messages, total] = await Promise.all([
-            MessageModel.find({ conversation: conversationId })
-                .populate("sender", USER_SELECT)
-                .populate("receiver", USER_SELECT)
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(limit)
-                .lean(),
-            MessageModel.countDocuments({
-                conversation: conversationId,
-            }),
-        ]);
-
-        // API returns chronological order for the chat UI while
-        // pagination remains newest-first at the database level.
-        messages.reverse();
+        // Use getMessagesForUser so clearedAt + deletedFor are respected.
+        const { messages, total } = await getMessagesForUser({
+            conversationId,
+            userId,
+            page,
+            limit,
+        });
 
         return res.status(200).json({
             success: true,
@@ -213,7 +203,7 @@ export async function getConversationMessageController(req, res) {
             total,
             page,
             totalPages: Math.ceil(total / limit),
-            hasMore: skip + messages.length < total,
+            hasMore: (page - 1) * limit + messages.length < total,
             messages,
         });
     } catch (error) {
@@ -222,9 +212,9 @@ export async function getConversationMessageController(req, res) {
             error
         );
 
-        return res.status(500).json({
+        return res.status(error.status || 500).json({
             success: false,
-            message: "Internal server error",
+            message: error.message || "Internal server error",
         });
     }
 }
@@ -400,21 +390,39 @@ export async function getSingleConversationController(req, res) {
     }
 }
 
+/**
+ * DELETE /conversations/messages/:conversationId/:messageId?scope=me|everyone
+ *
+ * scope=me       → Delete for me only (other participant still sees it)
+ * scope=everyone → Delete for everyone (sender only; shows tombstone to both)
+ * default        → everyone (backward compat)
+ */
 export async function deleteMessageController(req, res) {
     try {
         const { conversationId, messageId } = req.params;
+        const scope = req.query.scope === "me" ? "me" : "everyone";
         const io = req.app.get("io");
 
-        await deleteMessage({
-            conversationId,
-            messageId,
-            userId: req.user._id,
-            io,
-        });
+        if (scope === "me") {
+            await deleteMessageForMe({
+                conversationId,
+                messageId,
+                userId: req.user._id,
+                io,
+            });
+        } else {
+            await deleteMessageForEveryone({
+                conversationId,
+                messageId,
+                userId: req.user._id,
+                io,
+            });
+        }
 
         return res.status(200).json({
             success: true,
-            message: "Message deleted successfully",
+            message: `Message deleted${scope === "me" ? " for you" : " for everyone"}`,
+            scope,
         });
     } catch (error) {
         console.error("Delete Message Error:", error);
@@ -423,6 +431,46 @@ export async function deleteMessageController(req, res) {
             success: false,
             message:
                 error.message || "Internal server error",
+        });
+    }
+}
+
+/**
+ * DELETE /conversations/:conversationId/clear
+ *
+ * Clears the conversation history for the requesting user only.
+ * The other participant's history is unaffected.
+ * Messages created AFTER this point will remain visible.
+ */
+export async function clearConversationController(req, res) {
+    try {
+        const { conversationId } = req.params;
+        const io = req.app.get("io");
+
+        if (!mongoose.Types.ObjectId.isValid(conversationId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid conversation ID",
+            });
+        }
+
+        const result = await clearConversationForUser({
+            conversationId,
+            userId: req.user._id,
+            io,
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Conversation cleared",
+            clearedAt: result.clearedAt,
+        });
+    } catch (error) {
+        console.error("Clear Conversation Error:", error);
+
+        return res.status(error.status || 500).json({
+            success: false,
+            message: error.message || "Internal server error",
         });
     }
 }
@@ -436,4 +484,5 @@ export default {
     getUnreadCountController,
     getSingleConversationController,
     deleteMessageController,
+    clearConversationController,
 };

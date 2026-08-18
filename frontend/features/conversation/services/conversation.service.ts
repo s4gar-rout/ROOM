@@ -7,6 +7,7 @@ import type {
   MessagesResponse,
   UnreadResponse,
 } from "../types/conversation";
+export { getUserId } from "../types/conversation";
 
 export async function createOrGetConversation(roomId: string): Promise<ConversationResponse> {
   const response = await api.post<ConversationResponse>(`/conversations/${roomId}`);
@@ -53,11 +54,29 @@ export async function getUnreadCount(): Promise<UnreadResponse> {
   return response.data;
 }
 
-export async function deleteConversationMessage(conversationId: string, messageId: string) {
-  const response = await api.delete(`/conversations/messages/${conversationId}/${messageId}`);
+/**
+ * Delete a message.
+ * scope="me"       → hidden only for the requesting user
+ * scope="everyone" → shows "This message was deleted" to both (sender only)
+ */
+export async function deleteConversationMessage(
+  conversationId: string,
+  messageId: string,
+  scope: "me" | "everyone" = "me",
+) {
+  const response = await api.delete(
+    `/conversations/messages/${conversationId}/${messageId}`,
+    { params: { scope } },
+  );
   return response.data;
 }
 
-export function getUserId(value: Conversation["owner"] | Message["sender"]): string {
-  return typeof value === "string" ? value : value._id;
+/**
+ * Clear the conversation for the requesting user only.
+ * Messages before the clear point are no longer visible to this user.
+ * The other participant's history is unaffected.
+ */
+export async function clearConversation(conversationId: string) {
+  const response = await api.delete(`/conversations/${conversationId}/clear`);
+  return response.data;
 }

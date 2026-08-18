@@ -10,7 +10,7 @@ export interface LoginPayload {
   password: string;
 }
 
-export type UserRole = "owner" | "tenant";
+export type UserRole = "owner" | "tenant" | "admin";
 
 
 export interface UserAvatar {
@@ -30,6 +30,8 @@ export interface User {
   avatar?: UserAvatar;
 
   authProvider?: "local" | "google";
+  
+  isBlocked?: boolean;
 }
 
 export interface AuthResponse {

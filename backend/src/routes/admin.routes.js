@@ -7,6 +7,18 @@ import { validateRequest } from "../middlewares/validate.middleware.js";
 const router = express.Router();
 
 /**
+ * @desc Get dashboard stats
+ * @route GET /api/admin/stats
+ * @access Private/Admin
+ */
+router.get(
+    "/stats",
+    authMiddleware,
+    requireRole("admin"),
+    adminController.getDashboardStatsController
+);
+
+/**
  * @desc Block user
  * @route PATCH /api/admin/users/:userId/block
  * @access Private/Admin

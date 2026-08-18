@@ -4,8 +4,6 @@ import { deleteFile } from "../services/storage.service.js";
 import { createNotification } from "../services/notification.service.js";
 
 
-
-
 // Block User
 async function blockUserController(req, res) {
     try {
@@ -99,13 +97,32 @@ async function unblockUserController(req, res) {
 // Get All Users
 async function getAllUsersController(req, res) {
     try {
-        const users = await UserModel.find()
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const search = req.query.search || "";
+        const skip = (page - 1) * limit;
+
+        const query = search ? {
+            $or: [
+                { username: { $regex: search, $options: "i" } },
+                { email: { $regex: search, $options: "i" } }
+            ]
+        } : {};
+
+        const users = await UserModel.find(query)
             .select("-password")
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const total = await UserModel.countDocuments(query);
 
         return res.status(200).json({
             success: true,
             count: users.length,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit),
             users,
         });
 
@@ -123,14 +140,33 @@ async function getAllUsersController(req, res) {
 // Get All Rooms
 async function getAllRoomsController(req, res) {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const search = req.query.search || "";
+        const skip = (page - 1) * limit;
+
+        const query = search ? {
+            $or: [
+                { title: { $regex: search, $options: "i" } },
+                { location: { $regex: search, $options: "i" } }
+            ]
+        } : {};
+
         const rooms = await roomModel
-            .find()
+            .find(query)
             .populate("owner", "username email contact")
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+            
+        const total = await roomModel.countDocuments(query);
 
         return res.status(200).json({
             success: true,
             count: rooms.length,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit),
             rooms,
         });
 
@@ -187,10 +223,49 @@ async function deleteRoomController(req, res) {
 }
 
 
+// Get Dashboard Stats
+async function getDashboardStatsController(req, res) {
+    try {
+        const [
+            totalUsers,
+            totalOwners,
+            totalTenants,
+            totalRooms,
+            availableRooms
+        ] = await Promise.all([
+            UserModel.countDocuments(),
+            UserModel.countDocuments({ role: "owner" }),
+            UserModel.countDocuments({ role: "tenant" }),
+            roomModel.countDocuments(),
+            roomModel.countDocuments({ availability: true }),
+        ]);
+
+        return res.status(200).json({
+            success: true,
+            stats: {
+                users: totalUsers,
+                owners: totalOwners,
+                tenants: totalTenants,
+                rooms: totalRooms,
+                availableRooms,
+                unavailableRooms: totalRooms - availableRooms
+            }
+        });
+    } catch (error) {
+        console.error("Get Dashboard Stats Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
+
+
 export default {
     unblockUserController,
     blockUserController,
     getAllUsersController,
     getAllRoomsController,
-    deleteRoomController
+    deleteRoomController,
+    getDashboardStatsController
 }

@@ -13,7 +13,7 @@ import type {
 } from "@/features/conversation/types/conversation";
 import { useConversationSocket } from "@/features/conversation/hooks/useConversationSocket";
 import { chatStore } from "@/features/conversation/store";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, AlertCircle, Loader2 } from "lucide-react";
 
 export default function MessagesPage({
   initialConversationId,
@@ -28,6 +28,8 @@ export default function MessagesPage({
   const [selected, setSelected] = useState<Conversation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
+  const [removeLoading, setRemoveLoading] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -114,10 +116,84 @@ export default function MessagesPage({
     []
   );
 
+  const handleMessageDeletedForEveryone = useCallback(
+    (payload: { conversationId: string; messageId: string; lastMessage?: string; lastMessageAt?: string }) => {
+      if (payload.lastMessage !== undefined && payload.lastMessageAt !== undefined) {
+        setConversations((current) => {
+          const index = current.findIndex((c) => c._id === payload.conversationId);
+          if (index === -1) return current;
+
+          const updated: Conversation = {
+            ...current[index],
+            lastMessage: payload.lastMessage!,
+            lastMessageAt: payload.lastMessageAt!,
+          };
+
+          const next = [...current];
+          next[index] = updated;
+          
+          // Re-sort by lastMessageAt
+          next.sort((a, b) =>
+              (b.lastMessageAt ? new Date(b.lastMessageAt).getTime() : 0) - (a.lastMessageAt ? new Date(a.lastMessageAt).getTime() : 0)
+          );
+
+          return next;
+        });
+      }
+    },
+    []
+  );
+
+  const handleConversationCleared = useCallback(
+    (payload: { conversationId: string; clearedAt: string }) => {
+      setConversations((current) => {
+        const index = current.findIndex((c) => c._id === payload.conversationId);
+        if (index === -1) return current;
+
+        const conv = current[index];
+        // If the cleared timestamp is newer or equal to the last message, the preview should be cleared
+        if (conv.lastMessageAt && new Date(conv.lastMessageAt).getTime() <= new Date(payload.clearedAt).getTime()) {
+          const updated: Conversation = {
+            ...conv,
+            lastMessage: "",
+          };
+
+          const next = [...current];
+          next[index] = updated;
+          return next;
+        }
+
+        return current;
+      });
+    },
+    []
+  );
+
+
+
+  const executeRemoveConversation = async () => {
+    if (!confirmRemoveId) return;
+    try {
+      setRemoveLoading(true);
+      const { clearConversation } = await import("@/features/conversation/services/conversation.service");
+      await clearConversation(confirmRemoveId);
+      if (selected?._id === confirmRemoveId) setSelected(null);
+      setConfirmRemoveId(null);
+    } catch (err) {
+      console.error("Failed to remove conversation", err);
+      setError("Failed to clear conversation");
+    } finally {
+      setRemoveLoading(false);
+    }
+  };
+
+
   useConversationSocket({
     enabled: isAuthenticated,
     onConversationUpdated: handleConversationUpdated,
     onConversationRead: handleConversationRead,
+    onMessageDeletedForEveryone: handleMessageDeletedForEveryone,
+    onConversationCleared: handleConversationCleared,
   });
 
   // ── Loading / auth gate ──────────────────────────────────────────────────
@@ -194,6 +270,11 @@ export default function MessagesPage({
               selectedId={selected?._id}
               loading={loading}
               onSelect={setSelected}
+              confirmRemoveId={confirmRemoveId}
+              onRemoveRequest={setConfirmRemoveId}
+              onRemoveCancel={() => setConfirmRemoveId(null)}
+              onRemoveConfirm={executeRemoveConversation}
+              removeLoading={removeLoading}
             />
           </div>
 
@@ -237,13 +318,18 @@ export default function MessagesPage({
 
       {/* Global error toast — sits outside the chat shell */}
       {error && (
-        <p
-          role="alert"
-          className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-full bg-red-50 px-4 py-1.5 text-[10px] text-red-700 shadow"
-        >
-          {error}
-        </p>
+        <div className="fixed left-1/2 top-4 z-[300] -translate-x-1/2 px-4 pointer-events-none w-full max-w-sm">
+          <div
+            role="alert"
+            className="mx-auto flex w-max items-center gap-2 rounded-[16px] border border-[#E8E3D6] bg-[#FFFDF8] px-4 py-2.5 shadow-[0_8px_30px_rgba(28,27,24,0.12)] animate-in fade-in slide-in-from-top-4 duration-300"
+          >
+            <AlertCircle size={16} className="text-[#A53B32] shrink-0" />
+            <p className="text-[13px] font-medium text-[#1C1B18]">{error}</p>
+          </div>
+        </div>
       )}
+
+
     </div>
   );
 }

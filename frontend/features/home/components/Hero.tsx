@@ -1,4 +1,5 @@
 import { Sparkles, ArrowUpRight, ArrowDown } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -43,7 +44,8 @@ export default function Home() {
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
 
               {/* Primary */}
-              <button
+              <Link
+                href="/rentals"
                 className="
                   group flex h-14 min-w-[200px] items-center justify-center
                   gap-3 rounded-full
@@ -60,12 +62,13 @@ export default function Home() {
                   strokeWidth={1.7}
                   className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 />
-              </button>
+              </Link>
 
               {/* Secondary */}
-              <button
+              <Link
+                href="/owner-dashboard/add-room"
                 className="
-                  h-14 min-w-[200px] rounded-full
+                  flex h-14 min-w-[200px] items-center justify-center rounded-full
                   border border-[#174D35]/45
                   bg-transparent px-7
                   text-sm font-medium text-[#174D35]
@@ -75,7 +78,7 @@ export default function Home() {
                 "
               >
                 List your property
-              </button>
+              </Link>
             </div>
 
             {/* Trust Points */}

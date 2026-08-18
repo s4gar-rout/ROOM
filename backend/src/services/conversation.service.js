@@ -135,7 +135,6 @@ export async function sendMessage({
 
     if (!updatedConversation) {
         // Message was created but conversation disappeared unexpectedly.
-        // Keep the database consistent by removing the orphan message.
         await MessageModel.deleteOne({ _id: newMessage._id });
         throw chatError("Conversation is no longer available", 404);
     }
@@ -148,6 +147,8 @@ export async function sendMessage({
         message: newMessage.message,
         read: newMessage.read,
         readAt: newMessage.readAt,
+        isDeletedForEveryone: false,
+        deletedFor: [],
         createdAt: newMessage.createdAt,
         updatedAt: newMessage.updatedAt,
     };
@@ -170,8 +171,6 @@ export async function sendMessage({
         );
     }
 
-    // Persist ONE notification and let the notification service emit
-    // notification:new. Do not emit the same event here as well.
     await createNotification({
         userId: receiverId,
         type: "NEW_MESSAGE",
@@ -292,7 +291,12 @@ export async function getTotalUnreadCount(userId) {
     return result?.total || 0;
 }
 
-export async function deleteMessage({
+/**
+ * Delete a message ONLY for the requesting user.
+ * The other participant continues to see the original message.
+ * Emits "message:deleted:forme" only to the requesting user's private room.
+ */
+export async function deleteMessageForMe({
     conversationId,
     messageId,
     userId,
@@ -308,24 +312,255 @@ export async function deleteMessage({
         throw chatError("Message does not belong to this conversation", 400);
     }
 
-    if (message.sender.toString() !== userId.toString()) {
-        throw chatError("You can only delete your own messages", 403);
+    // Verify the requesting user is a conversation participant.
+    const conversation = await ConversationModel.findById(conversationId);
+    if (!conversation) {
+        throw chatError("Conversation not found", 404);
+    }
+    if (!isParticipant(conversation, userId)) {
+        throw chatError("You are not allowed to delete messages in this conversation", 403);
     }
 
-    if (message.isDeleted) {
+    // If already deleted for everyone, nothing to do.
+    if (message.isDeletedForEveryone || message.isDeleted) {
         throw chatError("Message is already deleted", 400);
     }
 
-    message.isDeleted = true;
-    await message.save();
+    const userIdStr = userId.toString();
+    const alreadyDeleted = message.deletedFor.some(
+        (id) => id.toString() === userIdStr
+    );
+
+    if (alreadyDeleted) {
+        throw chatError("Message already deleted for you", 400);
+    }
+
+    // Add this user to the deletedFor array.
+    await MessageModel.findByIdAndUpdate(messageId, {
+        $addToSet: { deletedFor: userId },
+    });
 
     if (io) {
-        const roomId = getConversationRoomId(conversationId);
-        io.to(roomId).emit("message:deleted", {
+        // Only notify the requesting user's sockets — not the other participant.
+        io.to(`user:${userIdStr}`).emit("message:deleted:forme", {
             conversationId,
             messageId,
         });
     }
 
     return true;
+}
+
+/**
+ * Delete a message for EVERYONE in the conversation.
+ * Only the original sender can do this.
+ * Shows "This message was deleted" to both participants.
+ * Emits "message:deleted:foreveryone" to the full conversation socket room.
+ */
+export async function deleteMessageForEveryone({
+    conversationId,
+    messageId,
+    userId,
+    io,
+}) {
+    const message = await MessageModel.findById(messageId);
+
+    if (!message) {
+        throw chatError("Message not found", 404);
+    }
+
+    if (message.conversation.toString() !== conversationId) {
+        throw chatError("Message does not belong to this conversation", 400);
+    }
+
+    // Only the original sender can delete for everyone.
+    if (message.sender.toString() !== userId.toString()) {
+        throw chatError("You can only delete your own messages for everyone", 403);
+    }
+
+    // Already globally deleted.
+    if (message.isDeletedForEveryone || message.isDeleted) {
+        throw chatError("Message is already deleted", 400);
+    }
+
+    await MessageModel.findByIdAndUpdate(messageId, {
+        $set: { isDeletedForEveryone: true },
+    });
+
+    const conversation = await ConversationModel.findById(conversationId);
+    let payloadLastMessage = undefined;
+    let payloadLastMessageAt = undefined;
+
+    if (conversation) {
+        // Query the latest non-deleted message to ensure consistency
+        const latestMessageInDb = await MessageModel.findOne({
+            conversation: conversationId,
+            isDeletedForEveryone: { $ne: true },
+            isDeleted: { $ne: true },
+        }).sort({ createdAt: -1 });
+
+        const actualLastMessage = latestMessageInDb ? latestMessageInDb.message : "This message was deleted";
+        const actualLastMessageAt = latestMessageInDb ? latestMessageInDb.createdAt : conversation.createdAt;
+
+        if (conversation.lastMessage !== actualLastMessage) {
+            payloadLastMessage = actualLastMessage;
+            payloadLastMessageAt = actualLastMessageAt;
+
+            await ConversationModel.findByIdAndUpdate(conversationId, {
+                $set: {
+                    lastMessage: payloadLastMessage,
+                    lastMessageAt: payloadLastMessageAt,
+                },
+            });
+        }
+    }
+
+    if (io) {
+        const roomId = getConversationRoomId(conversationId);
+        const payload = {
+            conversationId,
+            messageId,
+            deletedFor: "everyone",
+        };
+
+        if (payloadLastMessage !== undefined) {
+            payload.lastMessage = payloadLastMessage;
+            payload.lastMessageAt = payloadLastMessageAt;
+        }
+
+        // Broadcast to ALL conversation participants.
+        io.to(roomId).emit("message:deleted:foreveryone", payload);
+        
+        // Also emit to individual user channels so the sidebar updates if they aren't in the room
+        if (conversation) {
+            const ownerStr = getParticipantId(conversation.owner);
+            const buyerStr = getParticipantId(conversation.buyer);
+            if (ownerStr) io.to(`user:${ownerStr}`).emit("message:deleted:foreveryone", payload);
+            if (buyerStr && buyerStr !== ownerStr) io.to(`user:${buyerStr}`).emit("message:deleted:foreveryone", payload);
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Legacy deleteMessage — kept for backward compat.
+ * Routes now call deleteMessageForMe or deleteMessageForEveryone directly.
+ */
+export async function deleteMessage({
+    conversationId,
+    messageId,
+    userId,
+    io,
+}) {
+    return deleteMessageForEveryone({ conversationId, messageId, userId, io });
+}
+
+/**
+ * Clear the conversation for one user only.
+ * Records the current timestamp so messages created before now
+ * will no longer appear in that user's message list.
+ * Emits "conversation:cleared" only to that user.
+ */
+export async function clearConversationForUser({
+    conversationId,
+    userId,
+    io,
+}) {
+    const conversation = await ConversationModel.findById(conversationId);
+
+    if (!conversation) {
+        throw chatError("Conversation not found", 404);
+    }
+
+    if (!isParticipant(conversation, userId)) {
+        throw chatError("You are not allowed to clear this conversation", 403);
+    }
+
+    const now = new Date();
+    const userKey = userId.toString();
+
+    if (!conversation.clearedAt) {
+        conversation.clearedAt = new Map();
+    }
+
+    // By creating a completely new Map, we force Mongoose to overwrite the entire `clearedAt`
+    // field instead of using delta updates ($set: { "clearedAt.userKey": ... })
+    // This resolves the MongoDB error where it refuses to set a dot-notation field on an existing Array.
+    const updatedClearedAt = new Map(conversation.clearedAt);
+    updatedClearedAt.set(userKey, now);
+    conversation.clearedAt = updatedClearedAt;
+    
+    await conversation.save();
+
+    if (io) {
+        io.to(`user:${userKey}`).emit("conversation:cleared", {
+            conversationId,
+            clearedAt: now,
+        });
+    }
+
+    return { clearedAt: now };
+}
+
+/**
+ * Build the message query for a specific user, respecting:
+ * - isDeletedForEveryone / legacy isDeleted (show tombstone, not excluded)
+ * - deletedFor (exclude entirely for that user)
+ * - conversation.clearedAt[userId] (exclude messages before that timestamp)
+ */
+export async function getMessagesForUser({
+    conversationId,
+    userId,
+    page = 1,
+    limit = 30,
+}) {
+    const conversation = await ConversationModel.findById(conversationId);
+
+    if (!conversation) {
+        throw chatError("Conversation not found", 404);
+    }
+
+    if (!isParticipant(conversation, userId)) {
+        throw chatError("You are not allowed to view this conversation", 403);
+    }
+
+    const userIdStr = userId.toString();
+    const clearedAt = conversation.clearedAt?.get(userIdStr) || null;
+
+    const skip = (page - 1) * limit;
+
+    // Base filter: belongs to this conversation, not deleted for this user.
+    const filter = {
+        conversation: conversationId,
+        deletedFor: { $ne: userId },
+    };
+
+    // If the user has cleared the conversation, only show messages after that timestamp.
+    if (clearedAt) {
+        filter.createdAt = { $gt: clearedAt };
+    }
+
+    const [messages, total] = await Promise.all([
+        MessageModel.find(filter)
+            .populate("sender", USER_SELECT)
+            .populate("receiver", USER_SELECT)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean(),
+        MessageModel.countDocuments(filter),
+    ]);
+
+    // Chronological order for the chat UI.
+    messages.reverse();
+
+    // Normalize legacy isDeleted → isDeletedForEveryone so the frontend
+    // only needs to check one field.
+    const normalized = messages.map((m) => ({
+        ...m,
+        isDeletedForEveryone: m.isDeletedForEveryone || m.isDeleted || false,
+    }));
+
+    return { messages: normalized, total, page, limit };
 }

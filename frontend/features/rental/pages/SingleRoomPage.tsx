@@ -998,27 +998,28 @@ export default function SingleRoomPage({
           RESTRICTION MODAL
       ======================================================== */}
       {restrictionModal.isOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-[20px] bg-[#F8F4EA] p-6 shadow-2xl relative">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#1C1B18]/40 px-4 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md rounded-[24px] border border-[#E8E3D6] bg-[#FFFDF8] p-8 shadow-[0_12px_40px_rgba(28,27,24,0.14)] animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setRestrictionModal({ ...restrictionModal, isOpen: false })}
-              className="absolute right-4 top-4 text-[#1C1B18]/50 hover:text-[#1C1B18] transition-colors"
+              className="absolute right-5 top-5 rounded-full p-2 text-[#8A8177] transition-colors hover:bg-[#1C1B18]/5 hover:text-[#1C1B18] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#174D35]/50"
+              aria-label="Close modal"
             >
               <X size={20} />
             </button>
 
-            <h2 className="font-serif text-2xl font-medium text-[#1C1B18]">
+            <h2 className="font-serif text-[28px] leading-[1.1] tracking-[-0.02em] text-[#1C1B18]">
               {restrictionModal.title}
             </h2>
             
-            <p className="mt-3 text-sm text-[#5F554A] leading-relaxed">
+            <p className="mt-4 font-sans text-[15px] leading-relaxed text-[#756B60]">
               {restrictionModal.message}
             </p>
 
-            <div className="mt-6 flex justify-end">
+            <div className="mt-8 flex justify-end">
               <button
                 onClick={() => setRestrictionModal({ ...restrictionModal, isOpen: false })}
-                className="rounded-full bg-[#174D35] px-6 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-[#F8F4EA] hover:bg-[#14422D] transition-colors"
+                className="rounded-full bg-[#174D35] px-7 py-2.5 font-sans text-[13px] font-medium text-[#FFFDF8] transition-colors hover:bg-[#14422D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#174D35]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFFDF8]"
               >
                 OK
               </button>

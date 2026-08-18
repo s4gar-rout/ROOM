@@ -4,20 +4,19 @@ import Link from "next/link";
 import { UserRound, LogOut, User as UserIcon, Edit2, ChevronDown, Menu, MessageCircle } from "lucide-react";
 import { useAuth } from "../../features/auth/hooks/useAuth";
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import { getUnreadCount } from "@/features/conversation/services/conversation.service";
 import { useConversationSocket } from "@/features/conversation/hooks/useConversationSocket";
 import { chatStore } from "@/features/conversation/store";
-import BecomeOwnerModal from "@/features/auth/components/BecomeOwnerModal";
 
 export default function Navbar() {
   const { user, loading, isAuthenticated, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [becomeOwnerModalOpen, setBecomeOwnerModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
@@ -60,6 +59,27 @@ export default function Navbar() {
     router.push("/login");
   };
 
+  const isActive = (path: string) => {
+    if (path === "/") return pathname === "/";
+    return pathname?.startsWith(path);
+  };
+
+  const getDesktopLinkClass = (path: string) => {
+    const active = isActive(path);
+    return `relative flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.2em] transition-colors py-1 ${
+      active ? "text-[#174D35]" : "text-[#5F554A] hover:text-[#174D35]"
+    } after:content-[''] after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:bg-[#174D35] after:transition-all after:duration-300 ${
+      active ? "after:w-full" : "after:w-0 hover:after:w-full"
+    }`;
+  };
+
+  const getMobileLinkClass = (path: string) => {
+    const active = isActive(path);
+    return `flex items-center gap-2 font-medium transition-colors w-max pb-1 border-b-2 ${
+      active ? "text-[#174D35] border-[#174D35]" : "text-[#1C1B18] border-transparent hover:border-[#1C1B18]/20"
+    }`;
+  };
+
   return (
     <header className="w-full border-b border-[#1C1B18]/10 bg-[#F8F4EA] relative z-50">
       <nav className="mx-auto flex h-[72px] max-w-[1400px] items-center justify-between px-6 sm:px-10">
@@ -73,77 +93,30 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
-        {isAuthenticated && user?.role === "owner" ? (
-          <div className="hidden items-center gap-10 md:flex">
-            <Link
-              href="/"
-              className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
-            >
-              Home
-            </Link>
+        <div className="hidden items-center gap-10 md:flex">
+          <Link href="/" className={getDesktopLinkClass("/")}>
+            Home
+          </Link>
 
-            <Link
-              href="/rentals"
-              className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
-            >
-              Find Room
-            </Link>
+          <Link href="/rentals" className={getDesktopLinkClass("/rentals")}>
+            Rooms
+          </Link>
 
-            <Link
-              href="/owner-dashboard"
-              className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
-            >
+          {isAuthenticated && user?.role === "owner" && (
+            <Link href="/owner-dashboard" className={getDesktopLinkClass("/owner-dashboard")}>
               Dashboard
             </Link>
+          )}
 
-            <Link
-              href="/messages"
-              className="relative flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
-            >
-              Messages
-              {unreadCount > 0 ? (
-                <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#174D35] px-1 text-[8px] font-bold tracking-normal text-[#F8F4EA]">
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </span>
-              ) : null}
-            </Link>
-          </div>
-        ) : (
-          <div className="hidden items-center gap-10 md:flex">
-            <Link
-              href="/"
-              className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
-            >
-              Home
-            </Link>
-
-            <Link
-              href="/rentals"
-              className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
-            >
-              Find Room
-            </Link>
-
-            <Link
-              href="/messages"
-              className="relative flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
-            >
-              Messages
-              {unreadCount > 0 ? (
-                <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#174D35] px-1 text-[8px] font-bold tracking-normal text-[#F8F4EA]">
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </span>
-              ) : null}
-            </Link>
-
-            <button
-              onClick={() => setBecomeOwnerModalOpen(true)}
-              className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35]"
-            >
-              Become a Owner
-            </button>
-          </div>
-        )}
+          <Link href="/messages" className={getDesktopLinkClass("/messages")}>
+            Messages
+            {unreadCount > 0 ? (
+              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#174D35] px-1 text-[8px] font-bold tracking-normal text-[#F8F4EA]">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            ) : null}
+          </Link>
+        </div>
 
         {/* Right side */}
         <div className="flex items-center gap-5">
@@ -218,15 +191,6 @@ export default function Navbar() {
             </Link>
           )}
 
-          {!(isAuthenticated && user?.role === "owner") && (
-            <Link
-              href="/owner/add-rental"
-              className="flex h-10 items-center justify-center rounded-full bg-[#174D35] px-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40"
-            >
-              List a home
-            </Link>
-          )}
-
           {/* Mobile Menu Toggle */}
           <button 
             className="md:hidden text-[#1C1B18]"
@@ -240,27 +204,15 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-[#F8F4EA] border-b border-[#DED7C9] shadow-md flex flex-col py-4 px-4 gap-4 z-40">
-          {isAuthenticated && user?.role === "owner" ? (
-            <>
-              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="text-[#1C1B18] font-medium">Home</Link>
-              <Link href="/rentals" onClick={() => setMobileMenuOpen(false)} className="text-[#1C1B18] font-medium">Find Room</Link>
-              <Link href="/owner-dashboard" onClick={() => setMobileMenuOpen(false)} className="text-[#1C1B18] font-medium">Dashboard</Link>
-              <Link href="/messages" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2 text-[#1C1B18] font-medium">
-                <MessageCircle size={17} /> Messages
-                {unreadCount > 0 ? <span className="rounded-full bg-[#174D35] px-2 py-0.5 text-[9px] font-bold text-[#F8F4EA]">{unreadCount > 99 ? "99+" : unreadCount}</span> : null}
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="text-[#1C1B18] font-medium">Home</Link>
-              <Link href="/rentals" onClick={() => setMobileMenuOpen(false)} className="text-[#1C1B18] font-medium">Find Room</Link>
-              <Link href="/messages" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2 text-[#1C1B18] font-medium">
-                <MessageCircle size={17} /> Messages
-                {unreadCount > 0 ? <span className="rounded-full bg-[#174D35] px-2 py-0.5 text-[9px] font-bold text-[#F8F4EA]">{unreadCount > 99 ? "99+" : unreadCount}</span> : null}
-              </Link>
-              <button onClick={() => { setMobileMenuOpen(false); setBecomeOwnerModalOpen(true); }} className="text-left text-[#1C1B18] font-medium">Become a Owner</button>
-            </>
+          <Link href="/" onClick={() => setMobileMenuOpen(false)} className={getMobileLinkClass("/")}>Home</Link>
+          <Link href="/rentals" onClick={() => setMobileMenuOpen(false)} className={getMobileLinkClass("/rentals")}>Rooms</Link>
+          {isAuthenticated && user?.role === "owner" && (
+            <Link href="/owner-dashboard" onClick={() => setMobileMenuOpen(false)} className={getMobileLinkClass("/owner-dashboard")}>Dashboard</Link>
           )}
+          <Link href="/messages" onClick={() => setMobileMenuOpen(false)} className={getMobileLinkClass("/messages")}>
+            <MessageCircle size={17} /> Messages
+            {unreadCount > 0 ? <span className="rounded-full bg-[#174D35] px-2 py-0.5 text-[9px] font-bold text-[#F8F4EA]">{unreadCount > 99 ? "99+" : unreadCount}</span> : null}
+          </Link>
           
           <div className="w-full h-px bg-[#DED7C9] my-2"></div>
 
@@ -296,11 +248,6 @@ export default function Navbar() {
           )}
         </div>
       )}
-
-      <BecomeOwnerModal 
-        isOpen={becomeOwnerModalOpen} 
-        onClose={() => setBecomeOwnerModalOpen(false)} 
-      />
     </header>
   );
 }

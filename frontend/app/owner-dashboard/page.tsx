@@ -16,6 +16,7 @@ import {
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import Navbar from "@/components/layout/Navbar";
 
 import {
   deleteRoom,
@@ -221,8 +222,10 @@ export default function OwnerDashboardPage() {
 
   if (authLoading || loading) {
     return (
-      <main className="min-h-screen bg-[#F8F4EA] px-5 py-8">
-        <div className="mx-auto max-w-6xl animate-pulse">
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-[#F8F4EA] px-5 py-8">
+          <div className="mx-auto max-w-6xl animate-pulse">
           <div className="h-5 w-20 rounded-full bg-[#174D35]/10" />
           <div className="mt-12 h-12 w-64 rounded-full bg-[#174D35]/10" />
           <div className="mt-8 grid gap-4 md:grid-cols-3">
@@ -232,67 +235,19 @@ export default function OwnerDashboardPage() {
           </div>
         </div>
       </main>
+      </>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#F8F4EA] text-[#1C1B18]">
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-[#F8F4EA] text-[#1C1B18]">
 
-      <div className="mx-auto w-full max-w-6xl px-5 py-6 sm:px-7 lg:px-8">
+        <div className="mx-auto w-full max-w-6xl px-5 py-6 sm:px-7 lg:px-8">
 
-        {/* ======================================
-            HEADER
-        ====================================== */}
-
-        <header className="flex items-center justify-between">
-
-          <button
-            onClick={() => router.push("/")}
-            className="font-serif text-[25px] font-medium italic tracking-tight"
-          >
-            room.
-          </button>
-
-          <div className="flex items-center gap-2">
-
-            <button
-              onClick={() =>
-                router.push("/rentals")
-              }
-              className="group flex items-center gap-1.5 rounded-full px-3 py-2 text-[9px] font-bold uppercase tracking-[0.14em] text-[#1C1B18]/70 transition hover:bg-[#174D35]/5 hover:text-[#174D35]"
-            >
-              <ArrowLeft
-                size={12}
-                className="transition-transform group-hover:-translate-x-0.5"
-              />
-
-              <span className="hidden sm:inline">
-                Explore Rooms
-              </span>
-
-              <span className="sm:hidden">
-                Explore
-              </span>
-            </button>
-
-            <button
-              onClick={handleLogout}
-              disabled={loggingOut}
-              className="flex items-center gap-1.5 rounded-full border border-[#1C1B18]/10 px-3 py-2 text-[9px] font-bold uppercase tracking-[0.14em] text-[#5F554A] transition hover:bg-[#174D35] hover:text-[#F8F4EA] disabled:opacity-50"
-            >
-              <LogOut size={12} />
-
-              {loggingOut
-                ? "Logging out"
-                : "Logout"}
-            </button>
-
-          </div>
-
-        </header>
-
-        {/* ======================================
-            INTRO
+          {/* ======================================
+              INTRO
         ====================================== */}
 
         <section className="mt-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -529,6 +484,7 @@ export default function OwnerDashboardPage() {
       </div>
 
     </main>
+    </>
   );
 }
 

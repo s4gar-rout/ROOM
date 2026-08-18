@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
 
+import { useRouter } from "next/navigation";
+
 const suggestions = [
   "Near Railway Station",
   "Near Bus Stand",
@@ -11,15 +13,17 @@ const suggestions = [
 
 export default function LocationSearch() {
   const [location, setLocation] = useState("");
+  const router = useRouter();
 
   const handleSearch = () => {
     if (!location.trim()) return;
 
-    console.log("Searching rentals near:", location);
+    router.push(`/rentals?location=${encodeURIComponent(location.trim())}`);
   };
 
   const handleSuggestion = (value: string) => {
     setLocation(value);
+    router.push(`/rentals?location=${encodeURIComponent(value.trim())}`);
   };
 
   return (

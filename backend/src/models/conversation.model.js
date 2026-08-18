@@ -41,11 +41,39 @@ const conversationSchema = new mongoose.Schema(
             default: 0,
             min: 0,
         },
+
+        /**
+         * Stores per-user "clear chat" timestamps.
+         * Key: userId.toString()
+         * Value: Date — only messages created AFTER this date are visible to that user.
+         *
+         * Example:
+         *   clearedAt.get("user123") = 2024-01-15T10:00:00Z
+         *   → user123 only sees messages with createdAt > 2024-01-15T10:00:00Z
+         */
+        clearedAt: {
+            type: Map,
+            of: Date,
+            default: {},
+        },
     },
     {
         timestamps: true,
     }
 );
+
+// Migrate legacy `clearedAt` array to an object so Mongoose can cast it to a Map
+conversationSchema.pre('init', function(obj) {
+    if (obj.clearedAt && Array.isArray(obj.clearedAt)) {
+        const newClearedAt = {};
+        for (const item of obj.clearedAt) {
+            if (item.user && item.clearedAt) {
+                newClearedAt[item.user.toString()] = item.clearedAt;
+            }
+        }
+        obj.clearedAt = newClearedAt;
+    }
+});
 
 conversationSchema.index(
     { buyer: 1, owner: 1, room: 1 },

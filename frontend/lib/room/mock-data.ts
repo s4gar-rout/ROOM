@@ -1,3 +1,5 @@
+import type { Rental } from "@/types/rental";
+
 export const featuredRentals: Rental[] = [
   {
     id: "rental-001",

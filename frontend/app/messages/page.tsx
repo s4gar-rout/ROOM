@@ -1,127 +1,249 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import ConversationList from "@/features/conversation/components/ConversationList";
 import ChatWindow from "@/features/conversation/components/ChatWindow";
 import { getMyConversations } from "@/features/conversation/services/conversation.service";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import type { Conversation, Message } from "@/features/conversation/types/conversation";
+import type {
+  Conversation,
+  Message,
+} from "@/features/conversation/types/conversation";
 import { useConversationSocket } from "@/features/conversation/hooks/useConversationSocket";
 import { chatStore } from "@/features/conversation/store";
+import { MessageSquare } from "lucide-react";
 
-export default function MessagesPage({ initialConversationId }: { initialConversationId?: string } = {}) {
+export default function MessagesPage({
+  initialConversationId,
+}: {
+  initialConversationId?: string;
+} = {}) {
   const router = useRouter();
+
   const { user, loading: authLoading, isAuthenticated } = useAuth();
+
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selected, setSelected] = useState<Conversation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const load = async () => {
+  const load = useCallback(async () => {
     try {
       setLoading(true);
+      setError("");
       const response = await getMyConversations();
       const items = response.conversations || [];
       setConversations(items);
       setSelected((current) => {
-        if (initialConversationId) return items.find((item) => item._id === initialConversationId) || current || null;
-        return current ? (items.find((item) => item._id === current._id) || current) : null;
+        if (initialConversationId) {
+          return (
+            items.find((item) => item._id === initialConversationId) ||
+            current ||
+            null
+          );
+        }
+        return current
+          ? items.find((item) => item._id === current._id) || current
+          : null;
       });
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Unable to load conversations");
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : (err as { response?: { data?: { message?: string } } })?.response
+              ?.data?.message ?? "Unable to load conversations";
+      setError(msg);
     } finally {
       setLoading(false);
     }
-  };
+  }, [initialConversationId]);
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) router.replace("/login?redirect=/messages");
+    if (!authLoading && !isAuthenticated) {
+      router.replace("/login?redirect=/messages");
+    }
   }, [authLoading, isAuthenticated, router]);
 
   useEffect(() => {
-    if (isAuthenticated) load();
-  }, [isAuthenticated, initialConversationId]);
+    if (isAuthenticated) {
+      load();
+    }
+  }, [isAuthenticated, load]);
 
-  useConversationSocket({
-    enabled: isAuthenticated,
-    onConversationUpdated: (payload) => {
+  const handleConversationUpdated = useCallback(
+    (payload: {
+      conversationId: string;
+      lastMessage?: string;
+      lastMessageAt?: string;
+      unreadIncrement?: number;
+    }) => {
       setConversations((current) => {
         const index = current.findIndex((c) => c._id === payload.conversationId);
         if (index === -1) {
           load();
           return current;
         }
-        
-        const isCurrentActive = payload.conversationId === chatStore.activeConversationId;
-        const increment = isCurrentActive ? 0 : (payload.unreadIncrement || 0);
-
-        const updated = {
+        const isCurrentActive =
+          payload.conversationId === chatStore.activeConversationId;
+        const increment = isCurrentActive ? 0 : payload.unreadIncrement || 0;
+        const updated: Conversation = {
           ...current[index],
           lastMessage: payload.lastMessage,
           lastMessageAt: payload.lastMessageAt,
           unreadCount: (current[index].unreadCount || 0) + increment,
         };
-
-        const newArray = [...current];
-        newArray.splice(index, 1);
-        newArray.unshift(updated);
-        return newArray;
+        const next = [...current];
+        next.splice(index, 1);
+        next.unshift(updated);
+        return next;
       });
     },
-    onConversationRead: (payload) => {
+    [load]
+  );
+
+  const handleConversationRead = useCallback(
+    (payload: { conversationId: string }) => {
       setConversations((current) =>
         current.map((c) =>
           c._id === payload.conversationId ? { ...c, unreadCount: 0 } : c
         )
       );
     },
+    []
+  );
+
+  useConversationSocket({
+    enabled: isAuthenticated,
+    onConversationUpdated: handleConversationUpdated,
+    onConversationRead: handleConversationRead,
   });
 
+  // ── Loading / auth gate ──────────────────────────────────────────────────
   if (authLoading || !isAuthenticated || !user) {
-    return <main className="min-h-screen bg-[#F8F4EA]"><Navbar /><div className="flex min-h-[70vh] items-center justify-center text-xs uppercase tracking-[0.2em] text-[#174D35]">Loading messages…</div></main>;
+    return (
+      <div className="flex h-dvh flex-col overflow-hidden bg-[#F8F4EA]">
+        <Navbar />
+        <div className="flex flex-1 items-center justify-center">
+          <span className="text-[10px] uppercase tracking-[0.22em] text-[#174D35]">
+            Loading messages…
+          </span>
+        </div>
+      </div>
+    );
   }
 
+  // ── Handlers passed down ─────────────────────────────────────────────────
   const updateConversation = (message: Message) => {
     setConversations((current) => {
       const index = current.findIndex((c) => c._id === message.conversation);
       if (index === -1) return current;
-      
-      const updated = {
+      const updated: Conversation = {
         ...current[index],
         lastMessage: message.message,
         lastMessageAt: message.createdAt,
         unreadCount: 0,
       };
-
-      const newArray = [...current];
-      newArray.splice(index, 1);
-      newArray.unshift(updated);
-      return newArray;
+      const next = [...current];
+      next.splice(index, 1);
+      next.unshift(updated);
+      return next;
     });
   };
 
+  const handleConversationDeleted = () => {
+    if (!selected) return;
+    setConversations((current) =>
+      current.filter((c) => c._id !== selected._id)
+    );
+    setSelected(null);
+  };
+
+  // ── Layout ───────────────────────────────────────────────────────────────
   return (
-    <main className="min-h-screen bg-[#F8F4EA]">
+    /*
+     * `overflow-hidden` on main prevents the page itself from ever scrolling.
+     * `h-dvh` uses the dynamic viewport height so mobile browser chrome is
+     * accounted for correctly (avoids the classic 100vh iOS issue).
+     */
+    <div className="flex h-dvh flex-col overflow-hidden bg-[#F8F4EA]">
       <Navbar />
-      <div className="mx-auto h-[calc(100vh-72px)] max-w-[1500px] p-0 sm:p-4 lg:p-6">
-        <div className="flex h-full overflow-hidden border-y border-[#1C1B18]/10 bg-[#FFFDF8] sm:rounded-2xl sm:border">
-          <div className={`h-full w-full md:block md:w-[340px] ${selected ? "hidden" : "block"}`}>
-            <ConversationList conversations={conversations} selectedId={selected?._id} loading={loading} onSelect={(conversation) => setSelected(conversation)} />
+
+      {/* Chat shell — grows to fill the remaining viewport */}
+      <div className="flex min-h-0 flex-1 px-0 py-0 sm:px-4 sm:py-4 lg:px-6 lg:py-6">
+        <div
+          className="
+            mx-auto flex w-full max-w-[1400px] min-h-0 overflow-hidden
+            border-y border-[#1C1B18]/10
+            bg-[#FFFDF8]
+            sm:rounded-[18px] sm:border
+          "
+        >
+          {/* ── LEFT SIDEBAR ── */}
+          <div
+            className={`
+              h-full w-full shrink-0 min-w-0
+              border-r border-[#1C1B18]/10
+              md:w-[340px] lg:w-[380px]
+              ${selected ? "hidden md:flex md:flex-col" : "flex flex-col"}
+            `}
+          >
+            <ConversationList
+              conversations={conversations}
+              selectedId={selected?._id}
+              loading={loading}
+              onSelect={setSelected}
+            />
           </div>
-          <div className={`h-full min-w-0 flex-1 ${selected ? "block" : "hidden md:block"}`}>
+
+          {/* ── RIGHT CHAT ── */}
+          <div
+            className={`
+              min-w-0 flex-1 flex-col
+              ${selected ? "flex" : "hidden md:flex"}
+            `}
+          >
             {selected ? (
-              <ChatWindow conversation={selected} currentUser={user} onBack={() => setSelected(null)} onUpdated={updateConversation} />
+              <ChatWindow
+                conversation={selected}
+                currentUser={user}
+                onBack={() => setSelected(null)}
+                onUpdated={updateConversation}
+                onDeleted={handleConversationDeleted}
+              />
             ) : (
-              <div className="flex h-full items-center justify-center px-6 text-center">
-                <div><p className="font-serif text-4xl tracking-[-0.04em] text-[#1C1B18]">Your conversations</p><p className="mt-3 text-sm text-[#756B60]">Select a conversation to start chatting.</p></div>
+              <div className="flex flex-1 items-center justify-center bg-[#F8F4EA] px-6">
+                <div className="max-w-sm text-center">
+                  <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#174D35]/[0.08]">
+                    <MessageSquare
+                      size={20}
+                      strokeWidth={1.5}
+                      className="text-[#174D35]"
+                    />
+                  </div>
+                  <h2 className="font-serif text-[28px] tracking-[-0.035em] text-[#1C1B18]">
+                    Your messages
+                  </h2>
+                  <p className="mt-3 text-sm leading-6 text-[#756B60]">
+                    Conversations about your next place will appear here.
+                  </p>
+                </div>
               </div>
             )}
           </div>
         </div>
-        {error ? <p className="mx-auto max-w-3xl py-2 text-center text-[10px] text-red-700">{error}</p> : null}
       </div>
-    </main>
+
+      {/* Global error toast — sits outside the chat shell */}
+      {error && (
+        <p
+          role="alert"
+          className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-full bg-red-50 px-4 py-1.5 text-[10px] text-red-700 shadow"
+        >
+          {error}
+        </p>
+      )}
+    </div>
   );
 }

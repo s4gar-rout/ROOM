@@ -1,4 +1,4 @@
-import { Rental } from "../types/rental";
+import type { Rental } from "@/types/rental";
 
 export const featuredRentals: Rental[] = [
   {

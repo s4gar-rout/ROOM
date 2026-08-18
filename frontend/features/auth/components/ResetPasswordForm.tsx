@@ -56,7 +56,7 @@ export default function ResetPasswordForm({
     try {
       setLoading(true);
 
-      await resetPassword(token, password);
+      await resetPassword({ resetToken: token, newPassword: password, confirmPassword, email: "" });
 
       setSuccess(true);
 

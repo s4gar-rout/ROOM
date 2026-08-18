@@ -13,6 +13,7 @@ import {
     clearConversationForUser,
     getMessagesForUser,
 } from "../services/conversation.service.js";
+import { isUserOnline } from "../sockets/socket.js";
 
 const USER_SELECT = "username email avatar";
 const ROOM_SELECT = "title images rent location availability";
@@ -66,6 +67,7 @@ function formatConversation(conversation, currentUserId) {
         lastMessage: finalLastMessage,
         lastMessageAt: finalLastMessageAt,
         unreadCount: getUnreadCountForUser(obj, currentUserId),
+        otherUserOnline: isUserOnline(otherUser._id),
         createdAt: obj.createdAt,
         updatedAt: obj.updatedAt,
     };

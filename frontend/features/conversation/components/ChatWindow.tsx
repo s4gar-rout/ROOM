@@ -53,6 +53,9 @@ export default function ChatWindow({
   const [text, setText] = useState("");
   const [typingUserId, setTypingUserId] = useState<string | null>(null);
   const [isTypingState, setIsTypingState] = useState(false);
+  const [otherUserOnline, setOtherUserOnline] = useState<boolean>(
+    (conversation as any).otherUserOnline || false
+  );
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [clearLoading, setClearLoading] = useState(false);
   const [profileImageOpen, setProfileImageOpen] = useState(false);
@@ -168,6 +171,24 @@ export default function ChatWindow({
         setTypingUserId(typing ? userId : null);
       },
       [currentUser._id]
+    ),
+
+    onUserOnline: useCallback(
+      (payload: { userId: string }) => {
+        if (other && payload.userId === other._id) {
+          setOtherUserOnline(true);
+        }
+      },
+      [other]
+    ),
+
+    onUserOffline: useCallback(
+      (payload: { userId: string }) => {
+        if (other && payload.userId === other._id) {
+          setOtherUserOnline(false);
+        }
+      },
+      [other]
     ),
 
     // Legacy: treat the same as "delete for everyone".
@@ -346,7 +367,7 @@ export default function ChatWindow({
       typingTimer.current = setTimeout(() => {
         setIsTypingState(false);
         setTyping(false);
-      }, 2000);
+      }, 1000);
     }
   };
 
@@ -467,8 +488,18 @@ export default function ChatWindow({
         </button>
 
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[13px] font-semibold text-[#1C1B18]">
+          <p className="truncate text-[13px] font-semibold text-[#1C1B18] flex items-center gap-2">
             {other?.username || "User"}
+            {otherUserOnline ? (
+              <span className="flex items-center gap-1 text-[10px] font-medium text-emerald-600">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Online
+              </span>
+            ) : (
+              <span className="text-[10px] font-medium text-[#8A8177]">
+                Offline
+              </span>
+            )}
           </p>
 
           {/* Room context link */}
@@ -496,12 +527,6 @@ export default function ChatWindow({
             <p className="mt-0.5 flex min-w-0 items-center gap-1 text-[10px] text-[#174D35]">
               <Home size={9} className="shrink-0" aria-hidden />
               <span className="truncate font-medium">{roomLabel}</span>
-            </p>
-          )}
-
-          {typingUserId && (
-            <p className="mt-0.5 text-[10px] text-[#756B60]" aria-live="polite">
-              typing…
             </p>
           )}
         </div>
@@ -655,24 +680,6 @@ export default function ChatWindow({
               );
             })}
 
-            {typingUserId && (
-              <div
-                className="flex items-center gap-1.5 px-1 py-1"
-                aria-live="polite"
-              >
-                <span className="text-[11px] text-[#756B60]">typing</span>
-                <span className="flex gap-0.5">
-                  {[0, 1, 2].map((d) => (
-                    <span
-                      key={d}
-                      className="h-1 w-1 animate-bounce rounded-full bg-[#756B60]"
-                      style={{ animationDelay: `${d * 0.15}s` }}
-                    />
-                  ))}
-                </span>
-              </div>
-            )}
-
             <div ref={bottomRef} className="h-px" />
           </div>
         )}
@@ -694,6 +701,24 @@ export default function ChatWindow({
               <AlertCircle size={16} className="text-[#A53B32] shrink-0" />
             )}
             <p className="text-[13px] font-medium text-[#1C1B18]">{toast.message}</p>
+          </div>
+        </div>
+      )}
+
+      {/* ── Typing Indicator (Fixed above composer) ── */}
+      {typingUserId && (
+        <div className="px-3 sm:px-5 pb-2 bg-[#F8F4EA] shrink-0">
+          <div className="mx-auto max-w-2xl flex items-center gap-1.5 px-2">
+            <span className="flex gap-0.5">
+              {[0, 1, 2].map((d) => (
+                <span
+                  key={d}
+                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#8A8177]"
+                  style={{ animationDelay: `${d * 0.15}s` }}
+                />
+              ))}
+            </span>
+            <span className="text-[11px] font-medium text-[#8A8177]">Typing...</span>
           </div>
         </div>
       )}

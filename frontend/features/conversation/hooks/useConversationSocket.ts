@@ -17,6 +17,8 @@ interface Options {
   onMessage?: (message: Message) => void;
   onRead?: (payload: { conversationId: string; readBy: string; readAt: string }) => void;
   onTyping?: (typing: boolean, userId: string) => void;
+  onUserOnline?: (payload: { userId: string }) => void;
+  onUserOffline?: (payload: { userId: string }) => void;
   /** Legacy: message globally deleted (isDeleted or isDeletedForEveryone via old code) */
   onMessageDeleted?: (payload: { conversationId: string; messageId: string }) => void;
   /** message:deleted:forme — only the requesting user receives this */
@@ -56,6 +58,8 @@ export function useConversationSocket({
   onMessage,
   onRead,
   onTyping,
+  onUserOnline,
+  onUserOffline,
   onMessageDeleted,
   onMessageDeletedForMe,
   onMessageDeletedForEveryone,
@@ -71,6 +75,8 @@ export function useConversationSocket({
     onMessage,
     onRead,
     onTyping,
+    onUserOnline,
+    onUserOffline,
     onMessageDeleted,
     onMessageDeletedForMe,
     onMessageDeletedForEveryone,
@@ -87,6 +93,8 @@ export function useConversationSocket({
       onMessage,
       onRead,
       onTyping,
+      onUserOnline,
+      onUserOffline,
       onMessageDeleted,
       onMessageDeletedForMe,
       onMessageDeletedForEveryone,
@@ -119,6 +127,10 @@ export function useConversationSocket({
           handlersRef.current.onTyping?.(true, payload.userId);
         const handleTypingStop = (payload: { userId: string }) =>
           handlersRef.current.onTyping?.(false, payload.userId);
+        const handleUserOnline = (payload: { userId: string }) =>
+          handlersRef.current.onUserOnline?.(payload);
+        const handleUserOffline = (payload: { userId: string }) =>
+          handlersRef.current.onUserOffline?.(payload);
         const handleConversationUpdated = (payload: unknown) =>
           handlersRef.current.onConversationUpdated?.(payload);
         const handleConversationRead = (payload: unknown) =>
@@ -149,6 +161,8 @@ export function useConversationSocket({
         socket.on("conversation:cleared", handleConversationCleared);
         socket.on("typing:start", handleTypingStart);
         socket.on("typing:stop", handleTypingStop);
+        socket.on("user:online", handleUserOnline);
+        socket.on("user:offline", handleUserOffline);
         socket.on("conversation:updated", handleConversationUpdated);
         socket.on("conversation:read", handleConversationRead);
         socket.on("notification:new", handleNotification);
@@ -167,6 +181,8 @@ export function useConversationSocket({
           socket.off("conversation:cleared", handleConversationCleared);
           socket.off("typing:start", handleTypingStart);
           socket.off("typing:stop", handleTypingStop);
+          socket.off("user:online", handleUserOnline);
+          socket.off("user:offline", handleUserOffline);
           socket.off("conversation:updated", handleConversationUpdated);
           socket.off("conversation:read", handleConversationRead);
           socket.off("notification:new", handleNotification);

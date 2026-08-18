@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { fadeUpVariants, staggerContainerVariants, staggerItemVariants, shouldReduceMotion } from "@/lib/animations";
 
 const suggestions = [
   "Near Railway Station",
@@ -14,6 +16,7 @@ const suggestions = [
 export default function LocationSearch() {
   const [location, setLocation] = useState("");
   const router = useRouter();
+  const reduceMotion = shouldReduceMotion();
 
   const handleSearch = () => {
     if (!location.trim()) return;
@@ -28,10 +31,16 @@ export default function LocationSearch() {
 
   return (
     <section className="w-full overflow-hidden bg-[#F8F4EA] px-4 pb-8 sm:pb-10 sm:px-6">
-      <div className="mx-auto w-full max-w-5xl">
+      <motion.div 
+        className="mx-auto w-full max-w-5xl"
+        initial={reduceMotion ? false : "hidden"}
+        whileInView={reduceMotion ? undefined : "visible"}
+        viewport={{ once: true, margin: "-50px" }}
+        variants={staggerContainerVariants}
+      >
 
         {/* Search Bar */}
-        <div className="flex w-full flex-col gap-2 rounded-2xl bg-[#174D35] p-2 sm:flex-row sm:items-center sm:rounded-full sm:p-2">
+        <motion.div variants={fadeUpVariants} className="flex w-full flex-col gap-2 rounded-2xl bg-[#174D35] p-2 sm:flex-row sm:items-center sm:rounded-full sm:p-2">
 
           {/* Input */}
           <div className="flex h-12 sm:h-14 min-w-0 flex-1 items-center gap-3 sm:gap-4 rounded-xl sm:rounded-full bg-[#2D6047] px-4 sm:px-6">
@@ -70,14 +79,14 @@ export default function LocationSearch() {
           <button
             type="button"
             onClick={handleSearch}
-            className="h-12 sm:h-14 w-full shrink-0 rounded-xl sm:rounded-full bg-[#F8F4EA] px-6 sm:px-8 text-xs sm:text-sm font-medium !text-[#174D35] transition-colors duration-300 hover:bg-white sm:ml-1 sm:w-auto"
+            className="h-12 sm:h-14 w-full shrink-0 rounded-xl sm:rounded-full bg-[#F8F4EA] px-6 sm:px-8 text-xs sm:text-sm font-medium !text-[#174D35] transition-colors duration-300 hover:bg-white sm:ml-1 sm:w-auto hover:scale-[1.02]"
           >
             Search homes
           </button>
-        </div>
+        </motion.div>
 
         {/* Suggestions */}
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-2 text-[11px] sm:text-xs text-[#756A5C]">
+        <motion.div variants={fadeUpVariants} className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-2 text-[11px] sm:text-xs text-[#756A5C]">
 
           <span>Try:</span>
 
@@ -92,8 +101,8 @@ export default function LocationSearch() {
             </button>
           ))}
 
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

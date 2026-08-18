@@ -1,9 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowUpRight,
   MapPin,
 } from "lucide-react";
+import { motion } from "framer-motion";
+import { staggerItemVariants, cardHoverVariants, shouldReduceMotion } from "@/lib/animations";
 
 import type { Room } from "@/features/rental/types/rental";
 
@@ -14,6 +18,7 @@ type RentalCardProps = {
 export default function RentalCard({
   room,
 }: RentalCardProps) {
+  const reduceMotion = shouldReduceMotion();
   const roomTypeLabel =
     room.roomType === "1BHK"
       ? "1 BHK"
@@ -28,7 +33,11 @@ export default function RentalCard({
       : null;
 
   return (
-    <article className="group overflow-hidden rounded-[2px] border border-[#1C1B18]/15 bg-transparent transition-all duration-300 hover:border-[#174D35]/30">
+    <motion.article 
+      variants={staggerItemVariants}
+      whileHover={reduceMotion ? {} : cardHoverVariants.hover}
+      className="group overflow-hidden rounded-[2px] border border-[#1C1B18]/15 bg-[#F8F4EA] transition-colors duration-300 hover:border-[#174D35]/30"
+    >
 
       {/* ================================
           IMAGE
@@ -42,7 +51,7 @@ export default function RentalCard({
             alt={room.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5F554A]">
@@ -77,7 +86,7 @@ export default function RentalCard({
           className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#F8F4EA] !text-[#174D35] shadow-sm opacity-0 transition-all duration-300 group-hover:opacity-100 hover:!bg-[#174D35] hover:!text-[#F8F4EA]"
           aria-label={`View ${room.title}`}
         >
-          <ArrowUpRight size={18} />
+          <ArrowUpRight size={18} className="transition-transform duration-300 group-hover:translate-x-[1px] group-hover:-translate-y-[1px]" />
         </Link>
       </div>
 
@@ -93,7 +102,7 @@ export default function RentalCard({
 
           <div className="min-w-0">
 
-            <h3 className="font-serif text-lg leading-tight tracking-[-0.02em] text-[#1C1B18]">
+            <h3 className="font-serif text-lg leading-tight tracking-[-0.02em] text-[#1C1B18] transition-colors group-hover:text-[#174D35]">
               {room.title}
             </h3>
 
@@ -153,6 +162,6 @@ export default function RentalCard({
             </div>
           )}
       </div>
-    </article>
+    </motion.article>
   );
 }

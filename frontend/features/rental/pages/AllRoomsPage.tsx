@@ -16,8 +16,11 @@ import {
 import type { Room } from "@/features/rental/types/rental";
 import RentalCard from "@/features/rental/components/RentalCard";
 import Navbar from "@/components/layout/Navbar";
+import { motion } from "framer-motion";
+import { staggerContainerVariants, shouldReduceMotion } from "@/lib/animations";
 
 export default function AllRoomsPage() {
+  const reduceMotion = shouldReduceMotion();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -847,11 +850,16 @@ export default function AllRoomsPage() {
           </div>
         ) : rooms.length > 0 ? (
           <>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
+            <motion.div 
+              variants={staggerContainerVariants}
+              initial={reduceMotion ? false : "hidden"}
+              animate={reduceMotion ? false : "visible"}
+              className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4"
+            >
               {rooms.map((room) => (
                 <RentalCard key={room._id} room={room} />
               ))}
-            </div>
+            </motion.div>
 
             {/* PAGINATION */}
             {pagination.pages > 1 && (

@@ -11,6 +11,8 @@ import {
   ChevronRight,
   X,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { fadeUpVariants, staggerContainerVariants, staggerItemVariants, shouldReduceMotion } from "@/lib/animations";
 
 import { getSingleRoom } from "@/features/rental/services/rental.service";
 import { createOrGetConversation } from "@/features/conversation/services/conversation.service";
@@ -22,6 +24,7 @@ export default function SingleRoomPage({
 }: {
   roomId: string;
 }) {
+  const reduceMotion = shouldReduceMotion();
   const router = useRouter();
 
   const {
@@ -377,7 +380,10 @@ export default function SingleRoomPage({
           MAIN
       ======================================================== */}
 
-      <div
+      <motion.div
+        initial={reduceMotion ? false : "hidden"}
+        animate={reduceMotion ? false : "visible"}
+        variants={staggerContainerVariants}
         className="
           mx-auto
           max-w-[1380px]
@@ -402,11 +408,12 @@ export default function SingleRoomPage({
               LEFT — IMAGE GALLERY
           ================================================== */}
 
-          <section>
+          <motion.section variants={staggerItemVariants}>
 
             {/* MAIN IMAGE */}
 
-            <div
+            <motion.div
+              layoutId={`room-image-${roomId}`}
               className="
                 relative
                 aspect-[4/3]
@@ -418,14 +425,25 @@ export default function SingleRoomPage({
               "
             >
               {images.length > 0 ? (
-                <Image
-                  src={currentImage}
-                  alt={room.title || "Room"}
-                  fill
-                  priority
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 70vw"
-                />
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentImage}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute inset-0"
+                  >
+                    <Image
+                      src={currentImage}
+                      alt={room.title || "Room"}
+                      fill
+                      priority
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 70vw"
+                    />
+                  </motion.div>
+                </AnimatePresence>
               ) : (
                 <div
                   className="
@@ -480,7 +498,9 @@ export default function SingleRoomPage({
               {/* PREVIOUS */}
 
               {images.length > 1 && (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={goPrevious}
                   aria-label="Previous image"
                   className="
@@ -498,20 +518,22 @@ export default function SingleRoomPage({
                     bg-[#F8F4EA]/90
                     text-[#174D35]
                     backdrop-blur-sm
-                    transition-all
+                    transition-colors
                     duration-300
                     hover:bg-[#174D35]
                     hover:text-[#F8F4EA]
                   "
                 >
                   <ChevronLeft size={17} />
-                </button>
+                </motion.button>
               )}
 
               {/* NEXT */}
 
               {images.length > 1 && (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={goNext}
                   aria-label="Next image"
                   className="
@@ -529,16 +551,16 @@ export default function SingleRoomPage({
                     bg-[#F8F4EA]/90
                     text-[#174D35]
                     backdrop-blur-sm
-                    transition-all
+                    transition-colors
                     duration-300
                     hover:bg-[#174D35]
                     hover:text-[#F8F4EA]
                   "
                 >
                   <ChevronRight size={17} />
-                </button>
+                </motion.button>
               )}
-            </div>
+            </motion.div>
 
             {/* ==================================================
                 OTHER IMAGES
@@ -560,7 +582,9 @@ export default function SingleRoomPage({
                   const actualIndex = index + 1;
 
                   return (
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       key={
                         img.fileId ||
                         img.url ||
@@ -594,20 +618,21 @@ export default function SingleRoomPage({
                         className="object-cover"
                         sizes="110px"
                       />
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
             )}
 
-          </section>
+          </motion.section>
 
 
           {/* ==================================================
               RIGHT — ALL ROOM DETAILS
           ================================================== */}
 
-          <aside
+          <motion.aside
+            variants={staggerItemVariants}
             className="
               border
               border-[#1C1B18]/15
@@ -993,9 +1018,9 @@ export default function SingleRoomPage({
               </div>
 
             </div>
-          </aside>
+          </motion.aside>
         </div>
-      </div>
+      </motion.div>
 
       {/* ========================================================
           RESTRICTION MODAL

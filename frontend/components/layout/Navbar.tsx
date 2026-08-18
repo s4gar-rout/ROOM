@@ -6,6 +6,7 @@ import { useAuth } from "../../features/auth/hooks/useAuth";
 import { useState, useRef, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { getUnreadCount } from "@/features/conversation/services/conversation.service";
 import { useConversationSocket } from "@/features/conversation/hooks/useConversationSocket";
 import { chatStore } from "@/features/conversation/store";
@@ -14,10 +15,16 @@ export default function Navbar() {
   const { user, loading, isAuthenticated, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(0);
+
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setScrolled(latest > 50);
+  });
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -82,8 +89,16 @@ export default function Navbar() {
   };
 
   return (
-    <header className="w-full border-b border-[#1C1B18]/10 bg-[#F8F4EA] relative z-50">
-      <nav className="mx-auto flex h-[72px] max-w-[1400px] items-center justify-between px-6 sm:px-10">
+    <motion.header 
+      className={`w-full border-b bg-[#F8F4EA] relative z-50 transition-all duration-300 ${
+        scrolled ? "border-[#1C1B18]/10 shadow-sm" : "border-[#1C1B18]/5"
+      }`}
+    >
+      <nav 
+        className={`mx-auto flex max-w-[1400px] items-center justify-between px-6 sm:px-10 transition-all duration-300 ${
+          scrolled ? "h-[60px]" : "h-[72px]"
+        }`}
+      >
         
         {/* Logo */}
         <Link
@@ -101,6 +116,10 @@ export default function Navbar() {
 
           <Link href="/rentals" className={getDesktopLinkClass("/rentals")}>
             Rooms
+          </Link>
+
+          <Link href="/owner-dashboard/add-room" className={getDesktopLinkClass("/owner-dashboard/add-room")}>
+            List Room
           </Link>
 
           {isAuthenticated && user?.role === "owner" && (
@@ -207,6 +226,7 @@ export default function Navbar() {
         <div className="md:hidden absolute top-full left-0 w-full bg-[#F8F4EA] border-b border-[#DED7C9] shadow-md flex flex-col py-4 px-4 gap-4 z-40">
           <Link href="/" onClick={() => setMobileMenuOpen(false)} className={getMobileLinkClass("/")}>Home</Link>
           <Link href="/rentals" onClick={() => setMobileMenuOpen(false)} className={getMobileLinkClass("/rentals")}>Rooms</Link>
+          <Link href="/owner-dashboard/add-room" onClick={() => setMobileMenuOpen(false)} className={getMobileLinkClass("/owner-dashboard/add-room")}>List Room</Link>
           {isAuthenticated && user?.role === "owner" && (
             <Link href="/owner-dashboard" onClick={() => setMobileMenuOpen(false)} className={getMobileLinkClass("/owner-dashboard")}>Dashboard</Link>
           )}
@@ -249,6 +269,6 @@ export default function Navbar() {
           )}
         </div>
       )}
-    </header>
+    </motion.header>
   );
 }

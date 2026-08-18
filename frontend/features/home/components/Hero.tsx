@@ -1,7 +1,13 @@
+"use client";
+
 import { Sparkles, ArrowUpRight, ArrowDown } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { fadeUpVariants, staggerContainerVariants, staggerItemVariants, shouldReduceMotion } from "@/lib/animations";
 
 export default function Home() {
+  const reduceMotion = shouldReduceMotion();
+
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#F8F4EA] text-[#1C1B18]">
 
@@ -10,10 +16,15 @@ export default function Home() {
         <div className="mx-auto max-w-[1400px]">
 
           {/* Hero Content */}
-          <div className="text-center">
+          <motion.div 
+            className="text-center"
+            variants={staggerContainerVariants}
+            initial={reduceMotion ? false : "hidden"}
+            animate={reduceMotion ? undefined : "visible"}
+          >
 
             {/* Eyebrow */}
-            <div className="mb-7 flex items-center justify-center gap-3">
+            <motion.div variants={fadeUpVariants} className="mb-7 flex items-center justify-center gap-3">
               <Sparkles
                 size={20}
                 strokeWidth={1.5}
@@ -23,64 +34,57 @@ export default function Home() {
               <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-[#174D35] sm:text-xs">
                 A better way to rent
               </span>
-            </div>
+            </motion.div>
 
             {/* Main Heading */}
-            <h1 className="mx-auto max-w-[1250px] font-serif text-[3.3rem] leading-[0.95] tracking-[-0.045em] sm:text-6xl md:text-7xl lg:text-[6.5rem] xl:text-[7.5rem]">
+            <motion.h1 
+              variants={fadeUpVariants}
+              className="mx-auto max-w-[1250px] font-serif text-[3.3rem] leading-[0.95] tracking-[-0.045em] sm:text-6xl md:text-7xl lg:text-[6.5rem] xl:text-[7.5rem]"
+            >
               Find a place{" "}
               <em className="font-serif text-[#174D35]">
                 to belong.
               </em>
-            </h1>
+            </motion.h1>
 
             {/* Small Supporting Heading */}
-            <p className="mx-auto mt-7 max-w-[650px] font-serif text-lg italic leading-7 text-[#756A5C] sm:text-xl">
+            <motion.p 
+              variants={fadeUpVariants}
+              className="mx-auto mt-7 max-w-[650px] font-serif text-lg italic leading-7 text-[#756A5C] sm:text-xl"
+            >
               Rent somewhere that feels like home,
               <br className="hidden sm:block" />
               not just somewhere you can stay.
-            </p>
+            </motion.p>
 
             {/* CTA Buttons */}
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <motion.div variants={staggerItemVariants} className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
 
               {/* Primary */}
               <Link
                 href="/rentals"
-                className="
-                  flex h-14 min-w-[200px] items-center justify-center
-                  gap-3 rounded-full
-                  bg-[#174D35] px-7
-                  text-sm font-medium !text-[#F8F4EA]
-                "
+                className="flex h-14 min-w-[200px] items-center justify-center gap-3 rounded-full bg-[#174D35] px-7 text-sm font-medium !text-[#F8F4EA] hover:scale-[1.02] transition-transform duration-300 group"
               >
                 Explore rentals
 
                 <ArrowUpRight
                   size={18}
                   strokeWidth={1.7}
-                  className="transition-transform duration-300"
+                  className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 />
               </Link>
 
               {/* Secondary */}
               <Link
                 href="/owner-dashboard/add-room"
-                className="
-                  flex h-14 min-w-[200px] items-center justify-center rounded-full
-                  border border-[#174D35]/45
-                  bg-[#F8F4EA] px-7
-                  text-sm font-medium !text-[#1C1B18]
-                  transition-all duration-300
-                  hover:bg-[#174D35]
-                  hover:!text-[#F8F4EA]
-                "
+                className="flex h-14 min-w-[200px] items-center justify-center rounded-full border border-[#174D35]/45 bg-[#F8F4EA] px-7 text-sm font-medium !text-[#1C1B18] transition-all duration-300 hover:bg-[#174D35] hover:!text-[#F8F4EA] hover:scale-[1.02]"
               >
                 List your property
               </Link>
-            </div>
+            </motion.div>
 
             {/* Trust Points */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-[#756A5C]">
+            <motion.div variants={fadeUpVariants} className="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-[#756A5C]">
               <span className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#174D35]" />
                 Verified listings
@@ -93,23 +97,36 @@ export default function Home() {
               <span className="text-[#B7AA99]">·</span>
 
               <span>Monthly rentals</span>
-            </div>
+            </motion.div>
 
             {/* Explore Indicator */}
-            <div className="mt-12 flex flex-col items-center gap-1 text-[#B7AA99]">
+            <motion.div 
+              variants={fadeUpVariants}
+              className="mt-12 flex flex-col items-center gap-1 text-[#B7AA99]"
+            >
               <span className="text-[9px] font-medium uppercase tracking-[0.3em]">
                 Explore
               </span>
 
-              <ArrowDown
-                size={15}
-                strokeWidth={1.3}
-              />
-            </div>
-          </div>
+              <motion.div
+                animate={{ y: [0, 5, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <ArrowDown
+                  size={15}
+                  strokeWidth={1.3}
+                />
+              </motion.div>
+            </motion.div>
+          </motion.div>
 
           {/* Bottom Section Label */}
-          <div className="mt-16 border-t border-[#D8D0C3] pt-7 sm:mt-20 md:mt-24">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 1 }}
+            className="mt-16 border-t border-[#D8D0C3] pt-7 sm:mt-20 md:mt-24"
+          >
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
 
               {/* Left */}
@@ -135,7 +152,7 @@ export default function Home() {
               </div>
 
             </div>
-          </div>
+          </motion.div>
 
         </div>
       </section>

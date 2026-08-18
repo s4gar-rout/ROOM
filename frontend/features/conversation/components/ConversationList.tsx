@@ -27,72 +27,6 @@ function formatTime(dateString?: string | null): string {
     : date.toLocaleDateString([], { month: "short", day: "numeric" });
 }
 
-function formatRent(rent?: number): string {
-  if (!rent) return "";
-  return `₹${rent.toLocaleString("en-IN")}/mo`;
-}
-
-// ── Room context chip ──────────────────────────────────────────────────────
-
-function RoomChip({
-  conversation,
-  compact = false,
-}: {
-  conversation: Conversation;
-  compact?: boolean;
-}) {
-  const room = getRoomInfo(conversation);
-
-  // Fallback: bare ObjectId string or null — show minimal label
-  const roomId =
-    room?._id ??
-    (typeof conversation.room === "string" ? conversation.room : null);
-
-  const title = room?.title ?? "Room listing";
-  const meta = [
-    room ? formatRent(room.rent) : null,
-    room?.location ?? null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
-
-  const content = (
-    <span
-      className={`
-        flex min-w-0 items-center gap-1
-        ${compact ? "text-[10px]" : "text-[10px]"}
-      `}
-    >
-      <Home
-        size={10}
-        className="shrink-0 text-[#174D35]"
-        aria-hidden
-      />
-      <span className="truncate font-medium text-[#174D35]">
-        {title}
-      </span>
-      {meta && (
-        <span className="shrink-0 text-[#8A8177]">· {meta}</span>
-      )}
-    </span>
-  );
-
-  if (roomId) {
-    return (
-      <Link
-        href={`/rentals/${roomId}`}
-        onClick={(e) => e.stopPropagation()}
-        aria-label={`View listing: ${title}`}
-        className="mt-0.5 block min-w-0 truncate rounded hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#174D35]/40"
-      >
-        {content}
-      </Link>
-    );
-  }
-
-  return <div className="mt-0.5 min-w-0 truncate">{content}</div>;
-}
-
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function ConversationList({
@@ -324,8 +258,6 @@ export default function ConversationList({
                       </span>
                     </div>
 
-                    {/* Row 2: room chip — the key new element */}
-                    <RoomChip conversation={conversation} />
 
                     {/* Row 3: last message + unread badge */}
                     <div className="mt-1.5 flex items-center justify-between gap-2">

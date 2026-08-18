@@ -7,8 +7,11 @@ import { ArrowUpRight } from "lucide-react";
 import RentalCard from "@/features/rental/components/RentalCard";
 import { getAllRooms } from "@/features/rental/services/rental.service";
 import type { Room } from "@/features/rental/types/rental";
+import { motion } from "framer-motion";
+import { fadeUpVariants, staggerContainerVariants, shouldReduceMotion } from "@/lib/animations";
 
 export default function FeaturedRentals() {
+  const reduceMotion = shouldReduceMotion();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -52,25 +55,31 @@ export default function FeaturedRentals() {
 
         <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
 
-          <div className="max-w-lg">
+          <motion.div 
+            className="max-w-lg"
+            initial={reduceMotion ? false : "hidden"}
+            whileInView={reduceMotion ? undefined : "visible"}
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainerVariants}
+          >
 
-            <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.3em] text-[#174D35]">
+            <motion.p variants={fadeUpVariants} className="mb-1 text-[10px] font-medium uppercase tracking-[0.3em] text-[#174D35]">
               Featured rentals
-            </p>
+            </motion.p>
 
-            <h2 className="font-serif text-2xl leading-tight tracking-[-0.025em] text-[#1C1B18] sm:text-3xl md:text-4xl">
+            <motion.h2 variants={fadeUpVariants} className="font-serif text-2xl leading-tight tracking-[-0.025em] text-[#1C1B18] sm:text-3xl md:text-4xl">
               Places worth{" "}
               <em className="text-[#174D35]">
                 calling home.
               </em>
-            </h2>
+            </motion.h2>
 
-            <p className="mt-2 max-w-md text-xs leading-6 text-[#756A5C] sm:text-sm">
+            <motion.p variants={fadeUpVariants} className="mt-2 max-w-md text-xs leading-6 text-[#756A5C] sm:text-sm">
               Explore comfortable rooms and homes from
               local owners, available for long-term living.
-            </p>
+            </motion.p>
 
-          </div>
+          </motion.div>
 
           <Link
             href="/rentals"
@@ -158,7 +167,13 @@ export default function FeaturedRentals() {
         {!isLoading &&
           !error &&
           rooms.length > 0 && (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <motion.div 
+              className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+              initial={reduceMotion ? false : "hidden"}
+              whileInView={reduceMotion ? undefined : "visible"}
+              viewport={{ once: true, margin: "-50px" }}
+              variants={staggerContainerVariants}
+            >
 
               {rooms.map((room) => (
                 <RentalCard
@@ -167,7 +182,7 @@ export default function FeaturedRentals() {
                 />
               ))}
 
-            </div>
+            </motion.div>
           )}
 
       </div>

@@ -1,4 +1,8 @@
+"use client";
+
 import { Search, MessageCircle, Home } from "lucide-react";
+import { motion } from "framer-motion";
+import { fadeUpVariants, staggerContainerVariants, staggerItemVariants, shouldReduceMotion } from "@/lib/animations";
 
 const steps = [
   {
@@ -25,12 +29,19 @@ const steps = [
 ];
 
 export default function HowRoomWorks() {
+  const reduceMotion = shouldReduceMotion();
   return (
     <section className="bg-[#F8F4EA] px-4 py-12 sm:px-6 md:py-16">
-      <div className="mx-auto max-w-6xl">
+      <motion.div 
+        className="mx-auto max-w-6xl"
+        initial={reduceMotion ? false : "hidden"}
+        whileInView={reduceMotion ? undefined : "visible"}
+        viewport={{ once: true, margin: "-100px" }}
+        variants={staggerContainerVariants}
+      >
 
         {/* Header */}
-        <div className="max-w-xl">
+        <motion.div variants={staggerItemVariants} className="max-w-xl">
           <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.3em] text-[#174D35]">
             How ROOM works
           </p>
@@ -44,7 +55,7 @@ export default function HowRoomWorks() {
             From finding a place to connecting with the owner,
             ROOM keeps the process simple.
           </p>
-        </div>
+        </motion.div>
 
         {/* Steps */}
         <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -52,8 +63,9 @@ export default function HowRoomWorks() {
             const Icon = step.icon;
 
             return (
-              <div
+              <motion.div
                 key={step.number}
+                variants={fadeUpVariants}
                 className="rounded-3xl border border-[#174D35]/10 bg-white p-5 sm:p-6"
               >
                 <div className="flex items-start justify-between">
@@ -73,12 +85,12 @@ export default function HowRoomWorks() {
                 <p className="mt-1.5 text-xs sm:text-sm leading-6 text-[#756A5C]">
                   {step.description}
                 </p>
-              </div>
+              </motion.div>
             );
           })}
         </div>
 
-      </div>
+      </motion.div>
     </section>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useRef, useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -19,6 +20,7 @@ import {
   X,
   Loader2,
 } from "lucide-react";
+import ButtonLoader from "@/components/ui/ButtonLoader";
 
 import {
   getSingleRoom,
@@ -31,7 +33,7 @@ import type { Room } from "@/features/rental/types/rental";
 const ROOM_TYPES = [
   { value: "single", label: "Single" },
   { value: "double", label: "Double" },
-  { value: "shared", label: "Shared" },
+  { value: "3BHK", label: "3 BHK" },
   { value: "1BHK", label: "1 BHK" },
   { value: "2BHK", label: "2 BHK" },
 ] as const;
@@ -50,7 +52,7 @@ const FACILITIES = [
 type RoomType =
   | "single"
   | "double"
-  | "shared"
+  | "3BHK"
   | "1BHK"
   | "2BHK";
 
@@ -109,10 +111,10 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
           setSelectedFacilities(room.facilities || []);
           setExistingImages(room.images || []);
         }
-      } catch (err: any) {
-        console.error("Fetch room error:", err);
+      } catch (error: unknown) {
+        console.error("Fetch room error:", error);
         setServerError(
-          err?.response?.data?.message || "Unable to fetch room details."
+          (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "Unable to fetch room details."
         );
       } finally {
         setPageLoading(false);
@@ -216,10 +218,10 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
       if (res.success) {
         setExistingImages((prev) => prev.filter((img) => img.fileId !== fileId));
       }
-    } catch (err: any) {
-      console.error("Delete image error:", err);
+    } catch (error: unknown) {
+      console.error("Delete image error:", error);
       setServerError(
-        err?.response?.data?.message || "Failed to delete image."
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to delete image."
       );
     } finally {
       setDeletingFileId(null);
@@ -316,11 +318,11 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
 
       router.replace("/owner-dashboard");
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Update room error:", err);
       setServerError(
-        err?.response?.data?.message ||
-          err?.message ||
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          (err as Error).message ||
           "Unable to update listing. Please try again."
       );
     } finally {
@@ -634,10 +636,12 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
                       key={image.fileId}
                       className="group relative aspect-[1.15] overflow-hidden border border-[#CFCBBF] bg-[#DDE7DD]"
                     >
-                      <img
+                      <Image
                         src={image.url}
                         alt="Existing room image"
-                        className="h-full w-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover"
                       />
                       
                       <button
@@ -662,10 +666,12 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
                       key={preview}
                       className="group relative aspect-[1.15] overflow-hidden border border-[#CFCBBF] bg-[#DDE7DD]"
                     >
-                      <img
+                      <Image
                         src={preview}
                         alt={`New preview ${index + 1}`}
-                        className="h-full w-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover"
                       />
                       <button
                         type="button"
@@ -747,7 +753,7 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
                 disabled={isSubmitting}
                 className="group flex h-11 items-center justify-center gap-2 bg-[#174D35] px-8 text-[9px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition hover:bg-[#123D2A] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isSubmitting ? "Saving..." : "Save updates"}
+                {isSubmitting ? <ButtonLoader color="#F8F4EA" /> : "Save updates"}
                 {!isSubmitting && (
                   <ArrowUpRight
                     size={14}

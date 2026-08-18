@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { MoreHorizontal, Trash2, X } from "lucide-react";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 import type { Message } from "../types/conversation";
 
 // ── Types ──────────────────────────────────────────────────────────────────

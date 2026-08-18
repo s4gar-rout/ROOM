@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (refreshResponse.data.accessToken) {
               setAccessToken(refreshResponse.data.accessToken);
             }
-          } catch (e) {
+          } catch {
             // Silently fail, let getCurrentUser handle the failure
           }
         }
@@ -59,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUser();
   }, []);
 

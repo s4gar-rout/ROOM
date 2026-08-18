@@ -18,15 +18,18 @@ import {
   Droplets,
   X,
 } from "lucide-react";
+import Image from "next/image";
+import ButtonLoader from "@/components/ui/ButtonLoader";
 
 import { createRoom } from "@/features/rental/services/rental.service";
 
 const ROOM_TYPES = [
   { value: "single", label: "Single" },
   { value: "double", label: "Double" },
-  { value: "shared", label: "Shared" },
+  
   { value: "1BHK", label: "1 BHK" },
   { value: "2BHK", label: "2 BHK" },
+  { value: "3BHK", label: "3 BHK" },
 ] as const;
 
 const FACILITIES = [
@@ -43,7 +46,7 @@ const FACILITIES = [
 type RoomType =
   | "single"
   | "double"
-  | "shared"
+  | "3BHK"
   | "1BHK"
   | "2BHK";
 
@@ -234,67 +237,49 @@ export default function AddRoomPage() {
   // SUBMIT
   // ==========================================
 
-const handleSubmit = async (
-  e: React.FormEvent<HTMLFormElement>
-) => {
-  e.preventDefault();
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
 
-  setServerError("");
+    setServerError("");
 
-  if (!validate()) return;
+    if (!validate()) return;
 
-  try {
-    setIsSubmitting(true);
+    try {
+      setIsSubmitting(true);
 
-    const response = await createRoom({
-      title: form.title.trim(),
-      description: form.description.trim(),
-      rent: Number(form.rent),
-      location: form.location.trim(),
-      roomType: form.roomType as RoomType,
-      facilities: selectedFacilities,
-      images,
-    });
+      const response = await createRoom({
+        title: form.title.trim(),
+        description: form.description.trim(),
+        rent: Number(form.rent),
+        location: form.location.trim(),
+        roomType: form.roomType as RoomType,
+        facilities: selectedFacilities,
+        images,
+      });
 
-    console.log(
-      "CREATE ROOM RESPONSE:",
-      response
-    );
+      if (!response.success) {
+        throw new Error(
+          response.message ||
+            "Unable to create room."
+        );
+      }
 
-    if (!response.success) {
-      throw new Error(
-        response.message ||
-          "Unable to create room."
+      router.replace("/owner-dashboard");
+
+      router.refresh();
+    } catch (err: unknown) {
+      console.error("Create room error:", err);
+      setServerError(
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          (err as Error).message ||
+          "Unable to create listing. Please try again."
       );
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // IMPORTANT:
-    // Listing successfully created
-    // → Owner Dashboard
-
-    router.replace("/owner-dashboard");
-
-    router.refresh();
-  } catch (error: any) {
-    console.error(
-      "Create room error:",
-      error
-    );
-
-    console.error(
-      "Backend response:",
-      error?.response?.data
-    );
-
-    setServerError(
-      error?.response?.data?.message ||
-        error?.message ||
-        "Unable to create listing. Please try again."
-    );
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   // ==========================================
   // STYLES
@@ -697,10 +682,12 @@ const handleSubmit = async (
                       className="group relative aspect-[1.15] overflow-hidden border border-[#CFCBBF] bg-[#DDE7DD]"
                     >
 
-                      <img
+                      <Image
                         src={preview}
-                        alt={`Room image ${index + 1}`}
-                        className="h-full w-full object-cover"
+                        alt={`Preview ${index + 1}`}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover"
                       />
 
                       <button
@@ -799,9 +786,7 @@ const handleSubmit = async (
                 className="group flex h-11 items-center justify-center gap-2 bg-[#174D35] px-8 text-[9px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition hover:bg-[#123D2A] disabled:cursor-not-allowed disabled:opacity-60"
               >
 
-                {isSubmitting
-                  ? "Publishing..."
-                  : "Publish listing"}
+                {isSubmitting ? <ButtonLoader color="#F8F4EA" /> : "Publish listing"}
 
                 {!isSubmitting && (
                   <ArrowUpRight

@@ -31,16 +31,17 @@ export default function DashboardMessages() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, []);
 
   useConversationSocket({
     enabled: true,
-    onConversationUpdated: (payload) => {
+    onConversationUpdated: (payload: any) => {
       if (payload.conversationId === chatStore.activeConversationId) return;
       load();
     },
-    onNotification: (payload) => {
+    onNotification: (payload: any) => {
       if (payload.conversation === chatStore.activeConversationId) return;
       load();
     },
@@ -106,7 +107,7 @@ export default function DashboardMessages() {
                       </span>
                     ) : (
                       <span className="text-[10px] text-[#8A8177]">
-                        {new Date(conversation.lastMessageAt || conversation.createdAt || Date.now()).toLocaleDateString()}
+                        {new Date(conversation.lastMessageAt || conversation.createdAt || new Date()).toLocaleDateString()}
                       </span>
                     )}
                   </div>

@@ -19,7 +19,7 @@ export async function createRoom(data: {
   roomType:
     | "single"
     | "double"
-    | "shared"
+    | "3BHK"
     | "1BHK"
     | "2BHK";
   facilities: string[];
@@ -122,7 +122,7 @@ export async function updateRoom(
     roomType?:
       | "single"
       | "double"
-      | "shared"
+      | "3BHK"
       | "1BHK"
       | "2BHK";
     facilities?: string[];
@@ -130,7 +130,7 @@ export async function updateRoom(
     images?: File[];
   }
 ) {
-  let payload: any = data;
+  let payload: FormData | Record<string, unknown> = data as Record<string, unknown>;
 
   if (data.images && data.images.length > 0) {
     const formData = new FormData();

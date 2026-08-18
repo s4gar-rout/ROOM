@@ -10,7 +10,9 @@ import {
   Home as HomeIcon, 
   LogOut, 
   Menu, 
-  X
+  X,
+  AlertCircle,
+  MessageSquare
 } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -42,6 +44,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { label: "Users", href: "/admin/users", icon: Users },
     { label: "Rooms", href: "/admin/rooms", icon: HomeIcon },
+    { label: "Issues", href: "/admin/issues", icon: AlertCircle },
+    { label: "Feedback", href: "/admin/feedback", icon: MessageSquare },
   ];
 
   return (
@@ -130,7 +134,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8">
+        <div 
+          className="flex-1 overflow-y-auto p-4 md:p-8"
+          data-lenis-prevent="true"
+        >
           <div className="mx-auto max-w-6xl">
             {children}
           </div>

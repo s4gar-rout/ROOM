@@ -23,7 +23,7 @@ export default function RentalCard({ rental }: RentalCardProps) {
         {/* View Button */}
         <Link
           href={`/rental/${rental.id}`}
-          className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#F8F4EA] text-[#174D35] opacity-0 transition-all duration-300 group-hover:opacity-100"
+          className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#F8F4EA] !text-[#174D35] opacity-0 transition-all duration-300 group-hover:opacity-100 hover:!bg-[#174D35] hover:!text-[#F8F4EA]"
           aria-label={`View ${rental.title}`}
         >
           <ArrowUpRight size={18} />

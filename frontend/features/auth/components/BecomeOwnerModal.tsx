@@ -29,8 +29,8 @@ export default function BecomeOwnerModal({ isOpen, onClose }: BecomeOwnerModalPr
       
       onClose();
       router.push("/owner-dashboard");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Failed to upgrade account. Please try again.");
+    } catch (error: unknown) {
+      setError((error as { response?: { data?: { message?: string } } })?.response?.data?.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }

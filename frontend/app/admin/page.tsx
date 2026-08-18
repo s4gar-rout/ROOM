@@ -13,8 +13,8 @@ export default function AdminDashboard() {
       try {
         const data = await getDashboardStats();
         setStats(data);
-      } catch (error) {
-        console.error("Failed to fetch stats", error);
+      } catch (error: unknown) {
+        console.error("Dashboard error:", error);
       } finally {
         setLoading(false);
       }

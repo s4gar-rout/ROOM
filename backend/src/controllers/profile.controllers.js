@@ -140,12 +140,6 @@ export async function updateProfileController(req, res) {
 
 export async function updateAvatarController(req, res) {
     try {
-        console.log("========== AVATAR DEBUG ==========");
-        console.log("FILE:", req.file);
-        console.log("BODY:", req.body);
-        console.log("USER:", req.user?._id);
-        console.log("===================================");
-
         if (!req.file) {
             return res.status(400).json({
                 success: false,

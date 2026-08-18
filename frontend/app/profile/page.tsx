@@ -30,8 +30,8 @@ export default function ProfilePage() {
           } else {
             setError(data.message || "Failed to load profile.");
           }
-        } catch (err: any) {
-          setError(err.response?.data?.message || "An error occurred while loading profile.");
+        } catch (error: unknown) {
+          setError((error as { response?: { data?: { message?: string } } })?.response?.data?.message || "An error occurred while loading profile.");
         } finally {
           setLoadingProfile(false);
         }

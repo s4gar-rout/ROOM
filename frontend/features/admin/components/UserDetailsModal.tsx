@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X, Mail, Phone, Calendar, Shield, Ban, CheckCircle } from "lucide-react";
+import Image from "next/image";
 import type { User } from "@/types/auth.types";
 
 type UserDetailsModalProps = {
@@ -42,12 +43,12 @@ export default function UserDetailsModal({ isOpen, onClose, user }: UserDetailsM
         {/* Profile Header */}
         <div className="flex flex-col items-center justify-center mb-8">
           <div 
-            className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-[#174D35] text-2xl font-bold text-white overflow-hidden shadow-sm mb-4 ${user.avatar?.url ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
+            className={`relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-[#174D35] text-2xl font-bold text-white overflow-hidden shadow-sm mb-4 ${user.avatar?.url ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
             onClick={() => user.avatar?.url && setIsPreviewOpen(true)}
             title={user.avatar?.url ? "Click to view picture" : ""}
           >
             {user.avatar?.url ? (
-              <img src={user.avatar.url} alt={user.username} className="h-full w-full object-cover" />
+              <Image src={user.avatar.url} alt={user.username || "User"} fill className="h-full w-full object-cover" />
             ) : (
               user.username?.charAt(0).toUpperCase()
             )}
@@ -107,7 +108,7 @@ export default function UserDetailsModal({ isOpen, onClose, user }: UserDetailsM
             </div>
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-wider text-[#756A5C]">Joined</p>
-              <p className="text-sm font-medium text-[#1C1B18]">{(user as any).createdAt ? formatDate((user as any).createdAt) : "N/A"}</p>
+              <p className="text-sm font-medium text-[#1C1B18]">{(user as unknown as { createdAt?: string }).createdAt ? formatDate((user as unknown as { createdAt?: string }).createdAt) : "N/A"}</p>
             </div>
           </div>
         </div>
@@ -121,11 +122,12 @@ export default function UserDetailsModal({ isOpen, onClose, user }: UserDetailsM
           onClick={() => setIsPreviewOpen(false)}
         >
           <div className="relative animate-in zoom-in-95 duration-200 flex flex-col items-center">
-            <div className="h-64 w-64 md:h-80 md:w-80 rounded-full border border-[#1C1B18]/10 bg-[#FFFDF8] overflow-hidden shadow-xl">
-              <img 
+            <div className="relative h-64 w-64 md:h-80 md:w-80 rounded-full border border-[#1C1B18]/10 bg-[#FFFDF8] overflow-hidden shadow-xl">
+              <Image 
                 src={user.avatar.url} 
                 alt={`${user.username}'s profile`} 
-                className="h-full w-full object-cover"
+                fill
+                className="object-cover"
               />
             </div>
             <button 

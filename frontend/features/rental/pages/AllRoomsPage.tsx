@@ -161,7 +161,7 @@ export default function AllRoomsPage() {
 
       setRooms(response.rooms);
       setPagination(response.pagination);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to fetch rooms", err);
       setError("Failed to load rooms. Please try again.");
     } finally {
@@ -170,12 +170,13 @@ export default function AllRoomsPage() {
   }, [filters]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchRooms();
   }, [fetchRooms]);
 
   const handleFilterChange = (
     key: keyof GetRoomsParams,
-    value: any
+    value: string | number | undefined | boolean
   ) => {
     setFilters((prev: GetRoomsParams) => ({
       ...prev,
@@ -536,8 +537,8 @@ export default function AllRoomsPage() {
                         ? "Single Room"
                         : filters.roomType === "double"
                         ? "Double Room"
-                        : filters.roomType === "shared"
-                        ? "Shared Room"
+                        : filters.roomType === "3BHK"
+                        ? "3 BHK"
                         : filters.roomType === "1BHK"
                         ? "1 BHK"
                         : filters.roomType === "2BHK"
@@ -559,7 +560,7 @@ export default function AllRoomsPage() {
                         { value: "", label: "All Types" },
                         { value: "single", label: "Single Room" },
                         { value: "double", label: "Double Room" },
-                        { value: "shared", label: "Shared Room" },
+                        { value: "3BHK", label: "3 BHK" },
                       ].map((option) => (
                         <button
                           key={option.value}

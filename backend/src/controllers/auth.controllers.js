@@ -87,7 +87,7 @@ async function registerController(req, res) {
 
 
     } catch (error) {
-        console.log("Register error:", error)
+        console.error("Register error:", error);
         return res.status(500).json({
             success: false,
             message: "Internal server error"

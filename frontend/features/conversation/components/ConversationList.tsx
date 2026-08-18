@@ -120,7 +120,7 @@ export default function ConversationList({
 
   const filtered = useMemo(() => {
     // Hide conversations with no messages unless they are currently selected
-    let visible = conversations.filter(c => c._id === selectedId || Boolean(c.lastMessage?.trim()));
+    const visible = conversations.filter(c => c._id === selectedId || Boolean(c.lastMessage?.trim()));
 
     const q = query.trim().toLowerCase();
     if (!q) return visible;
@@ -138,7 +138,7 @@ export default function ConversationList({
         last.includes(q)
       );
     });
-  }, [conversations, query]);
+  }, [conversations, query, selectedId]);
 
   return (
     <aside className="flex h-full min-h-0 flex-col bg-[#FFFDF8]">
@@ -171,7 +171,10 @@ export default function ConversationList({
       </div>
 
       {/* ── List ── */}
-      <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <div 
+        className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        data-lenis-prevent="true"
+      >
         {loading ? (
           <div className="flex justify-center p-8">
             <Loader2

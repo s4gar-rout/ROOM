@@ -21,6 +21,7 @@ export default function Navbar() {
 
   useEffect(() => {
     if (!isAuthenticated) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUnreadCount(0);
       return;
     }
@@ -29,11 +30,11 @@ export default function Navbar() {
 
   useConversationSocket({
     enabled: isAuthenticated,
-    onConversationUpdated: (payload) => {
+    onConversationUpdated: (payload: any) => {
       if (payload.conversationId === chatStore.activeConversationId) return;
       getUnreadCount().then((data) => setUnreadCount(data.unreadCount || 0)).catch(() => undefined);
     },
-    onNotification: (payload) => {
+    onNotification: (payload: any) => {
       if (payload.conversation === chatStore.activeConversationId) return;
       getUnreadCount().then((data) => setUnreadCount(data.unreadCount || 0)).catch(() => undefined);
     },

@@ -40,7 +40,7 @@ export interface Room {
   roomType:
     | "single"
     | "double"
-    | "shared"
+    | "3BHK"
     | "1BHK"
     | "2BHK";
 

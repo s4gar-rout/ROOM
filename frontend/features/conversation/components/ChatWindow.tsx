@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import Link from "next/link";
-import { ArrowLeft, Home, Loader2, MoreVertical, Send, Trash2, CheckCircle2, AlertCircle } from "lucide-react";
+import { ArrowLeft, Home, Loader2, Send, Trash2, CheckCircle2, AlertCircle } from "lucide-react";
 import type { User } from "@/types/auth.types";
 import type { Conversation, Message } from "../types/conversation";
 import { getRoomInfo, getUserId } from "../types/conversation";
@@ -41,20 +41,17 @@ export default function ChatWindow({
   currentUser,
   onBack,
   onUpdated,
-  onDeleted,
 }: {
   conversation: Conversation;
   currentUser: User;
   onBack?: () => void;
   onUpdated?: (message: Message) => void;
-  onDeleted?: () => void;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [text, setText] = useState("");
   const [typingUserId, setTypingUserId] = useState<string | null>(null);
-  const [error, setError] = useState("");
   const [isTypingState, setIsTypingState] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [clearLoading, setClearLoading] = useState(false);
@@ -129,6 +126,8 @@ export default function ChatWindow({
 
   // ── Socket ─────────────────────────────────────────────────────────────
 
+  const markReadRef = useRef<(() => void) | null>(null);
+
   const { send: socketSend, markRead, setTyping } = useConversationSocket({
     conversationId: conversation._id,
 
@@ -141,12 +140,11 @@ export default function ChatWindow({
           return [...current, message];
         });
         onUpdated?.(message);
-        if (getUserId(message.sender) !== currentUser._id) markRead();
+        if (getUserId(message.sender) !== currentUser._id) markReadRef.current?.();
         if (isNearBottom.current) {
           requestAnimationFrame(() => scrollToBottom("smooth"));
         }
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [conversation._id, currentUser._id, onUpdated, scrollToBottom]
     ),
 
@@ -232,16 +230,20 @@ export default function ChatWindow({
     onError: useCallback((msg: string) => showToast(msg, "error"), [showToast]),
   });
 
+  useEffect(() => {
+    markReadRef.current = markRead;
+  }, [markRead]);
+
   // ── Load messages ─────────────────────────────────────────────────────
 
   useEffect(() => {
     chatStore.activeConversationId = conversation._id;
     let active = true;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMessages([]);
     seenIds.current.clear();
     setLoading(true);
-    setError("");
     setTypingUserId(null);
     setText("");
     setIsTypingState(false);
@@ -293,7 +295,6 @@ export default function ChatWindow({
     if (!value || sending) return;
 
     setSending(true);
-    setError("");
 
     if (typingTimer.current) clearTimeout(typingTimer.current);
     setTyping(false);
@@ -377,7 +378,7 @@ export default function ChatWindow({
         showToast(msg, "error");
       }
     },
-    [conversation._id]
+    [conversation._id, showToast]
   );
 
   // ── Delete for everyone ────────────────────────────────────────────────
@@ -407,7 +408,7 @@ export default function ChatWindow({
         showToast(msg, "error");
       }
     },
-    [conversation._id]
+    [conversation._id, showToast]
   );
 
   // ── Clear conversation ─────────────────────────────────────────────────
@@ -578,7 +579,7 @@ export default function ChatWindow({
             {other?.avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img 
-                src={typeof other.avatar === 'string' ? other.avatar : (other.avatar as any)?.url || ""} 
+                src={typeof other.avatar === 'string' ? other.avatar : (other.avatar as { url?: string })?.url || ""} 
                 alt={`${other.username}'s profile`} 
                 className="h-full w-full object-cover"
               />
@@ -599,6 +600,7 @@ export default function ChatWindow({
         ref={scrollContainerRef}
         onScroll={handleScroll}
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-[#F8F4EA] px-3 py-5 sm:px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        data-lenis-prevent="true"
       >
         {loading ? (
           <div className="flex h-full min-h-[200px] items-center justify-center">

@@ -42,10 +42,10 @@ export default function LocationSearch() {
               className="shrink-0 text-[#F8F4EA]"
             />
 
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 flex items-center gap-3">
               <label
                 htmlFor="location"
-                className="block text-[8px] font-medium uppercase tracking-[0.3em] text-[#C8D5CA] sm:text-[9px]"
+                className="shrink-0 text-[8px] font-medium uppercase tracking-[0.3em] text-[#C8D5CA] sm:text-[9px]"
               >
                 Location
               </label>
@@ -61,7 +61,7 @@ export default function LocationSearch() {
                   }
                 }}
                 placeholder="Area, landmark or locality"
-                className="mt-0.5 block w-full min-w-0 truncate bg-transparent text-xs text-[#F8F4EA] outline-none placeholder:text-[#B8C5BA] sm:text-sm"
+                className="w-full min-w-0 truncate bg-transparent text-xs text-[#F8F4EA] outline-none placeholder:text-[#B8C5BA] sm:text-sm"
               />
             </div>
           </div>

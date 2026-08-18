@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import ButtonLoader from "@/components/ui/ButtonLoader";
 
 type ConfirmModalProps = {
   isOpen: boolean;
@@ -26,8 +27,11 @@ export default function ConfirmModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-md rounded-2xl bg-[#FFFDF8] p-6 shadow-xl animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1C1B18]/40 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+      <div 
+        className="w-full max-w-sm rounded-[2px] bg-white p-6 shadow-xl animate-in zoom-in-95 duration-200"
+        data-lenis-prevent="true"
+      >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-serif font-medium text-[#1C1B18]">{title}</h2>
           <button onClick={onClose} disabled={isLoading} className="text-[#5F554A] hover:text-[#1C1B18]">
@@ -50,7 +54,7 @@ export default function ConfirmModal({
               isDestructive ? "bg-red-600 hover:bg-red-700" : "bg-[#174D35] hover:bg-[#174D35]/90"
             }`}
           >
-            {isLoading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>}
+            {isLoading && <ButtonLoader color="#FFFFFF" />}
             {confirmText}
           </button>
         </div>

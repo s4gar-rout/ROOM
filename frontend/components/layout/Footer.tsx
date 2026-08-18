@@ -110,13 +110,21 @@ export default function Footer() {
               © {new Date().getFullYear()} room. All rights reserved.
             </p>
 
-            <div className="flex items-center gap-5">
-              <Link href="/privacy" className="hover:text-[#F8F4EA]">
-                Privacy
+            <div className="flex flex-wrap items-center gap-5">
+              <Link href="/report-issue" className="hover:text-[#F8F4EA]">
+                Report an Issue
               </Link>
 
-              <Link href="/terms" className="hover:text-[#F8F4EA]">
-                Terms
+              <Link href="/feedback" className="hover:text-[#F8F4EA]">
+                Feedback
+              </Link>
+
+              <Link href="/privacy-policy" className="hover:text-[#F8F4EA]">
+                Privacy Policy
+              </Link>
+
+              <Link href="/terms-and-conditions" className="hover:text-[#F8F4EA]">
+                Terms &amp; Conditions
               </Link>
 
               <Link

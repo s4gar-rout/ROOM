@@ -4,6 +4,11 @@ import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { requireRole } from "../middlewares/role.middleware.js";
 import { userIdValidation } from "../validators/admin.validator.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
+import * as issueController from "../controllers/issue.controllers.js";
+import * as feedbackController from "../controllers/feedback.controllers.js";
+import { updateIssueStatusValidation, issueIdValidation } from "../validators/issue.validator.js";
+import { updateFeedbackStatusValidation, feedbackIdValidation } from "../validators/feedback.validator.js";
+
 const router = express.Router();
 
 /**
@@ -87,4 +92,64 @@ router.delete(
     requireRole("admin"),
     adminController.deleteRoomController
 );
+
+
+// ==========================================
+// ISSUES ADMIN ROUTES
+// ==========================================
+
+router.get(
+    "/issues",
+    authMiddleware,
+    requireRole("admin"),
+    issueController.getAllIssuesController
+);
+
+router.patch(
+    "/issues/:id/status",
+    authMiddleware,
+    requireRole("admin"),
+    updateIssueStatusValidation,
+    validateRequest,
+    issueController.updateIssueStatusController
+);
+
+router.delete(
+    "/issues/:id",
+    authMiddleware,
+    requireRole("admin"),
+    issueIdValidation,
+    validateRequest,
+    issueController.deleteIssueController
+);
+
+// ==========================================
+// FEEDBACK ADMIN ROUTES
+// ==========================================
+
+router.get(
+    "/feedback",
+    authMiddleware,
+    requireRole("admin"),
+    feedbackController.getAllFeedbackController
+);
+
+router.patch(
+    "/feedback/:id/status",
+    authMiddleware,
+    requireRole("admin"),
+    updateFeedbackStatusValidation,
+    validateRequest,
+    feedbackController.updateFeedbackStatusController
+);
+
+router.delete(
+    "/feedback/:id",
+    authMiddleware,
+    requireRole("admin"),
+    feedbackIdValidation,
+    validateRequest,
+    feedbackController.deleteFeedbackController
+);
+
 export default router;

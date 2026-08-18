@@ -41,7 +41,7 @@ export const createRoomValidation = [
     body("roomType")
         .notEmpty()
         .withMessage("Room type is required")
-        .isIn(["single", "double", "shared", "1BHK", "2BHK"])
+        .isIn(["single", "double", "3BHK", "1BHK", "2BHK"])
         .withMessage("Invalid room type"),
 
     body("facilities")
@@ -124,7 +124,7 @@ export const updateRoomValidation = [
 
     body("roomType")
         .optional()
-        .isIn(["single", "double", "shared", "1BHK", "2BHK"])
+        .isIn(["single", "double", "3BHK", "1BHK", "2BHK"])
         .withMessage("Invalid room type"),
 
     body("facilities")
@@ -185,7 +185,7 @@ export const roomQueryValidation = [
 
     query("roomType")
         .optional()
-        .isIn(["single", "double", "shared", "1BHK", "2BHK"])
+        .isIn(["single", "double", "3BHK", "1BHK", "2BHK"])
         .withMessage("Invalid room type"),
 
     query("availability")

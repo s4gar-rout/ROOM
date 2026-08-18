@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import type { Message } from "../types/conversation";
 
 interface SocketLike {
@@ -26,9 +26,9 @@ interface Options {
   /** conversation:cleared — only the requesting user receives this */
   onConversationCleared?: (payload: { conversationId: string; clearedAt: string }) => void;
   onError?: (message: string) => void;
-  onConversationUpdated?: (payload: any) => void;
-  onConversationRead?: (payload: any) => void;
-  onNotification?: (payload: any) => void;
+  onConversationUpdated?: (payload: unknown) => void;
+  onConversationRead?: (payload: unknown) => void;
+  onNotification?: (payload: unknown) => void;
 }
 
 let socketPromise: Promise<SocketLike> | null = null;
@@ -81,20 +81,22 @@ export function useConversationSocket({
     onNotification,
   });
 
-  conversationRef.current = conversationId;
-  handlersRef.current = {
-    onMessage,
-    onRead,
-    onTyping,
-    onMessageDeleted,
-    onMessageDeletedForMe,
-    onMessageDeletedForEveryone,
-    onConversationCleared,
-    onError,
-    onConversationUpdated,
-    onConversationRead,
-    onNotification,
-  };
+  useEffect(() => {
+    conversationRef.current = conversationId;
+    handlersRef.current = {
+      onMessage,
+      onRead,
+      onTyping,
+      onMessageDeleted,
+      onMessageDeletedForMe,
+      onMessageDeletedForEveryone,
+      onConversationCleared,
+      onError,
+      onConversationUpdated,
+      onConversationRead,
+      onNotification,
+    };
+  });
 
   useEffect(() => {
     if (!enabled) return;
@@ -111,31 +113,31 @@ export function useConversationSocket({
           handlersRef.current.onError?.(error.message);
         const handleMessage = (message: Message) =>
           handlersRef.current.onMessage?.(message);
-        const handleRead = (payload: any) =>
+        const handleRead = (payload: { conversationId: string; readBy: string; readAt: string }) =>
           handlersRef.current.onRead?.(payload);
-        const handleTypingStart = (payload: any) =>
+        const handleTypingStart = (payload: { userId: string }) =>
           handlersRef.current.onTyping?.(true, payload.userId);
-        const handleTypingStop = (payload: any) =>
+        const handleTypingStop = (payload: { userId: string }) =>
           handlersRef.current.onTyping?.(false, payload.userId);
-        const handleConversationUpdated = (payload: any) =>
+        const handleConversationUpdated = (payload: unknown) =>
           handlersRef.current.onConversationUpdated?.(payload);
-        const handleConversationRead = (payload: any) =>
+        const handleConversationRead = (payload: unknown) =>
           handlersRef.current.onConversationRead?.(payload);
-        const handleNotification = (payload: any) =>
+        const handleNotification = (payload: unknown) =>
           handlersRef.current.onNotification?.(payload);
 
         // Legacy: kept for backward compat with any old socket events.
-        const handleMessageDeleted = (payload: any) =>
+        const handleMessageDeleted = (payload: { conversationId: string; messageId: string }) =>
           handlersRef.current.onMessageDeleted?.(payload);
 
         // New granular delete events.
-        const handleMessageDeletedForMe = (payload: any) =>
+        const handleMessageDeletedForMe = (payload: { conversationId: string; messageId: string }) =>
           handlersRef.current.onMessageDeletedForMe?.(payload);
-        const handleMessageDeletedForEveryone = (payload: any) =>
+        const handleMessageDeletedForEveryone = (payload: { conversationId: string; messageId: string; lastMessage?: string; lastMessageAt?: string; deletedFor?: string }) =>
           handlersRef.current.onMessageDeletedForEveryone?.(payload);
 
         // Conversation cleared for this user.
-        const handleConversationCleared = (payload: any) =>
+        const handleConversationCleared = (payload: { conversationId: string; clearedAt: string }) =>
           handlersRef.current.onConversationCleared?.(payload);
 
         socket.on("connect_error", handleConnectError);
@@ -190,26 +192,26 @@ export function useConversationSocket({
     return () => socket.emit("conversation:leave", conversationId);
   }, [conversationId]);
 
-  const send = (message: string) => {
+  const send = useCallback((message: string) => {
     if (!socketRef.current || !conversationId) return false;
     socketRef.current.emit("message:send", { conversationId, message });
     return true;
-  };
+  }, [conversationId]);
 
-  const markRead = () => {
+  const markRead = useCallback(() => {
     if (!socketRef.current || !conversationId) return false;
     socketRef.current.emit("message:read", conversationId);
     return true;
-  };
+  }, [conversationId]);
 
-  const setTyping = (typing: boolean) => {
+  const setTyping = useCallback((typing: boolean) => {
     if (!socketRef.current || !conversationId) return false;
     socketRef.current.emit(
       typing ? "typing:start" : "typing:stop",
       conversationId
     );
     return true;
-  };
+  }, [conversationId]);
 
   return { send, markRead, setTyping };
 }

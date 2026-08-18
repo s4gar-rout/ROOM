@@ -1,6 +1,5 @@
 import api from "@/lib/axios";
 import type {
-  Conversation,
   ConversationResponse,
   ConversationsResponse,
   Message,

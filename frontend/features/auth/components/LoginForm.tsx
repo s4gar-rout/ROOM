@@ -7,6 +7,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import Link from "next/link";
+import ButtonLoader from "@/components/ui/ButtonLoader";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
@@ -154,10 +155,7 @@ export default function LoginForm() {
             formData.password,
         });
 
-      console.log(
-        "Login successful:",
-        response
-      );
+
 
       const user = response?.user;
 
@@ -210,14 +208,14 @@ export default function LoginForm() {
       setServerError(
         "Your account role is not configured correctly."
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(
         "Login error:",
         error
       );
 
       const message =
-        error?.response?.data
+        (error as { response?: { data?: { message?: string } } })?.response?.data
           ?.message ||
         "Invalid email or password.";
 
@@ -365,9 +363,7 @@ export default function LoginForm() {
         disabled={isLoading}
         className="group mt-7 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#174D35] px-5 text-xs font-semibold uppercase tracking-[0.16em] text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isLoading
-          ? "Signing in..."
-          : "Enter ROOM"}
+        {isLoading ? <ButtonLoader color="#F8F4EA" /> : "Login securely"}
 
         {!isLoading && (
           <ArrowUpRight

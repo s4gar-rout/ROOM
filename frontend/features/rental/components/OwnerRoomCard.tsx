@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import {
   ArrowUpRight,
   Check,
@@ -54,10 +55,12 @@ export default function OwnerRoomCard({
 
       <div className="relative aspect-[16/10] overflow-hidden bg-[#E8E3D8]">
 
-        <img
+        <Image
           src={image}
           alt={room.title}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition duration-500 group-hover:scale-[1.025]"
         />
 
         {/* Availability */}
@@ -221,7 +224,7 @@ export default function OwnerRoomCard({
                 "_self"
               )
             }
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#1C1B18]/10 bg-white text-[#174D35] transition hover:border-[#174D35]/30 hover:bg-[#174D35] hover:text-[#F8F4EA]"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#1C1B18]/10 bg-white !text-[#174D35] transition hover:border-[#174D35]/30 hover:!bg-[#174D35] hover:!text-[#F8F4EA]"
             aria-label="View room"
           >
             <ArrowUpRight size={14} />

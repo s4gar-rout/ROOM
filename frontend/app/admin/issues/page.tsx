@@ -1,0 +1,216 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { getAllIssues, updateIssueStatus, deleteIssue } from "@/features/admin/services/admin.service";
+import ConfirmModal from "@/features/admin/components/ConfirmModal";
+import { Search, SearchX, CheckCircle, Trash2, Clock, CheckSquare } from "lucide-react";
+
+export default function AdminIssues() {
+  const [issues, setIssues] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10;
+  
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [issueToDelete, setIssueToDelete] = useState<any | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  const fetchIssues = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllIssues(page, limit, debouncedSearch);
+      setIssues(data.data);
+      setTotalPages(data.totalPages || 1);
+    } catch (error: unknown) {
+      console.error("Failed to fetch issues", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchIssues();
+  }, [page, debouncedSearch]);
+
+  const handleDelete = async () => {
+    if (!issueToDelete) return;
+    try {
+      setActionLoading(true);
+      await deleteIssue(issueToDelete._id);
+      setIsConfirmOpen(false);
+      setIssueToDelete(null);
+      fetchIssues();
+    } catch (error: unknown) {
+      console.error("Action failed", error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUpdateStatus = async (id: string, currentStatus: string) => {
+    let nextStatus = "IN_PROGRESS";
+    if (currentStatus === "OPEN") nextStatus = "IN_PROGRESS";
+    if (currentStatus === "IN_PROGRESS") nextStatus = "RESOLVED";
+    if (currentStatus === "RESOLVED") nextStatus = "CLOSED";
+    if (currentStatus === "CLOSED") nextStatus = "OPEN";
+
+    try {
+      await updateIssueStatus(id, nextStatus);
+      fetchIssues();
+    } catch (error: unknown) {
+      console.error("Update failed", error);
+    }
+  };
+
+  const openConfirm = (issue: any) => {
+    setIssueToDelete(issue);
+    setIsConfirmOpen(true);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 className="font-serif text-3xl font-medium tracking-tight text-[#1C1B18]">Issues</h1>
+          <p className="text-sm text-[#5F554A]">Manage platform issues reported by users.</p>
+        </div>
+        <div className="relative w-full sm:w-72">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5F554A]" />
+          <input 
+            type="text" 
+            placeholder="Search subject or email..." 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-full border border-[#1C1B18]/10 bg-white py-2 pl-9 pr-4 text-sm outline-none focus:border-[#174D35] focus:ring-1 focus:ring-[#174D35]"
+          />
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-[#1C1B18]/10 bg-white shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm text-[#5F554A]">
+            <thead className="border-b border-[#1C1B18]/10 bg-[#F8F4EA] text-xs font-semibold uppercase tracking-wider text-[#1C1B18]">
+              <tr>
+                <th className="px-6 py-4">Reporter</th>
+                <th className="px-6 py-4">Issue Details</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 text-right">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-[#1C1B18]/5">
+              {loading ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-12 text-center">
+                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[#174D35] border-t-transparent"></div>
+                  </td>
+                </tr>
+              ) : issues.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center justify-center text-[#B7AA99]">
+                      <SearchX size={32} className="mb-2 opacity-20" />
+                      <p>No issues found</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                issues.map((issue) => (
+                  <tr key={issue._id} className="transition hover:bg-[#F8F4EA]/50">
+                    <td className="px-6 py-4 align-top">
+                      <div className="font-medium text-[#1C1B18]">
+                        {issue.user ? `${issue.user.firstName} ${issue.user.lastName}` : "Guest"}
+                      </div>
+                      <div className="text-xs mt-0.5">
+                        {issue.email || issue.user?.email || "No email"}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-medium text-[#1C1B18]">{issue.subject}</div>
+                      <div className="text-xs mt-0.5 text-[#174D35] font-medium">{issue.type}</div>
+                      <p className="mt-2 text-xs line-clamp-2 max-w-sm">{issue.description}</p>
+                    </td>
+                    <td className="px-6 py-4 align-top">
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-medium tracking-wide uppercase ${
+                        issue.status === 'OPEN' ? 'bg-yellow-100 text-yellow-800' :
+                        issue.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800' :
+                        issue.status === 'RESOLVED' ? 'bg-green-100 text-green-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {issue.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 align-top text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleUpdateStatus(issue._id, issue.status)}
+                          className="flex h-8 w-8 items-center justify-center rounded-full text-[#1C1B18] transition hover:bg-[#1C1B18]/5"
+                          title="Cycle Status"
+                        >
+                          <CheckSquare size={15} />
+                        </button>
+
+                        <button
+                          onClick={() => openConfirm(issue)}
+                          className="flex h-8 w-8 items-center justify-center rounded-full text-red-500 transition hover:bg-red-50"
+                          title="Delete"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-[#1C1B18]/10 px-6 py-4 text-sm">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage(p => p - 1)}
+              className="rounded-full px-4 py-1.5 font-medium transition hover:bg-[#1C1B18]/5 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="text-[#5F554A]">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage(p => p + 1)}
+              className="rounded-full px-4 py-1.5 font-medium transition hover:bg-[#1C1B18]/5 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
+
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Issue"
+        description="Are you sure you want to delete this issue? This action cannot be undone."
+        isLoading={actionLoading}
+        confirmText="Delete"
+      />
+    </div>
+  );
+}

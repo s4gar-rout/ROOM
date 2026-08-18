@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   ArrowLeft,
   Check,
@@ -135,14 +136,14 @@ export default function CompleteProfilePage() {
       }
 
       router.replace("/rentals");
-    } catch (error: any) {
+    } catch (err: unknown) {
       console.error(
         "Complete Profile Error:",
-        error
+        err
       );
 
       setError(
-        error?.response?.data?.message ||
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
           "Something went wrong. Please try again."
       );
     } finally {
@@ -288,14 +289,16 @@ export default function CompleteProfilePage() {
 
                     <div className="relative">
 
-                      <div className="flex h-[100px] w-[100px] items-center justify-center overflow-hidden rounded-full border border-[#174D35]/25 bg-[#EDE6D9] shadow-sm">
+                      <div className="relative flex h-[100px] w-[100px] items-center justify-center overflow-hidden rounded-full border border-[#174D35]/25 bg-[#EDE6D9] shadow-sm">
 
                         {previewUrl ? (
 
-                          <img
+                          <Image
                             src={previewUrl}
                             alt="Profile preview"
-                            className="h-full w-full object-cover"
+                            fill
+                            sizes="100px"
+                            className="object-cover"
                           />
 
                         ) : (

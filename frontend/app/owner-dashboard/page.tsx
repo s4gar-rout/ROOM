@@ -3,12 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 
 import {
-  ArrowLeft,
   ArrowUpRight,
   Check,
   Home,
-  Lock,
-  LogOut,
   RefreshCw,
   X,
 } from "lucide-react";
@@ -28,8 +25,6 @@ import type { Room } from "@/features/rental/types/rental";
 
 import OwnerRoomCard from "@/features/rental/components/OwnerRoomCard";
 
-import type { User } from "@/types/auth.types";
-
 export default function OwnerDashboardPage() {
   const router = useRouter();
 
@@ -42,9 +37,6 @@ export default function OwnerDashboardPage() {
     useState(true);
 
   const [roomsLoading, setRoomsLoading] =
-    useState(false);
-
-  const [loggingOut, setLoggingOut] =
     useState(false);
 
   const [updatingRoom, setUpdatingRoom] =
@@ -65,14 +57,14 @@ export default function OwnerDashboardPage() {
       setServerError("");
       const myRooms = await getMyRooms();
       setRooms(myRooms);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Dashboard error:", error);
-      if (error?.response?.status === 401) {
+      if ((error as { response?: { status?: number } })?.response?.status === 401) {
         router.replace(`/login?returnUrl=${encodeURIComponent(window.location.pathname)}`);
         return;
       }
       setServerError(
-        error?.response?.data?.message || "Unable to load dashboard."
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "Unable to load dashboard."
       );
     } finally {
       setLoading(false);
@@ -92,8 +84,10 @@ export default function OwnerDashboardPage() {
     }
 
     if (isAuthenticated && user?.role === "owner") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       loadDashboard();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, authLoading, user?.role, router]);
 
   // ==========================================
@@ -123,7 +117,6 @@ export default function OwnerDashboardPage() {
   ) => {
     try {
       setUpdatingRoom(roomId);
-
       const response =
         await updateRoomAvailability(
           roomId,
@@ -141,14 +134,14 @@ export default function OwnerDashboardPage() {
             : room
         )
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(
         "Availability update error:",
         error
       );
 
       setServerError(
-        error?.response?.data?.message ||
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
           "Unable to update availability."
       );
     } finally {
@@ -171,7 +164,6 @@ export default function OwnerDashboardPage() {
 
     try {
       setDeletingRoom(roomId);
-
       await deleteRoom(roomId);
 
       setRooms((prev) =>
@@ -179,14 +171,14 @@ export default function OwnerDashboardPage() {
           (room) => room._id !== roomId
         )
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(
         "Delete room error:",
         error
       );
 
       setServerError(
-        error?.response?.data?.message ||
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
           "Unable to delete room."
       );
     } finally {
@@ -198,10 +190,9 @@ export default function OwnerDashboardPage() {
   // LOGOUT
   // ==========================================
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleLogout = async () => {
     try {
-      setLoggingOut(true);
-
       await globalLogout();
       router.replace("/login");
     } catch (error) {
@@ -211,8 +202,6 @@ export default function OwnerDashboardPage() {
       );
 
       router.replace("/login");
-    } finally {
-      setLoggingOut(false);
     }
   };
 

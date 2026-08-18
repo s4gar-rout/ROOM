@@ -45,12 +45,10 @@ export default function Home() {
               {/* Primary */}
               <button
                 className="
-                  group flex h-14 min-w-[200px] items-center justify-center
+                  flex h-14 min-w-[200px] items-center justify-center
                   gap-3 rounded-full
                   bg-[#174D35] px-7
-                  text-sm font-medium text-[#F8F4EA]
-                  transition-all duration-300
-                  hover:-translate-y-0.5
+                  text-sm font-medium !text-[#F8F4EA]
                 "
               >
                 Explore rentals
@@ -58,20 +56,20 @@ export default function Home() {
                 <ArrowUpRight
                   size={18}
                   strokeWidth={1.7}
-                  className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  className="transition-transform duration-300"
                 />
               </button>
 
               {/* Secondary */}
               <button
                 className="
-                  h-14 min-w-[200px] rounded-full
+                  flex h-14 min-w-[200px] items-center justify-center rounded-full
                   border border-[#174D35]/45
-                  bg-transparent px-7
-                  text-sm font-medium text-[#174D35]
+                  bg-[#F8F4EA] px-7
+                  text-sm font-medium !text-[#1C1B18]
                   transition-all duration-300
                   hover:bg-[#174D35]
-                  hover:text-[#F8F4EA]
+                  hover:!text-[#F8F4EA]
                 "
               >
                 List your property

@@ -11,6 +11,8 @@ import roomRoutes from "./routes/room.routes.js";
 import conversationRoutes from "./routes/conversation.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
 import notificationRoutes from "./routes/rotification.routes.js";
+import issueRoutes from "./routes/issue.routes.js";
+import feedbackRoutes from "./routes/feedback.routes.js";
 
 const app = express();
 
@@ -54,5 +56,7 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/issues", issueRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
 export default app;

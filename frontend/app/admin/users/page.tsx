@@ -5,6 +5,7 @@ import { getAllUsers, blockUser, unblockUser } from "@/features/admin/services/a
 import ConfirmModal from "@/features/admin/components/ConfirmModal";
 import UserDetailsModal from "@/features/admin/components/UserDetailsModal";
 import { Search, Ban, CheckCircle, SearchX } from "lucide-react";
+import Image from "next/image";
 import type { User } from "@/types/auth.types";
 
 export default function AdminUsers() {
@@ -46,7 +47,9 @@ export default function AdminUsers() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, debouncedSearch]);
 
   const handleAction = async () => {
@@ -135,9 +138,15 @@ export default function AdminUsers() {
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#174D35] text-xs font-bold text-white overflow-hidden">
+                        <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#174D35] text-xs font-bold text-white overflow-hidden">
                           {u.avatar?.url ? (
-                            <img src={u.avatar.url} alt={u.username} className="h-full w-full object-cover" />
+                            <Image
+                              src={u.avatar.url}
+                              alt={u.username}
+                              fill
+                              sizes="32px"
+                              className="object-cover"
+                            />
                           ) : (
                             u.username?.charAt(0).toUpperCase()
                           )}

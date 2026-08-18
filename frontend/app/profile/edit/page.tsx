@@ -45,8 +45,8 @@ export default function EditProfilePage() {
           } else {
             setError(data.message || "Failed to load profile.");
           }
-        } catch (err: any) {
-          setError(err.response?.data?.message || "An error occurred while loading profile.");
+        } catch (error: unknown) {
+          setError((error as { response?: { data?: { message?: string } } })?.response?.data?.message || "An error occurred while loading profile.");
         } finally {
           setLoadingProfile(false);
         }
@@ -90,8 +90,8 @@ export default function EditProfilePage() {
         router.push("/");
       }, 1500);
 
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "An error occurred during update.");
+    } catch (error: unknown) {
+      setError((error as { response?: { data?: { message?: string } } })?.response?.data?.message || (error as Error).message || "An error occurred during update.");
     } finally {
       setIsSaving(false);
     }

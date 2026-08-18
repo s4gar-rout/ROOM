@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/features/auth/hooks/useAuth";
+import InitialLoader from "@/components/ui/InitialLoader";
+import SmoothScrollProvider from "@/components/ui/SmoothScrollProvider";
 
 export const metadata: Metadata = {
   title: "ROOM — Find a place that feels like home",
@@ -15,7 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <SmoothScrollProvider>
+          <InitialLoader />
+          <AuthProvider>{children}</AuthProvider>
+        </SmoothScrollProvider>
       </body>
     </html>
   );

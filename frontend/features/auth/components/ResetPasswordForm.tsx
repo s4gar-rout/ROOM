@@ -63,16 +63,12 @@ export default function ResetPasswordForm({
       setTimeout(() => {
         router.push("/login");
       }, 1500);
-    } catch (error: any) {
-      console.error(
-        "Reset password error:",
-        error
-      );
-
-      setError(
-        error?.response?.data?.message ||
-          "Reset link is invalid or expired."
-      );
+    } catch (error: unknown) {
+      console.error("Password reset error:", error);
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Failed to reset password. The link might be invalid or expired.";
+      setError(message);
     } finally {
       setLoading(false);
     }

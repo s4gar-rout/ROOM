@@ -13,7 +13,7 @@ import type {
 } from "@/features/conversation/types/conversation";
 import { useConversationSocket } from "@/features/conversation/hooks/useConversationSocket";
 import { chatStore } from "@/features/conversation/store";
-import { MessageSquare, AlertCircle, Loader2 } from "lucide-react";
+import { MessageSquare, AlertCircle } from "lucide-react";
 
 export default function MessagesPage({
   initialConversationId,
@@ -70,6 +70,7 @@ export default function MessagesPage({
 
   useEffect(() => {
     if (isAuthenticated) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       load();
     }
   }, [isAuthenticated, load]);
@@ -190,8 +191,8 @@ export default function MessagesPage({
 
   useConversationSocket({
     enabled: isAuthenticated,
-    onConversationUpdated: handleConversationUpdated,
-    onConversationRead: handleConversationRead,
+    onConversationUpdated: (payload: any) => handleConversationUpdated(payload),
+    onConversationRead: (payload: any) => handleConversationRead(payload),
     onMessageDeletedForEveryone: handleMessageDeletedForEveryone,
     onConversationCleared: handleConversationCleared,
   });
@@ -291,7 +292,6 @@ export default function MessagesPage({
                 currentUser={user}
                 onBack={() => setSelected(null)}
                 onUpdated={updateConversation}
-                onDeleted={handleConversationDeleted}
               />
             ) : (
               <div className="flex flex-1 items-center justify-center bg-[#F8F4EA] px-6">

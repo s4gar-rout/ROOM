@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getAllRooms, deleteRoom } from "@/features/admin/services/admin.service";
 import ConfirmModal from "@/features/admin/components/ConfirmModal";
 import { Search, SearchX, MapPin, Trash2, CheckCircle, XCircle } from "lucide-react";
+import Image from "next/image";
 import type { Room } from "@/features/rental/types/rental";
 
 export default function AdminRooms() {
@@ -34,7 +35,7 @@ export default function AdminRooms() {
       const data = await getAllRooms(page, limit, debouncedSearch);
       setRooms(data.rooms);
       setTotalPages(data.totalPages || 1);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Failed to fetch rooms", error);
     } finally {
       setLoading(false);
@@ -42,7 +43,9 @@ export default function AdminRooms() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchRooms();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, debouncedSearch]);
 
   const handleAction = async () => {
@@ -53,7 +56,7 @@ export default function AdminRooms() {
       setIsConfirmOpen(false);
       setRoomToDelete(null);
       fetchRooms();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Action failed", error);
     } finally {
       setActionLoading(false);
@@ -118,9 +121,9 @@ export default function AdminRooms() {
                   <tr key={r._id} className="hover:bg-[#F8F4EA]/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-14 shrink-0 overflow-hidden rounded bg-[#1C1B18]/5">
+                        <div className="relative h-10 w-14 shrink-0 overflow-hidden rounded bg-[#1C1B18]/5">
                             {r.images?.[0] ? (
-                                <img src={typeof r.images[0] === 'string' ? r.images[0] : (r.images[0] as any).url} alt={r.title} className="h-full w-full object-cover" />
+                                <Image src={typeof r.images[0] === 'string' ? r.images[0] : (r.images[0] as { url: string }).url} alt={r.title} fill className="h-full w-full object-cover" sizes="56px" />
                             ) : (
                                 <div className="flex h-full w-full items-center justify-center text-[8px] uppercase text-[#5F554A]">No Img</div>
                             )}
@@ -133,8 +136,8 @@ export default function AdminRooms() {
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-medium text-[#1C1B18]">{(r.owner as any)?.username || 'Unknown'}</p>
-                        <p className="text-xs">{(r.owner as any)?.email}</p>
+                        <p className="font-medium text-[#1C1B18]">{(r.owner as { username?: string })?.username || 'Unknown'}</p>
+                        <p className="text-xs">{(r.owner as { email?: string })?.email}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4">

@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   MapPin,
-  CheckCircle2,
   MessageCircle,
   ChevronLeft,
   ChevronRight,
@@ -55,14 +54,18 @@ export default function SingleRoomPage({
         } else {
           setError("Room not found");
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Failed to fetch room:", err);
 
-        if (err?.response?.status === 404) {
-          setError("Room not found");
-        } else {
-          setError("Failed to load room details.");
+        if (typeof err === "object" && err !== null && "response" in err) {
+          const axiosErr = err as { response?: { status?: number } };
+          if (axiosErr.response?.status === 404) {
+            setError("Room not found");
+            return;
+          }
         }
+        
+        setError("Failed to load room details.");
       } finally {
         setLoading(false);
       }
@@ -109,7 +112,7 @@ export default function SingleRoomPage({
       if (res?.success && res?.conversation?._id) {
         router.push(`/messages/${res.conversation._id}`);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to start chat:", err);
       // Optional: you can show an error toast here if one exists
     } finally {
@@ -129,8 +132,8 @@ export default function SingleRoomPage({
       case "double":
         return "Double Room";
 
-      case "shared":
-        return "Shared Room";
+      case "3BHK":
+        return "3 BHK";
 
       case "1bhk":
         return "1 BHK";

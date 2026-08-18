@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowUpRight,
   MapPin,
@@ -36,10 +37,12 @@ export default function RentalCard({
       <div className="relative aspect-[4/3] overflow-hidden bg-[#1C1B18]/5 border-b border-[#1C1B18]/15">
 
         {image ? (
-          <img
+          <Image
             src={image}
             alt={room.title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5F554A]">
@@ -71,7 +74,7 @@ export default function RentalCard({
 
         <Link
           href={`/rentals/${room._id}`}
-          className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#F8F4EA] text-[#174D35] shadow-sm opacity-0 transition-all duration-300 group-hover:opacity-100 hover:bg-[#174D35] hover:text-[#F8F4EA]"
+          className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#F8F4EA] !text-[#174D35] shadow-sm opacity-0 transition-all duration-300 group-hover:opacity-100 hover:!bg-[#174D35] hover:!text-[#F8F4EA]"
           aria-label={`View ${room.title}`}
         >
           <ArrowUpRight size={18} />

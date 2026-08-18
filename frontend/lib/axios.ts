@@ -26,9 +26,14 @@ api.interceptors.request.use((config) => {
 });
 
 let isRefreshing = false;
-let failedQueue: any[] = [];
+type FailedQueueItem = {
+  resolve: (value?: unknown) => void;
+  reject: (reason?: unknown) => void;
+};
 
-const processQueue = (error: any) => {
+let failedQueue: FailedQueueItem[] = [];
+
+const processQueue = (error: Error | null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -81,9 +86,9 @@ api.interceptors.response.use(
         processQueue(null);
         // Retry the original request
         return api(originalRequest);
-      } catch (refreshError) {
+      } catch (refreshError: unknown) {
         isRefreshing = false;
-        processQueue(refreshError);
+        processQueue(refreshError as Error);
 
         // Redirect to login if token refresh fails, and we are not already there
         if (typeof window !== "undefined" && window.location.pathname !== "/login") {

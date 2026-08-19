@@ -1,5 +1,7 @@
 import UserModel from "../models/user.model.js";
 import roomModel from "../models/room.model.js";
+import ConversationModel from "../models/conversation.model.js";
+import MessageModel from "../models/message.model.js";
 import PushSubscriptionModel from "../models/pushSubscription.model.js";
 import NotificationModel from "../models/notification.model.js";
 import {
@@ -403,6 +405,8 @@ export async function verifyAndDeleteAccountController(req, res) {
 
         // 2. Delete user's rooms and images if owner
         const userRooms = await roomModel.find({ owner: user._id });
+        const userRoomIds = userRooms.map((r) => r._id);
+
         for (const room of userRooms) {
             if (room.images && room.images.length > 0) {
                 for (const img of room.images) {
@@ -418,20 +422,46 @@ export async function verifyAndDeleteAccountController(req, res) {
         }
         await roomModel.deleteMany({ owner: user._id });
 
-        // 3. Delete push subscriptions
+        // 3. Delete conversations and messages involving user or user's rooms
+        const userConversations = await ConversationModel.find({
+            $or: [
+                { buyer: user._id },
+                { owner: user._id },
+                { room: { $in: userRoomIds } },
+            ],
+        });
+        const conversationIds = userConversations.map((c) => c._id);
+
+        // Delete all messages belonging to these conversations or sent/received by this user
+        await MessageModel.deleteMany({
+            $or: [
+                { conversation: { $in: conversationIds } },
+                { sender: user._id },
+                { receiver: user._id },
+            ],
+        });
+
+        // Delete the conversations
+        await ConversationModel.deleteMany({
+            _id: { $in: conversationIds },
+        });
+
+        // 4. Delete push subscriptions
         await PushSubscriptionModel.deleteMany({ user: user._id });
 
-        // 4. Delete notifications
-        await NotificationModel.deleteMany({ user: user._id });
+        // 5. Delete notifications (received or sent)
+        await NotificationModel.deleteMany({
+            $or: [{ user: user._id }, { sender: user._id }],
+        });
 
-        // 5. Delete User Document
+        // 6. Delete User Document
         await UserModel.findByIdAndDelete(user._id);
 
-        // 6. Clean up Redis OTP keys
+        // 7. Clean up Redis OTP keys
         await redis.del(otpKey);
         await redis.del(`delete-account-cooldown:${normalizedEmail}`);
 
-        // 7. Clear Auth Cookies
+        // 8. Clear Auth Cookies
         res.clearCookie("accessToken", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
@@ -450,7 +480,7 @@ export async function verifyAndDeleteAccountController(req, res) {
 
         return res.status(200).json({
             success: true,
-            message: "Your account and all associated data have been deleted permanently.",
+            message: "Your account and all associated data (rooms, chats, messages, notifications) have been permanently deleted.",
         });
     } catch (error) {
         console.error("Verify & Delete Account Error:", error);

@@ -7,16 +7,14 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function Page({ params }: PageProps) {
-  // Next.js 15 requires awaiting dynamic route params
-  const { id } = await params;
+  const resolvedParams = await Promise.resolve(params);
+  const id = resolvedParams.id;
 
-  // We pass the ID down to the client component,
-  // to reuse the existing axios-based setup and client-side auth context smoothly.
   return <SingleRoomPage roomId={id} />;
 }

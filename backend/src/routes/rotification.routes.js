@@ -26,8 +26,24 @@ router.patch(
 );
 
 // ==========================================
-// PUSH NOTIFICATION SUBSCRIPTION ENDPOINTS
+// DELETE SINGLE NOTIFICATION
 // ==========================================
+
+router.delete(
+    "/:notificationId",
+    authMiddleware,
+    notificationControllers.deleteNotificationController
+);
+
+// ==========================================
+// CLEAR ALL NOTIFICATIONS
+// ==========================================
+
+router.delete(
+    "/",
+    authMiddleware,
+    notificationControllers.clearAllNotificationsController
+);
 
 /**
  * @route POST /api/notifications/push/subscribe

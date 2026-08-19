@@ -1,13 +1,25 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Bell, X, CheckCheck, ArrowUpRight, MessageSquare, Home } from "lucide-react";
+import {
+  Bell,
+  X,
+  CheckCheck,
+  ArrowUpRight,
+  MessageSquare,
+  Home,
+  Trash2,
+  Sparkles,
+  Check,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   getMyNotifications,
   markNotificationAsRead,
+  deleteNotification,
+  clearAllNotifications,
   NotificationItem,
 } from "../services/notification.service";
 import { useConversationSocket } from "@/features/conversation/hooks/useConversationSocket";
@@ -41,7 +53,7 @@ export default function NotificationDrawer({
         onUnreadCountChange?.(data.unreadCount || 0);
       }
     } catch {
-      // Silently fail if unable to fetch
+      // Silently handle fetch errors
     } finally {
       setLoading(false);
     }
@@ -91,10 +103,22 @@ export default function NotificationDrawer({
 
     onClose();
 
-    if (notif.conversation) {
+    const convId =
+      typeof notif.conversation === "object"
+        ? notif.conversation?._id
+        : notif.conversation;
+    const targetRoom =
+      notif.room ||
+      (typeof notif.conversation === "object"
+        ? notif.conversation?.room
+        : null);
+
+    if (convId) {
+      router.push(`/messages/${convId}`);
+    } else if (targetRoom?._id) {
+      router.push(`/rentals/${targetRoom._id}`);
+    } else {
       router.push(`/messages`);
-    } else if (notif.room?._id) {
-      router.push(`/rentals/${notif.room._id}`);
     }
   };
 
@@ -112,164 +136,246 @@ export default function NotificationDrawer({
     onUnreadCountChange?.(0);
   };
 
+  const handleDeleteNotification = async (
+    e: React.MouseEvent,
+    notifId: string
+  ) => {
+    e.stopPropagation();
+    try {
+      await deleteNotification(notifId);
+      setNotifications((prev) => {
+        const updated = prev.filter((n) => n._id !== notifId);
+        const newUnread = updated.filter((n) => !n.isRead).length;
+        setUnreadCount(newUnread);
+        onUnreadCountChange?.(newUnread);
+        return updated;
+      });
+    } catch {
+      // Silently handle error
+    }
+  };
+
+  const handleClearAll = async () => {
+    try {
+      await clearAllNotifications();
+      setNotifications([]);
+      setUnreadCount(0);
+      onUnreadCountChange?.(0);
+    } catch {
+      // Silently handle error
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end animate-in fade-in duration-200">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-[80] flex justify-end animate-in fade-in duration-200">
+      {/* BACKDROP */}
       <div
-        className="fixed inset-0 bg-[#1C1B18]/50 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-[#1C1B18]/60 backdrop-blur-md transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Slide-in Drawer */}
+      {/* SLIDE-IN DRAWER */}
       <aside
-        className="relative z-10 flex h-full w-full max-w-md flex-col border-l border-[#1C1B18]/10 bg-[#F8F4EA] shadow-2xl animate-in slide-in-from-right duration-300"
+        className="relative z-10 flex h-full w-full max-w-md flex-col border-l border-[#174D35]/15 bg-[#FAF7F0] text-[#1C1B18] shadow-[0_24px_60px_rgba(28,27,24,0.18)] animate-in slide-in-from-right duration-300"
         aria-label="Notifications"
       >
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#1C1B18]/10 px-6 py-5">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#174D35]/10 text-[#174D35]">
-              <Bell size={18} />
+        {/* HEADER */}
+        <div className="border-b border-[#1C1B18]/10 px-6 py-5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#174D35]/10 text-[#174D35]">
+                <Bell size={20} />
+              </div>
+              <div>
+                <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
+                  Activity Log
+                </span>
+                <h2 className="font-serif text-2xl font-normal leading-tight tracking-[-0.02em] text-[#1C1B18]">
+                  Notifications
+                </h2>
+              </div>
             </div>
-            <div>
-              <h2 className="font-serif text-xl font-normal text-[#1C1B18]">
-                Notifications
-              </h2>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5F554A]">
-                {unreadCount > 0 ? `${unreadCount} Unread` : "All caught up"}
-              </p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-2">
-            {unreadCount > 0 && (
-              <button
-                onClick={handleMarkAllRead}
-                title="Mark all as read"
-                className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[9px] font-semibold uppercase tracking-wider text-[#174D35] hover:bg-[#174D35]/10 transition-colors"
-              >
-                <CheckCheck size={13} />
-                Mark all
-              </button>
-            )}
             <button
               onClick={onClose}
               aria-label="Close notifications"
-              className="flex h-8 w-8 items-center justify-center rounded-full text-[#5F554A] hover:bg-[#1C1B18]/5 hover:text-[#1C1B18] transition-colors"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[#174D35]/5 text-[#5F554A] transition-all hover:bg-[#174D35]/15 hover:text-[#174D35]"
             >
               <X size={18} />
             </button>
           </div>
+
+          {/* ACTION SUB-HEADER */}
+          <div className="mt-4 flex items-center justify-between border-t border-[#1C1B18]/8 pt-3">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#174D35]/5 px-3 py-1 font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-[#174D35]">
+              <span className={`h-1.5 w-1.5 rounded-full ${unreadCount > 0 ? "bg-[#174D35] animate-pulse" : "bg-[#756A5C]"}`} />
+              {unreadCount > 0 ? `${unreadCount} New Unread` : "All Caught Up"}
+            </span>
+
+            <div className="flex items-center gap-2">
+              {unreadCount > 0 && (
+                <button
+                  onClick={handleMarkAllRead}
+                  title="Mark all as read"
+                  className="inline-flex items-center gap-1 rounded-full border border-[#174D35]/20 bg-transparent px-3 py-1 font-sans text-[9px] font-bold uppercase tracking-wider text-[#174D35] transition-all hover:bg-[#174D35] hover:text-[#F8F4EA]"
+                >
+                  <CheckCheck size={12} />
+                  <span>Mark read</span>
+                </button>
+              )}
+              {notifications.length > 0 && (
+                <button
+                  onClick={handleClearAll}
+                  title="Clear all notifications"
+                  className="inline-flex items-center gap-1 rounded-full border border-[#A53B32]/20 bg-transparent px-3 py-1 font-sans text-[9px] font-bold uppercase tracking-wider text-[#A53B32] transition-all hover:bg-[#A53B32] hover:text-[#F8F4EA]"
+                >
+                  <Trash2 size={12} />
+                  <span>Clear all</span>
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3">
+        {/* NOTIFICATIONS LIST CONTENT */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3.5">
           {loading && notifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-[#5F554A]">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#174D35] border-t-transparent mb-3" />
-              <p className="text-xs uppercase tracking-wider">Loading updates...</p>
+            <div className="flex flex-col items-center justify-center py-20 text-[#756A5C]">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#174D35]/20 border-t-[#174D35] mb-3" />
+              <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-[#174D35]">
+                Fetching updates...
+              </p>
             </div>
           ) : notifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center text-[#5F554A]">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#1C1B18]/5 text-[#5F554A]">
-                <Bell size={24} />
+            <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#174D35]/10 text-[#174D35]">
+                <Bell size={28} />
               </div>
-              <h3 className="font-serif text-lg text-[#1C1B18]">No notifications yet</h3>
-              <p className="mt-1 max-w-xs text-xs text-[#756A5C]">
-                When you receive inquiry messages, room alerts, or updates, they will appear here.
+              <h3 className="font-serif text-2xl font-normal text-[#1C1B18]">
+                No notifications yet
+              </h3>
+              <p className="mt-2 max-w-xs font-sans text-xs text-[#62594F] leading-relaxed">
+                When you receive room inquiry messages, property status updates, or account alerts, they will appear right here.
               </p>
             </div>
           ) : (
-            notifications.map((item) => (
-              <div
-                key={item._id}
-                onClick={() => handleNotificationClick(item)}
-                className={`group relative cursor-pointer border p-4 transition-all duration-200 ${
-                  item.isRead
-                    ? "border-[#1C1B18]/10 bg-white/40 hover:bg-white/80"
-                    : "border-[#174D35]/30 bg-white shadow-xs hover:border-[#174D35]"
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  {/* Sender or Icon Avatar */}
-                  {item.sender?.avatar?.url ? (
-                    <Image
-                      src={item.sender.avatar.url}
-                      alt={item.sender.username || "User"}
-                      width={36}
-                      height={36}
-                      className="rounded-full object-cover w-9 h-9 shrink-0 border border-[#1C1B18]/10"
-                    />
-                  ) : item.room?.images?.[0]?.url ? (
-                    <Image
-                      src={item.room.images[0].url}
-                      alt={item.room.title || "Room"}
-                      width={36}
-                      height={36}
-                      className="rounded-sm object-cover w-9 h-9 shrink-0 border border-[#1C1B18]/10"
-                    />
-                  ) : (
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#174D35]/10 text-[#174D35]">
-                      {item.conversation ? <MessageSquare size={16} /> : <Home size={16} />}
-                    </div>
-                  )}
+            notifications.map((item) => {
+              const targetRoom =
+                item.room ||
+                (typeof item.conversation === "object"
+                  ? item.conversation?.room
+                  : null);
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <p className="text-xs font-semibold text-[#1C1B18] truncate">
-                        {item.title || "ROOM Alert"}
-                      </p>
-                      <span className="text-[9px] font-medium text-[#756A5C] shrink-0">
-                        {new Date(item.createdAt).toLocaleDateString([], {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
-                    </div>
+              const messageText =
+                item.body ||
+                (typeof item.message === "string" && item.message.trim()
+                  ? item.message
+                  : typeof item.message === "object" && item.message?.message
+                  ? item.message.message
+                  : item.messageRef?.message ||
+                    (item.conversation
+                      ? "Inquiry message received regarding a room listing."
+                      : "New activity on your account"));
 
-                    <p className="text-xs text-[#5F554A] line-clamp-2 leading-relaxed">
-                      {item.body || item.message?.message || "New activity on your account"}
-                    </p>
-
-                    {item.room?.title && (
-                      <span className="mt-2 inline-flex items-center gap-1 text-[10px] font-medium text-[#174D35]">
-                        <Home size={11} />
-                        {item.room.title}
-                        <ArrowUpRight size={11} className="transition-transform group-hover:translate-x-0.5" />
-                      </span>
-                    )}
-                  </div>
-
+              return (
+                <div
+                  key={item._id}
+                  onClick={() => handleNotificationClick(item)}
+                  className={`group relative cursor-pointer overflow-hidden rounded-2xl border p-4.5 transition-all duration-300 ${
+                    item.isRead
+                      ? "border-[#1C1B18]/10 bg-[#FAF7F0]/60 opacity-85 hover:bg-[#FFFDF8] hover:opacity-100 hover:border-[#174D35]/20 shadow-xs"
+                      : "border-[#174D35]/30 bg-[#FFFDF8] shadow-sm hover:border-[#174D35] hover:shadow-md"
+                  }`}
+                >
+                  {/* Left Accent indicator for unread */}
                   {!item.isRead && (
-                    <span className="h-2 w-2 rounded-full bg-[#174D35] shrink-0 mt-1" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#174D35]" />
                   )}
+
+                  <div className="flex items-start gap-3.5 pl-1">
+                    {/* AVATAR OR ROOM THUMBNAIL */}
+                    {item.sender?.avatar?.url ? (
+                      <Image
+                        src={item.sender.avatar.url}
+                        alt={item.sender.username || "User"}
+                        width={40}
+                        height={40}
+                        className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-[#174D35]/15"
+                      />
+                    ) : targetRoom?.images?.[0]?.url ? (
+                      <Image
+                        src={targetRoom.images[0].url}
+                        alt={targetRoom.title || "Room"}
+                        width={40}
+                        height={40}
+                        className="h-10 w-10 shrink-0 rounded-xl object-cover ring-1 ring-[#1C1B18]/10"
+                      />
+                    ) : (
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#174D35]/10 text-[#174D35]">
+                        {item.conversation ? (
+                          <MessageSquare size={18} />
+                        ) : (
+                          <Home size={18} />
+                        )}
+                      </div>
+                    )}
+
+                    {/* TEXT & ROOM DETAILS */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <h4 className="font-sans text-xs font-semibold text-[#1C1B18] truncate">
+                          {item.sender?.username
+                            ? `Message from ${item.sender.username}`
+                            : item.title || "New Message"}
+                        </h4>
+                        <span className="font-sans text-[9px] font-semibold text-[#756A5C] shrink-0">
+                          {new Date(item.createdAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                      </div>
+
+                      <p className="font-sans text-xs text-[#514A42] leading-relaxed line-clamp-2">
+                        {messageText}
+                      </p>
+
+                      {/* TARGET PROPERTY BADGE */}
+                      {targetRoom?.title && (
+                        <div className="mt-2.5 flex items-center">
+                          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#174D35]/25 bg-[#174D35]/5 px-3 py-1 font-sans text-[10px] font-bold uppercase tracking-wider text-[#174D35] transition-all duration-300 group-hover:bg-[#174D35] group-hover:text-[#F8F4EA]">
+                            <Home size={11} className="shrink-0" />
+                            <span className="truncate max-w-[170px]">
+                              {targetRoom.title}
+                            </span>
+                            <ArrowUpRight
+                              size={11}
+                              className="shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                            />
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* DELETE ACTION BUTTON */}
+                    <div className="flex items-center gap-1 shrink-0 pt-0.5">
+                      <button
+                        type="button"
+                        onClick={(e) => handleDeleteNotification(e, item._id)}
+                        title="Delete notification"
+                        className="flex h-7 w-7 items-center justify-center rounded-full text-[#756A5C] opacity-50 hover:opacity-100 hover:bg-[#A53B32]/10 hover:text-[#A53B32] transition-all"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-
-                {/* Subtle corner accents */}
-                {!item.isRead && (
-                  <>
-                    <span className="absolute -left-0.5 -top-0.5 h-1.5 w-1.5 border-l border-t border-[#174D35]" />
-                    <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 border-r border-t border-[#174D35]" />
-                  </>
-                )}
-              </div>
-            ))
+              );
+            })
           )}
-        </div>
-
-        {/* Footer */}
-        <div className="border-t border-[#1C1B18]/10 p-4 bg-[#F8F4EA]/80">
-          <Link
-            href="/rentals"
-            onClick={onClose}
-            className="flex items-center justify-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#174D35] hover:underline"
-          >
-            Explore available rooms
-            <ArrowUpRight size={13} />
-          </Link>
         </div>
       </aside>
     </div>

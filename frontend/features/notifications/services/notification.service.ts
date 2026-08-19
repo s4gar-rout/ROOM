@@ -18,15 +18,33 @@ export interface NotificationItem {
     location?: string;
     images?: Array<{ url: string }>;
   };
-  conversation?: string;
-  message?: {
+  conversation?:
+    | string
+    | {
+        _id: string;
+        room?: {
+          _id: string;
+          title: string;
+          rent: number;
+          location?: string;
+          images?: Array<{ url: string }>;
+        };
+      };
+  message?:
+    | string
+    | {
+        _id: string;
+        message: string;
+        createdAt: string;
+      };
+  messageRef?: {
     _id: string;
     message: string;
     createdAt: string;
   };
   type: string;
   title: string;
-  body: string;
+  body?: string;
   isRead: boolean;
   readAt?: string | null;
   expiresAt?: string;
@@ -51,6 +69,25 @@ export const markNotificationAsRead = async (
 ): Promise<{ success: boolean; message?: string }> => {
   const response = await api.patch<{ success: boolean; message?: string }>(
     `/notifications/${notificationId}/read`
+  );
+  return response.data;
+};
+
+export const deleteNotification = async (
+  notificationId: string
+): Promise<{ success: boolean; message?: string }> => {
+  const response = await api.delete<{ success: boolean; message?: string }>(
+    `/notifications/${notificationId}`
+  );
+  return response.data;
+};
+
+export const clearAllNotifications = async (): Promise<{
+  success: boolean;
+  message?: string;
+}> => {
+  const response = await api.delete<{ success: boolean; message?: string }>(
+    "/notifications"
   );
   return response.data;
 };

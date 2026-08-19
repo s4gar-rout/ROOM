@@ -85,7 +85,7 @@ export async function sendWelcomeEmail({
             <p>Your email has been verified and your ROOM account is now <strong>fully activated</strong>.</p>
             <p>You can now explore premium room listings, save your favorites, connect directly with property owners, or list your own rental spaces.</p>
             <div style="text-align: center; margin: 30px 0;">
-                <a href="${config.CLIENT_URL || 'http://localhost:3000'}" style="background-color: #174D35; color: #F8F4EA; text-decoration: none; padding: 12px 28px; font-size: 14px; font-weight: bold; border-radius: 50px; display: inline-block;">Explore ROOM</a>
+                <a href="${config.FRONTEND_URL}" style="background-color: #174D35; color: #F8F4EA; text-decoration: none; padding: 12px 28px; font-size: 14px; font-weight: bold; border-radius: 50px; display: inline-block;">Explore ROOM</a>
             </div>
             <hr style="border: none; border-top: 1px solid #E8E3D6; margin: 24px 0;" />
             <p style="color: #756A5C; font-size: 12px;">Welcome aboard,<br><strong>The ROOM Team</strong></p>

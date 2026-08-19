@@ -25,6 +25,7 @@ import {
 import type { Room } from "@/features/rental/types/rental";
 
 import OwnerRoomCard from "@/features/rental/components/OwnerRoomCard";
+import ButtonLoader from "@/components/ui/ButtonLoader";
 
 export default function OwnerDashboardPage() {
   const router = useRouter();
@@ -480,19 +481,44 @@ export default function OwnerDashboardPage() {
 
     {/* DELETE CONFIRMATION MODAL */}
     {roomToDelete && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1C1B18]/60 backdrop-blur-xs">
-        <div className="w-full max-w-sm rounded-3xl border border-[#174D35]/15 bg-[#F8F4EA] p-6 shadow-2xl text-[#1C1B18] animate-in fade-in zoom-in-95 duration-200">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-600 mb-3">
-            <Trash2 size={22} />
+      <div 
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-[#0F1E17]/45 backdrop-blur-[10px] animate-in fade-in duration-300"
+        onClick={(e) => {
+          if (e.target === e.currentTarget && deletingRoom !== roomToDelete) {
+            setRoomToDelete(null);
+          }
+        }}
+      >
+        <div 
+          className="w-full max-w-[480px] sm:max-w-[500px] rounded-[28px] border border-[#174D35]/12 bg-[#FAF7F2] p-7 sm:p-9 shadow-[0_24px_50px_-12px_rgba(28,27,24,0.14)] text-[#1C1B18] animate-in fade-in zoom-in-95 duration-300 ease-out"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-modal-title"
+          aria-describedby="delete-modal-description"
+        >
+          {/* Subtle Icon Container */}
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#174D35]/8 text-[#174D35] border border-[#174D35]/12 mb-5">
+            <Trash2 size={20} strokeWidth={1.75} />
           </div>
-          <h3 className="font-serif text-2xl font-normal leading-tight text-[#1C1B18]">Delete Listing?</h3>
-          <p className="mt-2 text-xs leading-relaxed text-[#756A5C]">Are you sure you want to delete this room listing? This action cannot be undone.</p>
-          <div className="mt-6 flex items-center justify-end gap-2.5">
+
+          {/* Heading & Description */}
+          <h3 id="delete-modal-title" className="font-serif text-2xl sm:text-[28px] font-normal leading-tight text-[#1C1B18] tracking-tight">
+            Delete listing?
+          </h3>
+          <p id="delete-modal-description" className="mt-2.5 text-xs sm:text-sm leading-relaxed text-[#756A5C]">
+            Are you sure you want to delete this room listing? This action cannot be undone.
+          </p>
+
+          {/* Composition Divider */}
+          <div className="my-6 border-t border-[#1C1B18]/8" />
+
+          {/* Action Buttons */}
+          <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3">
             <button
               type="button"
               disabled={deletingRoom === roomToDelete}
               onClick={() => setRoomToDelete(null)}
-              className="h-10 rounded-full border border-[#174D35]/30 bg-transparent px-5 text-xs font-semibold text-[#1C1B18] hover:bg-[#1C1B18]/5 transition-colors disabled:opacity-50"
+              className="w-full sm:w-auto h-11 rounded-full border border-[#1C1B18]/15 bg-[#F5F0E5]/70 px-6 text-xs sm:text-[13px] font-semibold text-[#1C1B18] hover:bg-[#EFE8D8] hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 disabled:opacity-50 cursor-pointer"
             >
               Cancel
             </button>
@@ -500,9 +526,10 @@ export default function OwnerDashboardPage() {
               type="button"
               disabled={deletingRoom === roomToDelete}
               onClick={confirmDelete}
-              className="h-10 rounded-full bg-red-600 px-5 text-xs font-semibold !text-white hover:bg-red-700 transition-colors disabled:opacity-50 shadow-xs"
+              className="w-full sm:w-auto h-11 rounded-full bg-[#174D35] px-6 text-xs sm:text-[13px] font-semibold text-[#F8F4EA] hover:bg-[#123E2B] hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 disabled:opacity-50 shadow-sm shadow-[#174D35]/20 cursor-pointer flex items-center justify-center gap-2"
             >
-              {deletingRoom === roomToDelete ? "Deleting..." : "Delete Listing"}
+              {deletingRoom === roomToDelete && <ButtonLoader color="#F8F4EA" />}
+              <span>{deletingRoom === roomToDelete ? "Deleting..." : "Delete listing"}</span>
             </button>
           </div>
         </div>

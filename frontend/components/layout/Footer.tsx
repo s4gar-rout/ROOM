@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 
 const exploreLinks = [
   { label: "Find a home", href: "/rentals" },
+  { label: "About us", href: "/about-us" },
   { label: "Messages", href: "/messages" },
 ];
 

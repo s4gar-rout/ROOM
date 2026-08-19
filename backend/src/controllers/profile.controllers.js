@@ -123,9 +123,6 @@ export async function updateProfileController(req, res) {
                 email: user.email,
                 contact: user.contact,
                 role: user.role,
-                ownerVerified: user.ownerVerified,
-                ownerRequestStatus:
-                    user.ownerRequestStatus,
                 avatar: user.avatar,
             },
         });

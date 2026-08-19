@@ -258,7 +258,7 @@ export async function getSingleRoomDetailsController(req, res) {
 
         const room = await roomModel
             .findById(roomId)
-            .populate("owner", "username email avatar");
+            .populate("owner", "username avatar");
 
         if (!room) {
             return res.status(404).json({

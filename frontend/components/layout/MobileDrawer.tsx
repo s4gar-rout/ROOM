@@ -22,6 +22,7 @@ import {
   LogOut,
   UserRound,
   ArrowUpRight,
+  Info,
 } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
@@ -204,6 +205,21 @@ export default function MobileDrawer({
                 <div className="flex items-center gap-3">
                   <Building2 size={16} />
                   <span>Find Rooms</span>
+                </div>
+              </Link>
+
+              <Link
+                href="/about-us"
+                onClick={onClose}
+                className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                  isActive("/about-us")
+                    ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
+                    : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Info size={16} />
+                  <span>About Us</span>
                 </div>
               </Link>
 

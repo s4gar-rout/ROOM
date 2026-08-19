@@ -217,7 +217,7 @@ export default function OwnerRoomCard({
               e.stopPropagation();
               onDelete(room._id || (room as any).id);
             }}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-red-500/20 bg-white text-red-500 transition hover:border-red-500 hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#8B2626]/20 bg-white text-[#8B2626] transition hover:border-[#8B2626] hover:bg-[#8B2626] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
             aria-label="Delete room"
           >
             <Trash2 size={13} />

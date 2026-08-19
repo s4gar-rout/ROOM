@@ -64,8 +64,8 @@ export default function RentalCard({ room }: RentalCardProps) {
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         variants={staggerItemVariants}
-        initial={reduceMotion ? false : "hidden"}
-        whileInView={reduceMotion ? false : "visible"}
+        initial={reduceMotion ? undefined : "hidden"}
+        whileInView={reduceMotion ? undefined : "visible"}
         viewport={{ once: true, amount: 0.15 }}
         whileHover={reduceMotion ? {} : cardHoverVariants.hover}
         className="group overflow-hidden rounded-2xl sm:rounded-[2px] border border-[#1C1B18]/15 bg-[#F8F4EA] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-[#174D35]/35 hover:shadow-[0_16px_36px_rgba(28,27,24,0.08)] cursor-pointer shadow-sm sm:shadow-none"

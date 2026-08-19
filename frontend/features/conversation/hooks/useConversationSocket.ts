@@ -38,7 +38,11 @@ let socketPromise: Promise<SocketLike> | null = null;
 async function getSocket(): Promise<SocketLike> {
   if (!socketPromise) {
     socketPromise = import("socket.io-client").then(async ({ io }) => {
-      const baseURL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/?$/, "") || "http://localhost:3000";
+      const baseURL = process.env.NEXT_PUBLIC_API_URL
+        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, "")
+        : typeof window !== "undefined"
+        ? window.location.origin
+        : "http://localhost:3000";
       const { getAccessToken } = await import("@/lib/axios");
       return io(baseURL, {
         auth: {

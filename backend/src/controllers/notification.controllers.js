@@ -17,7 +17,13 @@ async function getMyNotificationsController(req, res) {
             })
                 .populate("sender", USER_SELECT)
                 .populate("room", ROOM_SELECT)
-                .populate("conversation")
+                .populate({
+                    path: "conversation",
+                    populate: {
+                        path: "room",
+                        select: ROOM_SELECT,
+                    },
+                })
                 .populate("messageRef", "message createdAt")
                 .sort({ createdAt: -1 })
                 .lean();
@@ -223,9 +229,67 @@ async function testPushController(req, res) {
     }
 }
 
+// ==========================================
+// DELETE SINGLE NOTIFICATION
+// ==========================================
+
+async function deleteNotificationController(req, res) {
+    try {
+        const { notificationId } = req.params;
+
+        const result = await NotificationModel.deleteOne({
+            _id: notificationId,
+            user: req.user._id,
+        });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Notification not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Notification deleted successfully",
+        });
+    } catch (error) {
+        console.error("Delete Notification Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
+
+// ==========================================
+// CLEAR ALL NOTIFICATIONS FOR USER
+// ==========================================
+
+async function clearAllNotificationsController(req, res) {
+    try {
+        await NotificationModel.deleteMany({
+            user: req.user._id,
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "All notifications cleared successfully",
+        });
+    } catch (error) {
+        console.error("Clear All Notifications Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
+
 export default {
     getMyNotificationsController,
     markNotificationAsReadController,
+    deleteNotificationController,
+    clearAllNotificationsController,
     subscribePushController,
     unsubscribePushController,
     testPushController,

@@ -16,8 +16,8 @@ export default function RentalCard({ rental }: RentalCardProps) {
   return (
     <motion.article 
       variants={staggerItemVariants}
-      initial={reduceMotion ? false : "hidden"}
-      whileInView={reduceMotion ? false : "visible"}
+      initial={reduceMotion ? undefined : "hidden"}
+      whileInView={reduceMotion ? undefined : "visible"}
       viewport={{ once: true, amount: 0.15 }}
       whileHover={reduceMotion ? {} : cardHoverVariants.hover}
       className="group overflow-hidden rounded-3xl border border-[#174D35]/15 bg-white transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-[#174D35]/35 hover:shadow-[0_16px_36px_rgba(28,27,24,0.08)]"

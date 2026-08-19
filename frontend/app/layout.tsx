@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/features/auth/hooks/useAuth";
 import InitialLoader from "@/components/ui/InitialLoader";
 import SmoothScrollProvider from "@/components/ui/SmoothScrollProvider";
+import BottomNav from "@/components/layout/BottomNav";
 
 export const metadata: Metadata = {
   title: "ROOM — Find a place that feels like home",
@@ -19,7 +20,10 @@ export default function RootLayout({
       <body>
         <SmoothScrollProvider>
           <InitialLoader />
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            {children}
+            <BottomNav />
+          </AuthProvider>
         </SmoothScrollProvider>
       </body>
     </html>

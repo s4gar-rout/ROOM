@@ -92,3 +92,27 @@ export const updateAvatar = async (
 
   return response.data;
 };
+
+// ==========================================
+// DELETE ACCOUNT (OTP VERIFICATION)
+// ==========================================
+
+export const sendDeleteAccountOtp = async (): Promise<{
+  success: boolean;
+  message?: string;
+}> => {
+  const response = await api.post<{ success: boolean; message?: string }>(
+    "/profile/delete-account/send-otp"
+  );
+  return response.data;
+};
+
+export const verifyAndDeleteAccount = async (
+  otp: string
+): Promise<{ success: boolean; message?: string }> => {
+  const response = await api.post<{ success: boolean; message?: string }>(
+    "/profile/delete-account/verify",
+    { otp }
+  );
+  return response.data;
+};

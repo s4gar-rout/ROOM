@@ -1,4 +1,5 @@
 import NotificationModel from "../models/notification.model.js";
+import { sendWebPushNotification } from "./webpush.service.js";
 
 const USER_SELECT = "username email avatar";
 const ROOM_SELECT = "title images rent location availability";
@@ -25,7 +26,7 @@ export async function createNotification({
             conversation,
             sender,
             room,
-            message: messageId,
+            messageRef: messageId,
         });
     } catch (error) {
         // Duplicate NEW_MESSAGE notification is safe/idempotent.
@@ -34,7 +35,7 @@ export async function createNotification({
                 await NotificationModel.findOne({
                     user: userId,
                     type,
-                    message: messageId,
+                    messageRef: messageId,
                 });
 
             if (!notification) throw error;
@@ -50,7 +51,7 @@ export async function createNotification({
             .populate("sender", USER_SELECT)
             .populate("room", ROOM_SELECT)
             .populate("conversation")
-            .populate("message", "message createdAt")
+            .populate("messageRef", "message createdAt")
             .lean();
 
         io.to(`user:${userId.toString()}`).emit(
@@ -62,5 +63,19 @@ export async function createNotification({
         );
     }
 
+    // Trigger browser Web Push (best effort, never blocks or fails notification)
+    sendWebPushNotification(userId, {
+        notificationId: notification._id,
+        type: notification.type,
+        title: notification.title,
+        message: notification.message,
+        senderId: notification.sender,
+        roomId: notification.room,
+        conversationId: notification.conversation,
+    }).catch((pushErr) => {
+        console.error("Web push dispatch error:", pushErr.message);
+    });
+
     return notification;
 }
+

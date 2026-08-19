@@ -6,12 +6,14 @@ import { useAuth } from "../../features/auth/hooks/useAuth";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, ArrowLeft } from "lucide-react";
+import { ArrowUpRight, ArrowLeft, Trash2 } from "lucide-react";
+import DeleteAccountModal from "@/features/auth/components/DeleteAccountModal";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileUser | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [error, setError] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
 
@@ -125,7 +127,7 @@ export default function ProfilePage() {
               {/* Edit Button */}
               <Link
                 href="/profile/edit"
-                className="group flex h-11 items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40"
+                className="group flex h-11 items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-[10px] font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:!text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40"
               >
                 Edit Profile
                 <ArrowUpRight
@@ -168,6 +170,32 @@ export default function ProfilePage() {
         <span className="absolute -bottom-1 -left-1 h-3 w-3 border-b border-l border-[#174D35]" />
         <span className="absolute -bottom-1 -right-1 h-3 w-3 border-b border-r border-[#174D35]" />
       </div>
+
+      {/* Delete Account */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-[#1C1B18]/10 pt-6">
+        <div>
+          <h3 className="text-sm font-medium text-[#1C1B18]">Delete Account</h3>
+          <p className="text-xs text-[#5F554A] mt-0.5">
+            Permanently remove your account and all associated data via email OTP verification.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowDeleteModal(true)}
+          className="self-start sm:self-auto flex h-10 items-center justify-center gap-2 rounded-full border border-[#1C1B18]/20 px-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#5F554A] transition-all hover:border-[#1C1B18] hover:bg-[#1C1B18] hover:!text-[#F8F4EA] whitespace-nowrap"
+        >
+          <Trash2 size={13} />
+          Delete Account
+        </button>
+      </div>
+
+      {/* Delete Account Modal with OTP */}
+      <DeleteAccountModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        userEmail={profile.email}
+      />
     </main>
   );
 }

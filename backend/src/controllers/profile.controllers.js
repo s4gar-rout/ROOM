@@ -1,8 +1,13 @@
 import UserModel from "../models/user.model.js";
+import roomModel from "../models/room.model.js";
+import PushSubscriptionModel from "../models/pushSubscription.model.js";
+import NotificationModel from "../models/notification.model.js";
 import {
     uploadFile,
     deleteFile,
 } from "../services/storage.service.js";
+import { sendAccountDeletionOtpEmail } from "../services/email.service.js";
+import redis from "../services/redis.service.js";
 
 // ==========================================
 // GET MY PROFILE
@@ -285,10 +290,183 @@ export async function changePasswordController(req, res) {
     }
 }
 
+// ==========================================
+// SEND DELETE ACCOUNT OTP
+// ==========================================
+
+export async function sendDeleteAccountOtpController(req, res) {
+    try {
+        const user = await UserModel.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        const normalizedEmail = user.email.toLowerCase().trim();
+        const otpKey = `delete-account:${normalizedEmail}`;
+        const cooldownKey = `delete-account-cooldown:${normalizedEmail}`;
+
+        // Check cooldown
+        const cooldownExists = await redis.exists(cooldownKey);
+        if (cooldownExists) {
+            return res.status(429).json({
+                success: false,
+                message: "Please wait before requesting another OTP",
+            });
+        }
+
+        // Generate 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Store in Redis for 10 minutes
+        await redis.set(otpKey, otp, { ex: 10 * 60 });
+
+        // Cooldown for 45 seconds
+        await redis.set(cooldownKey, "1", { ex: 45 });
+
+        // Send Email
+        await sendAccountDeletionOtpEmail({
+            email: user.email,
+            username: user.username,
+            otp,
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Verification OTP has been sent to your email.",
+        });
+    } catch (error) {
+        console.error("Send Delete Account OTP Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to send verification OTP",
+        });
+    }
+}
+
+// ==========================================
+// VERIFY AND DELETE ACCOUNT
+// ==========================================
+
+export async function verifyAndDeleteAccountController(req, res) {
+    try {
+        const { otp } = req.body || {};
+
+        if (!otp) {
+            return res.status(400).json({
+                success: false,
+                message: "Verification OTP is required",
+            });
+        }
+
+        const user = await UserModel.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        const normalizedEmail = user.email.toLowerCase().trim();
+        const normalizedOtp = otp.toString().trim();
+        const otpKey = `delete-account:${normalizedEmail}`;
+
+        const storedOtp = await redis.get(otpKey);
+
+        if (!storedOtp) {
+            return res.status(400).json({
+                success: false,
+                message: "OTP has expired or was not requested. Please request a new OTP.",
+            });
+        }
+
+        if (String(storedOtp).trim() !== normalizedOtp) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid verification OTP",
+            });
+        }
+
+        // 1. Delete user avatar from ImageKit if exists
+        if (user.avatar?.fileId) {
+            try {
+                await deleteFile(user.avatar.fileId);
+            } catch (err) {
+                console.error("Delete Avatar Error:", err.message);
+            }
+        }
+
+        // 2. Delete user's rooms and images if owner
+        const userRooms = await roomModel.find({ owner: user._id });
+        for (const room of userRooms) {
+            if (room.images && room.images.length > 0) {
+                for (const img of room.images) {
+                    if (img.fileId) {
+                        try {
+                            await deleteFile(img.fileId);
+                        } catch (err) {
+                            console.error("Delete Room Image Error:", err.message);
+                        }
+                    }
+                }
+            }
+        }
+        await roomModel.deleteMany({ owner: user._id });
+
+        // 3. Delete push subscriptions
+        await PushSubscriptionModel.deleteMany({ user: user._id });
+
+        // 4. Delete notifications
+        await NotificationModel.deleteMany({ user: user._id });
+
+        // 5. Delete User Document
+        await UserModel.findByIdAndDelete(user._id);
+
+        // 6. Clean up Redis OTP keys
+        await redis.del(otpKey);
+        await redis.del(`delete-account-cooldown:${normalizedEmail}`);
+
+        // 7. Clear Auth Cookies
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+        });
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+        });
+        res.clearCookie("sessionId", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Your account and all associated data have been deleted permanently.",
+        });
+    } catch (error) {
+        console.error("Verify & Delete Account Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to delete account. Please try again.",
+        });
+    }
+}
 
 export default {
     getMyProfileController,
     updateProfileController,
     updateAvatarController,
     changePasswordController,
+    sendDeleteAccountOtpController,
+    verifyAndDeleteAccountController,
 };

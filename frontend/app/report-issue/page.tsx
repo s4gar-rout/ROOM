@@ -69,7 +69,7 @@ export default function ReportIssuePage() {
     <div className="flex min-h-screen flex-col bg-[#F8F4EA]">
       <Navbar />
 
-      <main className="flex-1 px-4 py-6 md:py-8 text-[#1C1B18] sm:px-6 lg:px-8 flex flex-col justify-center">
+      <main className="flex-1 px-4 pt-6 pb-24 md:py-8 text-[#1C1B18] sm:px-6 lg:px-8 flex flex-col justify-center">
         <div className="mx-auto w-full max-w-2xl flex-col border border-[#174D35]/15 bg-[#F8F4EA]">
           
           {status === "success" ? (

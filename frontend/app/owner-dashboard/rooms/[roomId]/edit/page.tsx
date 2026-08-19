@@ -359,7 +359,7 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-[#F8F4EA] px-4 py-4 text-[#1C1B18] sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#F8F4EA] px-4 pt-4 pb-24 md:py-4 text-[#1C1B18] sm:px-6 lg:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-32px)] max-w-[1400px] flex-col border border-[#174D35]/15 bg-[#F8F4EA]">
         
         {/* =========================================

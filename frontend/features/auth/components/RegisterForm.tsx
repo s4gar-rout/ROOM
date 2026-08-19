@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 
 import { registerUser } from "../services/auth.service";
 import { useAuth } from "../hooks/useAuth";
+import NotificationPromptModal from "@/features/notifications/components/NotificationPromptModal";
 
 type RegisterFormData = {
   username: string;
@@ -48,6 +49,9 @@ export default function RegisterForm() {
 
   const [serverError, setServerError] =
     useState("");
+
+  const [showNotificationModal, setShowNotificationModal] =
+    useState(false);
 
   /* =====================================================
      INPUT CHANGE
@@ -177,19 +181,8 @@ export default function RegisterForm() {
         setUser(response.user);
       }
 
-      /*
-       * IMPORTANT
-       *
-       * Registration successful hone ke baad
-       * user ko directly complete-profile page
-       * par bhejna hai.
-       *
-       * Yahin user:
-       * 1. Profile photo upload karega
-       * 2. User / Owner select karega
-       */
-
-      router.replace("/complete-profile");
+      // Show notification permission prompt modal on successful account creation
+      setShowNotificationModal(true);
 
     } catch (error: unknown) {
       console.error(
@@ -207,6 +200,11 @@ export default function RegisterForm() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleNotificationModalComplete = () => {
+    setShowNotificationModal(false);
+    router.replace("/complete-profile");
   };
 
   /* =====================================================
@@ -499,6 +497,12 @@ export default function RegisterForm() {
         </Link>
 
       </p>
+
+      {/* Post-Registration Notification Permission Modal */}
+      <NotificationPromptModal
+        isOpen={showNotificationModal}
+        onComplete={handleNotificationModalComplete}
+      />
 
     </form>
   );

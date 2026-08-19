@@ -72,4 +72,30 @@ router.patch(
     profileControllers.updateAvatarController
 );
 
+// ==========================================
+// DELETE ACCOUNT FLOW
+// ==========================================
+
+/**
+ * @route POST /api/profile/delete-account/send-otp
+ * @description Send OTP to email for account deletion verification
+ * @access Protected
+ */
+router.post(
+    "/delete-account/send-otp",
+    authMiddleware,
+    profileControllers.sendDeleteAccountOtpController
+);
+
+/**
+ * @route POST /api/profile/delete-account/verify
+ * @description Verify OTP and permanently delete account and related data
+ * @access Protected
+ */
+router.post(
+    "/delete-account/verify",
+    authMiddleware,
+    profileControllers.verifyAndDeleteAccountController
+);
+
 export default router;

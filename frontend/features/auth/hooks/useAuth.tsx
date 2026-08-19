@@ -63,6 +63,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     fetchUser();
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      import("@/features/notifications/services/push.service")
+        .then(({ syncPushSubscriptionOnLogin }) => {
+          syncPushSubscriptionOnLogin().catch(() => undefined);
+        })
+        .catch(() => undefined);
+    }
+  }, [user]);
+
   return (
     <AuthContext.Provider
       value={{

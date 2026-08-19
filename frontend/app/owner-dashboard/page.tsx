@@ -231,7 +231,7 @@ export default function OwnerDashboardPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#F8F4EA] text-[#1C1B18]">
+      <main className="min-h-screen bg-[#F8F4EA] text-[#1C1B18] pb-24 md:pb-12">
 
         <div className="mx-auto w-full max-w-6xl px-5 py-6 sm:px-7 lg:px-8">
 

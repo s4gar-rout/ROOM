@@ -1,4 +1,6 @@
 import NotificationModel from "../models/notification.model.js";
+import PushSubscriptionModel from "../models/pushSubscription.model.js";
+import { sendWebPushNotification } from "../services/webpush.service.js";
 
 const USER_SELECT = "username email avatar";
 const ROOM_SELECT = "title images rent location availability";
@@ -97,7 +99,128 @@ async function markNotificationAsReadController(
     }
 }
 
+// ==========================================
+// SUBSCRIBE TO PUSH NOTIFICATIONS
+// ==========================================
+
+async function subscribePushController(req, res) {
+    try {
+        const { endpoint, keys } = req.body || {};
+
+        if (!endpoint || typeof endpoint !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Valid push endpoint is required",
+            });
+        }
+
+        if (!keys || !keys.p256dh || !keys.auth) {
+            return res.status(400).json({
+                success: false,
+                message: "Subscription keys (p256dh and auth) are required",
+            });
+        }
+
+        // Upsert subscription mapped to the authenticated user
+        const subscription = await PushSubscriptionModel.findOneAndUpdate(
+            { endpoint: endpoint.trim() },
+            {
+                user: req.user._id,
+                endpoint: endpoint.trim(),
+                keys: {
+                    p256dh: keys.p256dh.trim(),
+                    auth: keys.auth.trim(),
+                },
+            },
+            {
+                upsert: true,
+                new: true,
+                setDefaultsOnInsert: true,
+            }
+        );
+
+        return res.status(201).json({
+            success: true,
+            message: "Push subscription registered successfully",
+            subscriptionId: subscription._id,
+        });
+    } catch (error) {
+        console.error("Subscribe Push Error:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to register push subscription",
+        });
+    }
+}
+
+// ==========================================
+// UNSUBSCRIBE FROM PUSH NOTIFICATIONS
+// ==========================================
+
+async function unsubscribePushController(req, res) {
+    try {
+        const endpoint = req.body?.endpoint || req.query?.endpoint;
+
+        if (!endpoint) {
+            return res.status(400).json({
+                success: false,
+                message: "Push endpoint is required for unsubscription",
+            });
+        }
+
+        const result = await PushSubscriptionModel.deleteOne({
+            endpoint: endpoint.trim(),
+            user: req.user._id,
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Push subscription removed successfully",
+            deletedCount: result.deletedCount,
+        });
+    } catch (error) {
+        console.error("Unsubscribe Push Error:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to remove push subscription",
+        });
+    }
+}
+
+// ==========================================
+// TEST PUSH NOTIFICATION (Protected)
+// ==========================================
+
+async function testPushController(req, res) {
+    try {
+        const user = req.user;
+
+        await sendWebPushNotification(user._id, {
+            type: "TEST_NOTIFICATION",
+            title: "ROOM Notification Test",
+            message: `Hello ${user.username || "there"}! Browser push notifications are working perfectly.`,
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Test push notification triggered",
+        });
+    } catch (error) {
+        console.error("Test Push Error:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to trigger test push notification",
+        });
+    }
+}
+
 export default {
     getMyNotificationsController,
     markNotificationAsReadController,
+    subscribePushController,
+    unsubscribePushController,
+    testPushController,
 };

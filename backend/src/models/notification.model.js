@@ -57,8 +57,7 @@ const notificationSchema = new mongoose.Schema(
             default: null,
         },
 
-        // Used to make NEW_MESSAGE notifications idempotent.
-        message: {
+        messageRef: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Message",
             default: null,
@@ -78,12 +77,12 @@ notificationSchema.index({
 // A message should create at most one notification for a user.
 // Sparse keeps older/non-message notifications valid.
 notificationSchema.index(
-    { user: 1, type: 1, message: 1 },
+    { user: 1, type: 1, messageRef: 1 },
     {
         unique: true,
         partialFilterExpression: {
             type: "NEW_MESSAGE",
-            message: { $type: "objectId" },
+            messageRef: { $type: "objectId" },
         },
     }
 );

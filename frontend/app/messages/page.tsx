@@ -63,6 +63,32 @@ export default function MessagesPage({
   }, [initialConversationId]);
 
   useEffect(() => {
+    load();
+  }, [load]);
+
+  // Manage mobile chat view state to hide global bottom navigation during active conversations
+  useEffect(() => {
+    const isMobileChatOpen = Boolean(selected);
+    if (isMobileChatOpen) {
+      document.body.classList.add("chat-open-mobile");
+      window.dispatchEvent(
+        new CustomEvent("room:chat-state", { detail: { open: true } })
+      );
+    } else {
+      document.body.classList.remove("chat-open-mobile");
+      window.dispatchEvent(
+        new CustomEvent("room:chat-state", { detail: { open: false } })
+      );
+    }
+    return () => {
+      document.body.classList.remove("chat-open-mobile");
+      window.dispatchEvent(
+        new CustomEvent("room:chat-state", { detail: { open: false } })
+      );
+    };
+  }, [selected]);
+
+  useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.replace("/login?redirect=/messages");
     }

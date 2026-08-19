@@ -9,7 +9,7 @@ export default function Home() {
   const reduceMotion = shouldReduceMotion();
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#F8F4EA] text-[#1C1B18]">
+    <div className="overflow-x-hidden bg-[#F8F4EA] text-[#1C1B18]">
 
       {/* HERO */}
       <section className="px-5 pb-10 pt-20 sm:px-8 sm:pt-24 md:px-12 md:pt-28 lg:px-16 lg:pt-32">
@@ -157,6 +157,6 @@ export default function Home() {
         </div>
       </section>
 
-    </main>
+    </div>
   );
 }

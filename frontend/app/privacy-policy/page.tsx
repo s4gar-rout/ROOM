@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
     <div className="flex min-h-screen flex-col bg-[#F8F4EA]">
       <Navbar />
 
-      <main className="flex-1 py-16 md:py-24">
+      <main className="flex-1 pt-12 pb-24 md:py-24">
         <div className="mx-auto max-w-3xl px-6 sm:px-12">
           <div className="mb-12">
             <h1 className="font-serif text-4xl md:text-5xl text-[#1C1B18] mb-4">

@@ -15,6 +15,11 @@ export async function createNotification({
     messageId = null,
     io,
 }) {
+    const now = new Date();
+    const expiresAt = new Date(
+        now.getTime() + 30 * 24 * 60 * 60 * 1000
+    );
+
     let notification;
 
     try {
@@ -27,6 +32,9 @@ export async function createNotification({
             sender,
             room,
             messageRef: messageId,
+            isRead: false,
+            readAt: null,
+            expiresAt,
         });
     } catch (error) {
         // Duplicate NEW_MESSAGE notification is safe/idempotent.

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Bell, X, CheckCheck, ArrowUpRight, MessageSquare, Home, Sparkles } from "lucide-react";
+import { Bell, X, CheckCheck, ArrowUpRight, MessageSquare, Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -48,10 +48,25 @@ export default function NotificationDrawer({
   }, [isAuthenticated, onUnreadCountChange]);
 
   useEffect(() => {
-    if (isOpen) {
-      fetchNotifications();
+    let isMounted = true;
+    if (isOpen && isAuthenticated) {
+      getMyNotifications()
+        .then((data) => {
+          if (isMounted && data.success) {
+            setNotifications(data.notifications || []);
+            setUnreadCount(data.unreadCount || 0);
+            onUnreadCountChange?.(data.unreadCount || 0);
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          if (isMounted) setLoading(false);
+        });
     }
-  }, [isOpen, fetchNotifications]);
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen, isAuthenticated, onUnreadCountChange]);
 
   useConversationSocket({
     enabled: isAuthenticated,

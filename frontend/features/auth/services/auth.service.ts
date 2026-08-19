@@ -39,16 +39,29 @@ export interface ResetPasswordPayload {
 }
 
 // ==========================================
-// REGISTER
+// REGISTER & VERIFY EMAIL
 // ==========================================
 
 export const registerUser = async (
   data: RegisterPayload
-): Promise<AuthResponse> => {
-  const response = await api.post<AuthResponse>(
+): Promise<AuthResponse & { requiresVerification?: boolean; email?: string }> => {
+  const response = await api.post<AuthResponse & { requiresVerification?: boolean; email?: string }>(
     "/auth/register",
     data
   );
+
+  return response.data;
+};
+
+export interface VerifyEmailPayload {
+  email: string;
+  otp: string;
+}
+
+export const verifyEmail = async (
+  data: VerifyEmailPayload
+): Promise<AuthResponse> => {
+  const response = await api.post<AuthResponse>("/auth/verify-email", data);
 
   if (response.data.sessionId) {
     sessionStorage.setItem("roomSessionId", response.data.sessionId);
@@ -97,6 +110,15 @@ export const getCurrentUser = async (): Promise<User> => {
   );
 
   return response.data.user;
+};
+
+// ==========================================
+// BECOME OWNER (SELF ROLE CONVERSION)
+// ==========================================
+
+export const becomeOwner = async (): Promise<AuthResponse> => {
+  const response = await api.patch<AuthResponse>("/auth/become-owner");
+  return response.data;
 };
 
 // ==========================================

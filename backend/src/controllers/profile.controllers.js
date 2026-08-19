@@ -8,7 +8,7 @@ import {
     uploadFile,
     deleteFile,
 } from "../services/storage.service.js";
-import { sendAccountDeletionOtpEmail } from "../services/email.service.js";
+import { sendAccountDeletionOtpEmail, sendAccountDeletedConfirmationEmail } from "../services/email.service.js";
 import redis from "../services/redis.service.js";
 
 // ==========================================
@@ -456,6 +456,16 @@ export async function verifyAndDeleteAccountController(req, res) {
 
         // 6. Delete User Document
         await UserModel.findByIdAndDelete(user._id);
+
+        // Send "Account Deleted" Confirmation Email
+        try {
+            await sendAccountDeletedConfirmationEmail({
+                email: user.email,
+                username: user.username,
+            });
+        } catch (emailErr) {
+            console.error("Account Deleted Email Error:", emailErr);
+        }
 
         // 7. Clean up Redis OTP keys
         await redis.del(otpKey);

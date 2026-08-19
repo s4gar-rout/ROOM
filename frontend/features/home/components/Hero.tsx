@@ -5,19 +5,42 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { fadeUpVariants, staggerContainerVariants, staggerItemVariants, shouldReduceMotion } from "@/lib/animations";
 
+import { useState } from "react";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import BecomeOwnerModal from "@/features/auth/components/BecomeOwnerModal";
+
 export default function Home() {
   const reduceMotion = shouldReduceMotion();
+  const { user, isAuthenticated } = useAuth();
+  const [becomeOwnerModalOpen, setBecomeOwnerModalOpen] = useState(false);
 
   return (
-    <div className="overflow-x-hidden bg-[#F8F4EA] text-[#1C1B18]">
+    <>
+      <div className="overflow-x-hidden bg-[#F8F4EA] text-[#1C1B18]">
 
       {/* HERO */}
-      <section className="px-5 pb-10 pt-20 sm:px-8 sm:pt-24 md:px-12 md:pt-28 lg:px-16 lg:pt-32">
+      <section className="px-5 pb-6 pt-8 sm:px-8 sm:pb-10 sm:pt-24 md:px-12 md:pt-28 lg:px-16 lg:pt-32">
         <div className="mx-auto max-w-[1400px]">
 
-          {/* Hero Content */}
+          {/* Mobile Compact Hero (< md) */}
+          <div className="block md:hidden text-center py-2">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
+              ROOM / RENTALS
+            </p>
+            <h1 className="mt-2 font-serif text-2xl font-normal leading-tight tracking-[-0.02em] text-[#1C1B18] sm:text-3xl">
+              Thoughtfully listed homes for long-term living.
+            </h1>
+            <div className="mt-4 inline-flex flex-col items-center gap-1 rounded-full border border-[#174D35]/15 bg-[#174D35]/5 px-4 py-2 text-xs">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#174D35]">
+                JHARSUGUDA • ODISHA
+              </span>
+              <span className="text-[#756A5C]">Built for local living.</span>
+            </div>
+          </div>
+
+          {/* Desktop Hero Content (>= md) */}
           <motion.div 
-            className="text-center"
+            className="hidden md:block text-center"
             variants={staggerContainerVariants}
             initial={reduceMotion ? false : "hidden"}
             animate={reduceMotion ? undefined : "visible"}
@@ -77,6 +100,12 @@ export default function Home() {
               {/* Secondary */}
               <Link
                 href="/owner-dashboard/add-room"
+                onClick={(e) => {
+                  if (isAuthenticated && user?.role === "tenant") {
+                    e.preventDefault();
+                    setBecomeOwnerModalOpen(true);
+                  }
+                }}
                 className="flex h-14 min-w-[200px] items-center justify-center rounded-full border border-[#174D35]/45 bg-[#F8F4EA] px-7 text-sm font-medium !text-[#1C1B18] transition-all duration-300 hover:bg-[#174D35] hover:!text-[#F8F4EA] hover:scale-[1.02]"
               >
                 List your property
@@ -120,12 +149,12 @@ export default function Home() {
             </motion.div>
           </motion.div>
 
-          {/* Bottom Section Label */}
+          {/* Desktop Bottom Section Label */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 1 }}
-            className="mt-16 border-t border-[#D8D0C3] pt-7 sm:mt-20 md:mt-24"
+            className="hidden md:block mt-16 border-t border-[#D8D0C3] pt-7 sm:mt-20 md:mt-24"
           >
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
 
@@ -158,5 +187,11 @@ export default function Home() {
       </section>
 
     </div>
-  );
+
+    <BecomeOwnerModal
+      isOpen={becomeOwnerModalOpen}
+      onClose={() => setBecomeOwnerModalOpen(false)}
+    />
+  </>
+);
 }

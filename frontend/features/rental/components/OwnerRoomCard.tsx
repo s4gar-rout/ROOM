@@ -70,12 +70,12 @@ export default function OwnerRoomCard({
             className={`rounded-full px-3 py-1.5 text-[8px] font-bold uppercase tracking-[0.12em] backdrop-blur-sm ${
               room.availability
                 ? "bg-[#F8F4EA]/95 text-[#174D35]"
-                : "bg-[#F8F4EA]/95 text-[#756A5C]"
+                : "bg-[#1C1B18]/90 text-[#F8F4EA]"
             }`}
           >
             {room.availability
               ? "Available"
-              : "Unavailable"}
+              : "Sold Out"}
           </span>
         </div>
 
@@ -166,36 +166,42 @@ export default function OwnerRoomCard({
           <button
             type="button"
             disabled={isUpdating}
-            onClick={() =>
+            onClick={(e) => {
+              e.stopPropagation();
               onAvailabilityChange(
-                room._id,
+                room._id || (room as any).id,
                 !room.availability
-              )
-            }
-            className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full border text-[9px] font-bold uppercase tracking-[0.12em] transition ${
+              );
+            }}
+            className={`flex h-9 flex-1 items-center justify-center gap-1 px-2.5 rounded-full border text-[9px] font-bold uppercase tracking-[0.1em] transition ${
               room.availability
-                ? "border-[#174D35] bg-[#174D35] text-[#F8F4EA] hover:bg-transparent hover:text-[#174D35]"
-                : "border-[#174D35]/35 bg-transparent text-[#174D35] hover:bg-[#174D35] hover:text-[#F8F4EA]"
+                ? "border-[#174D35] bg-[#174D35] !text-[#F8F4EA] hover:bg-[#123d2a]"
+                : "border-[#1C1B18]/40 bg-[#1C1B18] !text-[#F8F4EA] hover:bg-[#1C1B18]/80"
             } disabled:cursor-not-allowed disabled:opacity-50`}
           >
-            {room.availability ? (
-              <Check size={12} />
+            {isUpdating ? (
+              <span className="whitespace-nowrap !text-[#F8F4EA]">Updating...</span>
+            ) : room.availability ? (
+              <>
+                <Check size={11} className="shrink-0 !text-[#F8F4EA]" />
+                <span className="whitespace-nowrap !text-[#F8F4EA]">Mark Sold Out</span>
+              </>
             ) : (
-              <X size={12} />
+              <>
+                <X size={11} className="shrink-0 !text-[#F8F4EA]" />
+                <span className="whitespace-nowrap !text-[#F8F4EA]">Mark Available</span>
+              </>
             )}
-
-            {isUpdating
-              ? "Updating"
-              : room.availability
-                ? "Available"
-                : "Unavailable"}
           </button>
 
           {/* Edit */}
 
           <button
             type="button"
-            onClick={() => onEdit(room._id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(room._id || (room as any).id);
+            }}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#1C1B18]/10 bg-white text-[#174D35] transition hover:border-[#174D35]/30 hover:bg-[#174D35] hover:text-[#F8F4EA]"
             aria-label="Edit room"
           >
@@ -207,8 +213,11 @@ export default function OwnerRoomCard({
           <button
             type="button"
             disabled={isDeleting}
-            onClick={() => onDelete(room._id)}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-red-500/10 bg-white text-red-500 transition hover:border-red-500/20 hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(room._id || (room as any).id);
+            }}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-red-500/20 bg-white text-red-500 transition hover:border-red-500 hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
             aria-label="Delete room"
           >
             <Trash2 size={13} />
@@ -218,13 +227,14 @@ export default function OwnerRoomCard({
 
           <button
             type="button"
-            onClick={() =>
+            onClick={(e) => {
+              e.stopPropagation();
               window.open(
-                `/rooms/${room._id}`,
+                `/rentals/${room._id || (room as any).id}`,
                 "_self"
-              )
-            }
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#1C1B18]/10 bg-white !text-[#174D35] transition hover:border-[#174D35]/30 hover:!bg-[#174D35] hover:!text-[#F8F4EA]"
+              );
+            }}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#1C1B18]/10 bg-white !text-[#174D35] transition hover:border-[#174D35]/30 hover:!bg-[#174D35] hover:!text-[#F8F4EA] cursor-pointer"
             aria-label="View room"
           >
             <ArrowUpRight size={14} />

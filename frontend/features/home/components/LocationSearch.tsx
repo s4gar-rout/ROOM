@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search, MapPin } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { fadeUpVariants, staggerContainerVariants, staggerItemVariants, shouldReduceMotion } from "@/lib/animations";
+import { fadeUpVariants, staggerContainerVariants, shouldReduceMotion } from "@/lib/animations";
 
 const suggestions = [
   "Near Railway Station",
@@ -39,8 +39,75 @@ export default function LocationSearch() {
         variants={staggerContainerVariants}
       >
 
-        {/* Search Bar */}
-        <motion.div variants={fadeUpVariants} className="flex w-full flex-col gap-2 rounded-2xl bg-[#174D35] p-2 sm:flex-row sm:items-center sm:rounded-full sm:p-2">
+        {/* Mobile Search Card (< md) */}
+        <motion.div 
+          variants={fadeUpVariants} 
+          className="block md:hidden rounded-2xl border border-[#174D35]/15 bg-[#FFFDF8] p-4 shadow-sm shadow-[#174D35]/5"
+        >
+          {/* Location Input */}
+          <div className="flex h-13 w-full items-center gap-3 rounded-xl border border-[#174D35]/15 bg-[#F8F4EA]/60 px-3.5">
+            <MapPin
+              size={18}
+              strokeWidth={1.8}
+              className="shrink-0 text-[#174D35]"
+            />
+
+            <div className="min-w-0 flex-1">
+              <label
+                htmlFor="mobile-location"
+                className="block text-[8px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]"
+              >
+                Location
+              </label>
+
+              <input
+                id="mobile-location"
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  }
+                }}
+                placeholder="Area, landmark or locality"
+                className="w-full min-w-0 truncate bg-transparent text-sm text-[#1C1B18] outline-none placeholder:text-[#8B7D6D]"
+              />
+            </div>
+          </div>
+
+          {/* Primary Search Button */}
+          <button
+            type="button"
+            onClick={handleSearch}
+            className="mt-3 flex h-12 w-full items-center justify-center rounded-xl bg-[#174D35] text-sm font-semibold !text-[#F8F4EA] transition-colors hover:bg-[#123d2a] active:bg-[#0d2e1f]"
+          >
+            Search homes
+          </button>
+
+          {/* Search Suggestion Chips */}
+          <div className="mt-4 border-t border-[#1C1B18]/10 pt-3">
+            <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.15em] text-[#756A5C]">
+              Try searching near
+            </p>
+
+            <div className="flex flex-wrap items-center gap-1.5">
+              {suggestions.map((suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  onClick={() => handleSuggestion(suggestion)}
+                  className="rounded-full border border-[#174D35]/20 bg-[#174D35]/5 px-3 py-1.5 text-xs font-medium text-[#174D35] transition-colors hover:bg-[#174D35]/10 active:bg-[#174D35]/20"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Desktop Search Bar (>= md) */}
+        <motion.div variants={fadeUpVariants} className="hidden md:flex w-full flex-col gap-2 rounded-2xl bg-[#174D35] p-2 sm:flex-row sm:items-center sm:rounded-full sm:p-2">
 
           {/* Input */}
           <div className="flex h-12 sm:h-14 min-w-0 flex-1 items-center gap-3 sm:gap-4 rounded-xl sm:rounded-full bg-[#2D6047] px-4 sm:px-6">
@@ -85,8 +152,8 @@ export default function LocationSearch() {
           </button>
         </motion.div>
 
-        {/* Suggestions */}
-        <motion.div variants={fadeUpVariants} className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-2 text-[11px] sm:text-xs text-[#756A5C]">
+        {/* Desktop Suggestions (>= md) */}
+        <motion.div variants={fadeUpVariants} className="hidden md:flex mt-3 flex-wrap items-center justify-center gap-x-4 gap-y-1 px-2 text-[11px] sm:text-xs text-[#756A5C]">
 
           <span>Try:</span>
 
@@ -106,3 +173,4 @@ export default function LocationSearch() {
     </section>
   );
 }
+

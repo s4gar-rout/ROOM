@@ -46,35 +46,53 @@ export default function AdminDashboard() {
   }
 
   const statCards = [
-    { label: "Total Users", value: stats.users, icon: Users, color: "text-blue-600", bg: "bg-blue-100" },
-    { label: "Owners", value: stats.owners, icon: UserCheck, color: "text-green-600", bg: "bg-green-100" },
-    { label: "Tenants", value: stats.tenants, icon: UserX, color: "text-purple-600", bg: "bg-purple-100" },
-    { label: "Total Rooms", value: stats.rooms, icon: Home, color: "text-indigo-600", bg: "bg-indigo-100" },
-    { label: "Available Rooms", value: stats.availableRooms, icon: CheckCircle, color: "text-teal-600", bg: "bg-teal-100" },
-    { label: "Unavailable Rooms", value: stats.unavailableRooms, icon: XCircle, color: "text-rose-600", bg: "bg-rose-100" },
+    { label: "Total Users", value: stats.users, icon: Users },
+    { label: "Owners", value: stats.owners, icon: UserCheck },
+    { label: "Tenants", value: stats.tenants, icon: UserX },
+    { label: "Total Rooms", value: stats.rooms, icon: Home },
+    { label: "Available Rooms", value: stats.availableRooms, icon: CheckCircle },
+    { label: "Sold Out Rooms", value: stats.unavailableRooms, icon: XCircle },
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="mb-8">
-        <h1 className="font-serif text-3xl font-medium tracking-tight text-[#1C1B18]">Overview</h1>
-        <p className="text-sm text-[#5F554A]">Platform statistics and metrics.</p>
+    <div className="space-y-8">
+      {/* Section Intro */}
+      <div>
+        <div className="mb-2.5 flex items-center gap-3">
+          <span className="h-px w-8 bg-[#174D35]" />
+          <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
+            Platform Overview
+          </span>
+        </div>
+        <h1 className="font-serif text-[40px] font-normal leading-none tracking-[-0.03em] text-[#1C1B18] sm:text-[44px]">
+          Dashboard <span className="italic text-[#174D35]">metrics.</span>
+        </h1>
+        <p className="mt-2.5 text-[11px] font-medium leading-5 text-[#5F554A]">
+          Real-time metrics, user statistics, and room inventory across ROOM marketplace.
+        </p>
       </div>
 
+      {/* Stat Cards Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="rounded-2xl border border-[#1C1B18]/10 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
-              <div className="flex items-center gap-4">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-full ${stat.bg}`}>
-                  <Icon className={`h-6 w-6 ${stat.color}`} />
+            <div 
+              key={index} 
+              className="group rounded-[22px] border border-[#174D35]/12 bg-[#FAF7F0] p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#174D35]/30 hover:shadow-[0_12px_32px_rgba(28,27,24,0.06)]"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#174D35]/10 text-[#174D35] transition-transform duration-300 group-hover:scale-105">
+                  <Icon size={20} />
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-[#5F554A]">{stat.label}</p>
-                  <p className="font-serif text-2xl font-semibold text-[#1C1B18]">{stat.value}</p>
-                </div>
+                <span className="font-serif text-[38px] font-normal leading-none text-[#1C1B18]">
+                  {stat.value}
+                </span>
               </div>
+
+              <p className="mt-5 text-[9px] font-bold uppercase tracking-[0.2em] text-[#756A5C]">
+                {stat.label}
+              </p>
             </div>
           );
         })}

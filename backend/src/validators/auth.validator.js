@@ -32,18 +32,17 @@ export const registerValidator = [
 
 
 export const loginValidator = [
-    body("email")
-        .trim()
-        .notEmpty()
-        .withMessage("Email is required")
-        .isEmail()
-        .withMessage("Please enter a valid email address")
-        .normalizeEmail(),
+    body().custom((value, { req }) => {
+        const identifier = (req.body.email || req.body.identifier || "").trim();
+        if (!identifier) {
+            throw new Error("Email or phone number is required");
+        }
+        return true;
+    }),
 
     body("password")
         .notEmpty()
-        .withMessage("Password is required")
-        .isLength({ min: 8 })
-        .withMessage("Password must be at least 8 characters long"),
+        .withMessage("Password is required"),
 ];
+
 

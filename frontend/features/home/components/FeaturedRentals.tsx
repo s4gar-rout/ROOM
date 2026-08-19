@@ -9,14 +9,26 @@ import { getAllRooms } from "@/features/rental/services/rental.service";
 import type { Room } from "@/features/rental/types/rental";
 import { motion } from "framer-motion";
 import { fadeUpVariants, staggerContainerVariants, shouldReduceMotion } from "@/lib/animations";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import BecomeOwnerModal from "@/features/auth/components/BecomeOwnerModal";
 
-export default function FeaturedRentals() {
+interface FeaturedRentalsProps {
+  initialRentals?: Room[];
+}
+
+export default function FeaturedRentals({
+  initialRentals,
+}: FeaturedRentalsProps) {
+  const { user, isAuthenticated } = useAuth();
+  const [becomeOwnerModalOpen, setBecomeOwnerModalOpen] = useState(false);
   const reduceMotion = shouldReduceMotion();
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [rooms, setRooms] = useState<Room[]>(initialRentals || []);
+  const [isLoading, setIsLoading] = useState(!initialRentals);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (initialRentals) return;
+
     const fetchFeaturedRooms = async () => {
       try {
         setIsLoading(true);
@@ -147,15 +159,39 @@ export default function FeaturedRentals() {
         {!isLoading &&
           !error &&
           rooms.length === 0 && (
-            <div className="rounded-3xl border border-[#174D35]/10 bg-white px-5 py-10 text-center">
+            <div className="mx-auto max-w-lg rounded-2xl border border-[#174D35]/15 bg-[#174D35]/5 px-6 py-7 text-center">
 
-              <p className="font-serif text-xl text-[#1C1B18]">
-                No rooms available yet.
+              <p className="font-serif text-lg font-normal text-[#1C1B18]">
+                No homes here yet.
               </p>
 
-              <p className="mt-2 text-sm font-medium text-[#756A5C]">
-                New listings will appear here soon.
+              <p className="mt-1 text-xs font-medium text-[#756A5C]">
+                New listings are on their way.
               </p>
+
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-semibold text-[#174D35]">
+                <Link
+                  href="/rentals"
+                  className="hover:underline"
+                >
+                  Explore all rentals →
+                </Link>
+
+                <span className="text-[#174D35]/30 hidden sm:inline">·</span>
+
+                <Link
+                  href="/owner-dashboard/add-room"
+                  onClick={(e) => {
+                    if (isAuthenticated && user?.role === "tenant") {
+                      e.preventDefault();
+                      setBecomeOwnerModalOpen(true);
+                    }
+                  }}
+                  className="hover:underline"
+                >
+                  Be the first to list a property →
+                </Link>
+              </div>
 
             </div>
           )}
@@ -186,6 +222,11 @@ export default function FeaturedRentals() {
           )}
 
       </div>
+
+      <BecomeOwnerModal
+        isOpen={becomeOwnerModalOpen}
+        onClose={() => setBecomeOwnerModalOpen(false)}
+      />
     </section>
   );
 }

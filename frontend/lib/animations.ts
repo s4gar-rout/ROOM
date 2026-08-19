@@ -42,18 +42,18 @@ export const staggerContainerVariants: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1,
+      staggerChildren: 0.08,
+      delayChildren: 0.05,
     },
   },
 };
 
 export const staggerItemVariants: Variants = {
-  hidden: { opacity: 0, y: 15 },
+  hidden: { opacity: 0, y: 28 },
   visible: { 
     opacity: 1, 
     y: 0, 
-    transition: { duration: duration.normal, ease: easeOutExpo } 
+    transition: { duration: 0.8, ease: easeOutExpo } 
   },
 };
 
@@ -73,15 +73,15 @@ export const cardHoverVariants = {
   initial: { y: 0 },
   hover: { 
     y: -4, 
-    transition: { duration: duration.fast, ease: easeOutQuart } 
+    transition: { duration: 0.45, ease: easeOutQuart } 
   }
 };
 
 export const imageHoverVariants = {
   initial: { scale: 1 },
   hover: { 
-    scale: 1.03, 
-    transition: { duration: duration.normal, ease: easeOutQuart } 
+    scale: 1.035, 
+    transition: { duration: 0.7, ease: easeOutExpo } 
   }
 };
 

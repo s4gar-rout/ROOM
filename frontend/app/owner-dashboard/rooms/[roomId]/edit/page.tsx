@@ -4,7 +4,6 @@ import { use, useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft,
   ArrowUpRight,
   Check,
   ImagePlus,
@@ -21,6 +20,7 @@ import {
   Loader2,
 } from "lucide-react";
 import ButtonLoader from "@/components/ui/ButtonLoader";
+import Navbar from "@/components/layout/Navbar";
 
 import {
   getSingleRoom,
@@ -56,6 +56,8 @@ type RoomType =
   | "1BHK"
   | "2BHK";
 
+import { useAuth } from "@/features/auth/hooks/useAuth";
+
 interface EditRoomPageProps {
   params: Promise<{ roomId: string }>;
 }
@@ -63,6 +65,15 @@ interface EditRoomPageProps {
 export default function EditRoomPage({ params }: EditRoomPageProps) {
   const { roomId } = use(params);
   const router = useRouter();
+  const { isAuthenticated, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.replace(`/login?returnUrl=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+  }, [isAuthenticated, authLoading, router]);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Loading States
@@ -342,9 +353,19 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
   const errorClass =
     "mt-1.5 text-[9px] font-semibold text-red-500";
 
-  // ==========================================
-  // SKELETON / LOADING UI
-  // ==========================================
+  if (authLoading || !isAuthenticated) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#F8F4EA]">
+        <div className="flex items-center gap-3 text-[#174D35]">
+          <Loader2 size={22} className="animate-spin" />
+          <span className="text-xs font-bold uppercase tracking-[0.15em]">
+            Checking authentication...
+          </span>
+        </div>
+      </main>
+    );
+  }
+
   if (pageLoading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#F8F4EA]">
@@ -359,31 +380,11 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-[#F8F4EA] px-4 pt-4 pb-24 md:py-4 text-[#1C1B18] sm:px-6 lg:px-8">
-      <div className="mx-auto flex min-h-[calc(100vh-32px)] max-w-[1400px] flex-col border border-[#174D35]/15 bg-[#F8F4EA]">
-        
-        {/* =========================================
-            TOP HEADER
-        ========================================= */}
-        <header className="flex h-[72px] shrink-0 items-center justify-between border-b border-[#1C1B18]/10 px-6 sm:px-8 lg:px-10">
-          <button
-            type="button"
-            onClick={() => router.push("/")}
-            className="font-serif text-[27px] italic tracking-tight text-[#1C1B18]"
-          >
-            room.
-          </button>
+    <>
+      <Navbar />
 
-          <button
-            type="button"
-            onClick={() => router.push("/owner-dashboard")}
-            className="flex h-9 items-center gap-2 border border-[#1C1B18]/15 bg-transparent px-4 text-[9px] font-bold uppercase tracking-[0.15em] text-[#1C1B18] transition hover:border-[#174D35] hover:text-[#174D35]"
-          >
-            <ArrowLeft size={13} />
-            <span className="hidden sm:inline">Back to dashboard</span>
-            <span className="sm:hidden">Back</span>
-          </button>
-        </header>
+      <main className="min-h-screen bg-[#F8F4EA] px-4 pt-4 pb-24 md:py-4 text-[#1C1B18] sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-[calc(100vh-32px)] max-w-[1400px] flex-col border border-[#174D35]/15 bg-[#F8F4EA]">
 
         {/* =========================================
             MAIN FORM
@@ -556,7 +557,7 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
                         : "border-[#CFCBBF] bg-transparent text-[#5F554A] hover:border-[#174D35]"
                     }`}
                   >
-                    Unavailable
+                    Sold Out
                   </button>
                 </div>
               </div>
@@ -767,5 +768,6 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
         </form>
       </div>
     </main>
-  );
+  </>
+);
 }

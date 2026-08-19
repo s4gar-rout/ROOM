@@ -5,10 +5,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
+  ArrowRight,
   MapPin,
   MessageCircle,
   ChevronLeft,
   ChevronRight,
+  Info,
   X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -87,22 +89,23 @@ export default function SingleRoomPage({
       return;
     }
 
-    const roomOwnerId = typeof room?.owner === "string" ? room.owner : room?.owner?._id;
+    const roomOwnerId = typeof room?.owner === "object" ? (room.owner?._id || (room.owner as any)?.id) : room?.owner;
+    const currentUserId = user?._id || (user as any)?.id;
 
-    if (user._id === roomOwnerId) {
+    if (currentUserId && roomOwnerId && String(currentUserId) === String(roomOwnerId)) {
       setRestrictionModal({
         isOpen: true,
-        title: "Cannot Message This Room",
-        message: "You are the owner of this room. You cannot message yourself. Tenants can contact you about this listing."
+        title: "Your Property Listing",
+        message: "You are the owner of this property. You cannot message yourself. Potential tenants can contact you about this listing."
       });
       return;
     }
 
-    if (user.role === "owner" && user._id !== roomOwnerId) {
+    if (user?.role?.toLowerCase() === "owner") {
       setRestrictionModal({
         isOpen: true,
         title: "Messaging Not Available",
-        message: "Owners cannot contact other owners. Only tenants can contact room owners about their listings."
+        message: "You are currently signed in as a Property Owner. Owners cannot send room inquiry messages to other owners. Only tenants can contact property owners about listings."
       });
       return;
     }
@@ -115,9 +118,13 @@ export default function SingleRoomPage({
       if (res?.success && res?.conversation?._id) {
         router.push(`/messages/${res.conversation._id}`);
       }
-    } catch (err: unknown) {
-      console.error("Failed to start chat:", err);
-      // Optional: you can show an error toast here if one exists
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || "Unable to start chat at this time.";
+      setRestrictionModal({
+        isOpen: true,
+        title: "Cannot Start Chat",
+        message: msg
+      });
     } finally {
       setChatLoading(false);
     }
@@ -781,7 +788,7 @@ export default function SingleRoomPage({
                 >
                   {room.availability
                     ? "Available"
-                    : "Unavailable"}
+                    : "Sold Out"}
                 </span>
               </div>
 
@@ -997,7 +1004,7 @@ export default function SingleRoomPage({
                     ? "Opening Chat..."
                     : room.availability
                       ? "Chat With Owner"
-                      : "Room Unavailable"}
+                      : "Room Sold Out"}
                 </button>
 
                 <p
@@ -1023,35 +1030,57 @@ export default function SingleRoomPage({
       </motion.div>
 
       {/* ========================================================
-          RESTRICTION MODAL
+          RESTRICTION MODAL (PREMIUM EDITORIAL DESIGN)
       ======================================================== */}
       {restrictionModal.isOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#1C1B18]/40 px-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-[24px] border border-[#E8E3D6] bg-[#FFFDF8] p-8 shadow-[0_12px_40px_rgba(28,27,24,0.14)] animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#1C1B18]/60 px-4 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[32px] sm:rounded-[36px] border border-[#174D35]/15 bg-[#FAF7F0] p-7 sm:p-8 shadow-[0_24px_60px_rgba(28,27,24,0.18)] animate-in zoom-in-95 duration-200 text-[#1C1B18]">
+
+            {/* Close Button */}
             <button
               onClick={() => setRestrictionModal({ ...restrictionModal, isOpen: false })}
-              className="absolute right-5 top-5 rounded-full p-2 text-[#8A8177] transition-colors hover:bg-[#1C1B18]/5 hover:text-[#1C1B18] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#174D35]/50"
+              className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-[#174D35]/5 text-[#756A5C] transition-all hover:bg-[#174D35]/15 hover:text-[#174D35] focus:outline-none"
               aria-label="Close modal"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
 
-            <h2 className="font-serif text-[28px] leading-[1.1] tracking-[-0.02em] text-[#1C1B18]">
+            {/* Eyebrow Accent Line */}
+            <div className="mb-4 flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#174D35]" />
+              <span className="h-px w-6 bg-[#174D35]/30" />
+              <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
+                Account Notice
+              </span>
+            </div>
+
+            {/* Icon Header */}
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#174D35]/10 text-[#174D35]">
+              <Info size={22} />
+            </div>
+
+            {/* Title */}
+            <h2 className="font-serif text-[28px] sm:text-[32px] font-normal leading-[1.15] tracking-[-0.03em] text-[#1C1B18]">
               {restrictionModal.title}
             </h2>
-            
-            <p className="mt-4 font-sans text-[15px] leading-relaxed text-[#756B60]">
+
+            {/* Message */}
+            <p className="mt-3 text-[13px] sm:text-[14px] leading-relaxed text-[#5F554A]">
               {restrictionModal.message}
             </p>
 
-            <div className="mt-8 flex justify-end">
+            {/* Action CTA */}
+            <div className="mt-7 flex items-center justify-end border-t border-[#174D35]/10 pt-5">
               <button
+                type="button"
                 onClick={() => setRestrictionModal({ ...restrictionModal, isOpen: false })}
-                className="rounded-full bg-[#174D35] px-7 py-2.5 font-sans text-[13px] font-medium text-[#FFFDF8] transition-colors hover:bg-[#14422D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#174D35]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFFDF8]"
+                className="group inline-flex h-11 items-center gap-2 rounded-full bg-[#174D35] px-7 text-[10px] font-bold uppercase tracking-[0.18em] !text-[#F8F4EA] transition-all hover:bg-[#123d2a] shadow-md hover:shadow-lg"
               >
-                OK
+                <span>Understood</span>
+                <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
               </button>
             </div>
+
           </div>
         </div>
       )}

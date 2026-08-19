@@ -14,6 +14,13 @@ const router = express.Router();
  */
 router.post("/register", registerValidator, validateRequest, authControllers.registerController);
 
+/**
+ * @route POST /api/auth/verify-email
+ * @description Verify user email via OTP and activate account
+ * @access Public
+ */
+router.post("/verify-email", authControllers.verifyEmailController);
+
 
 /**
  * @route POST /api/auth/login
@@ -41,6 +48,13 @@ router.post(
  */
 
 router.get("/me", authMiddleware, authControllers.getMeController);
+
+/**
+ * @route PATCH /api/auth/become-owner
+ * @description Convert authenticated tenant user to owner role
+ * @access Protected
+ */
+router.patch("/become-owner", authMiddleware, authControllers.becomeOwnerController);
 
 
 /**

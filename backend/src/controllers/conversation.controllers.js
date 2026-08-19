@@ -19,28 +19,35 @@ const USER_SELECT = "username email avatar";
 const ROOM_SELECT = "title images rent location availability";
 
 function formatConversation(conversation, currentUserId) {
+    if (!conversation) return null;
+
     const obj = conversation.toObject
         ? conversation.toObject()
         : conversation;
 
-    const currentId = currentUserId.toString();
+    const currentId = currentUserId ? currentUserId.toString() : "";
 
     const ownerId = obj.owner?._id
         ? obj.owner._id.toString()
-        : obj.owner?.toString();
+        : (obj.owner ? obj.owner.toString() : "");
 
     const buyerId = obj.buyer?._id
         ? obj.buyer._id.toString()
-        : obj.buyer?.toString();
+        : (obj.buyer ? obj.buyer.toString() : "");
 
-    const isOwner = ownerId === currentId;
-    const isBuyer = buyerId === currentId;
+    const isOwner = Boolean(ownerId && ownerId === currentId);
+    const isBuyer = Boolean(buyerId && buyerId === currentId);
 
-    if (!isOwner && !isBuyer) {
-        return null;
-    }
+    const ownerObj = (typeof obj.owner === 'object' && obj.owner !== null && obj.owner._id)
+        ? obj.owner
+        : { _id: ownerId || "owner", username: "Property Owner", email: "" };
 
-    const otherUser = isOwner ? obj.buyer : obj.owner;
+    const buyerObj = (typeof obj.buyer === 'object' && obj.buyer !== null && obj.buyer._id)
+        ? obj.buyer
+        : { _id: buyerId || "buyer", username: "User", email: "" };
+
+    const currentUserIsOwner = isOwner || (!isBuyer && currentId === ownerId);
+    const otherUser = currentUserIsOwner ? buyerObj : ownerObj;
 
     let finalLastMessage = obj.lastMessage || "";
     let finalLastMessageAt = obj.lastMessageAt;
@@ -49,7 +56,7 @@ function formatConversation(conversation, currentUserId) {
     if (obj.clearedAt) {
         const userClearedAt = obj.clearedAt instanceof Map 
             ? obj.clearedAt.get(currentId) 
-            : obj.clearedAt[currentId];
+            : (typeof obj.clearedAt === "object" ? obj.clearedAt[currentId] : null);
 
         if (userClearedAt && finalLastMessageAt) {
             if (new Date(finalLastMessageAt).getTime() <= new Date(userClearedAt).getTime()) {
@@ -61,13 +68,13 @@ function formatConversation(conversation, currentUserId) {
     return {
         _id: obj._id,
         room: obj.room,
-        owner: obj.owner,
-        buyer: obj.buyer,
+        owner: ownerObj,
+        buyer: buyerObj,
         otherUser,
         lastMessage: finalLastMessage,
         lastMessageAt: finalLastMessageAt,
         unreadCount: getUnreadCountForUser(obj, currentUserId),
-        otherUserOnline: isUserOnline(otherUser._id),
+        otherUserOnline: otherUser?._id ? isUserOnline(otherUser._id) : false,
         createdAt: obj.createdAt,
         updatedAt: obj.updatedAt,
     };
@@ -96,14 +103,25 @@ export async function createConversationController(req, res) {
             });
         }
 
-        if (!room.availability) {
+        if (!room.owner) {
             return res.status(400).json({
                 success: false,
-                message: "This room is currently unavailable",
+                message: "The owner of this room is no longer available",
             });
         }
 
-        if (room.owner.toString() === tenantId.toString()) {
+        if (!room.availability) {
+            return res.status(400).json({
+                success: false,
+                message: "This room is currently sold out",
+            });
+        }
+
+        const ownerIdStr = room.owner._id
+            ? room.owner._id.toString()
+            : room.owner.toString();
+
+        if (ownerIdStr === tenantId.toString()) {
             return res.status(400).json({
                 success: false,
                 message:
@@ -113,19 +131,21 @@ export async function createConversationController(req, res) {
 
         if (
             req.user.role === "owner" &&
-            room.owner.toString() !== tenantId.toString()
+            ownerIdStr !== tenantId.toString()
         ) {
             return res.status(400).json({
                 success: false,
                 message:
-                    "Owners cannot contact other owners.",
+                    "You are currently signed in as a Property Owner. Owners cannot send room inquiry messages to other owners. Only tenants can contact property owners about listings.",
             });
         }
 
         let conversation = await ConversationModel.findOne({
-            buyer: tenantId,
-            owner: room.owner,
             room: room._id,
+            $or: [
+                { buyer: tenantId, owner: room.owner },
+                { buyer: room.owner, owner: tenantId },
+            ],
         });
 
         if (!conversation) {
@@ -135,15 +155,23 @@ export async function createConversationController(req, res) {
                     owner: room.owner,
                     room: room._id,
                 });
-            } catch (error) {
-                if (error.code !== 11000) throw error;
-
+            } catch (createErr) {
+                console.warn("Conversation create fallback:", createErr?.message);
                 conversation = await ConversationModel.findOne({
-                    buyer: tenantId,
-                    owner: room.owner,
                     room: room._id,
+                    $or: [
+                        { buyer: tenantId, owner: room.owner },
+                        { buyer: room.owner, owner: tenantId },
+                    ],
                 });
             }
+        }
+
+        if (!conversation) {
+            return res.status(400).json({
+                success: false,
+                message: "Unable to start conversation for this room",
+            });
         }
 
         const populated = await ConversationModel.findById(
@@ -153,17 +181,19 @@ export async function createConversationController(req, res) {
             .populate("owner", USER_SELECT)
             .populate("room", ROOM_SELECT);
 
+        const formatted = formatConversation(populated || conversation, tenantId);
+
         return res.status(200).json({
             success: true,
             message: "Conversation ready",
-            conversation: formatConversation(populated, tenantId),
+            conversation: formatted,
         });
     } catch (error) {
         console.error("Create Conversation Error:", error);
 
         return res.status(500).json({
             success: false,
-            message: "Internal server error",
+            message: error.message || "Internal server error",
         });
     }
 }

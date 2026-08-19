@@ -54,26 +54,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Mobile Sidebar Overlay */}
       {isMobileOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-black/50 md:hidden" 
+          className="fixed inset-0 z-40 bg-[#1C1B18]/50 backdrop-blur-xs md:hidden" 
           onClick={() => setIsMobileOpen(false)} 
         />
       )}
 
       {/* Sidebar */}
       <aside 
-        className={`fixed inset-y-0 left-0 z-50 w-64 transform border-r border-[#1C1B18]/10 bg-[#FFFDF8] transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform border-r border-[#1C1B18]/8 bg-[#FAF7F0] transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="flex h-16 items-center justify-between border-b border-[#1C1B18]/10 px-6">
-          <Link href="/admin" className="font-serif text-2xl italic tracking-tight text-[#174D35]">
-            room. <span className="font-sans text-xs not-italic tracking-widest text-[#5F554A]">ADMIN</span>
+        <div className="flex h-16 items-center justify-between border-b border-[#1C1B18]/8 px-6">
+          <Link href="/admin" className="flex items-center gap-2 font-serif text-2xl font-normal tracking-tight text-[#174D35]">
+            <span>room.</span>
+            <span className="rounded-full bg-[#174D35]/10 px-2.5 py-0.5 font-sans text-[8px] font-bold uppercase tracking-[0.2em] text-[#174D35]">ADMIN</span>
           </Link>
-          <button className="md:hidden" onClick={() => setIsMobileOpen(false)}>
-            <X size={20} className="text-[#5F554A]" />
+          <button className="md:hidden text-[#756A5C] hover:text-[#1C1B18]" onClick={() => setIsMobileOpen(false)}>
+            <X size={18} />
           </button>
         </div>
 
-        <nav className="flex flex-col gap-1 p-4">
-          <p className="px-3 pb-2 pt-4 text-[10px] font-semibold uppercase tracking-wider text-[#756A5C]">
+        <nav className="flex flex-col gap-1.5 p-4">
+          <p className="px-3 pb-2 pt-4 text-[9px] font-bold uppercase tracking-[0.22em] text-[#174D35]">
             Management
           </p>
           {navItems.map((item) => {
@@ -84,25 +85,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsMobileOpen(false)}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 rounded-full px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] transition-all duration-200 ${
                   isActive 
-                    ? "bg-[#174D35] text-[#F8F4EA]" 
-                    : "text-[#5F554A] hover:bg-[#1C1B18]/5 hover:text-[#174D35]"
+                    ? "bg-[#174D35] !text-[#F8F4EA] shadow-sm" 
+                    : "text-[#5F554A] hover:bg-[#174D35]/8 hover:text-[#174D35]"
                 }`}
               >
-                <Icon size={18} />
-                {item.label}
+                <Icon size={16} />
+                <span>{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="absolute bottom-0 left-0 w-full border-t border-[#1C1B18]/10 p-4">
+        <div className="absolute bottom-0 left-0 w-full border-t border-[#1C1B18]/8 p-4 bg-[#FAF7F0]">
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+            className="flex w-full items-center gap-3 rounded-full px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-red-600 transition-colors hover:bg-red-500/10"
           >
-            <LogOut size={18} />
+            <LogOut size={16} />
             Logout
           </button>
         </div>
@@ -111,23 +112,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main Content */}
       <main className="flex flex-1 flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="flex h-16 shrink-0 items-center justify-between border-b border-[#1C1B18]/10 bg-[#FFFDF8] px-4 md:px-8">
+        <header className="flex h-16 shrink-0 items-center justify-between border-b border-[#1C1B18]/8 bg-[#FAF7F0] px-5 md:px-8">
           <div className="flex items-center gap-3">
             <button 
-              className="rounded-lg p-2 text-[#5F554A] hover:bg-[#1C1B18]/5 md:hidden"
+              className="rounded-full p-2 text-[#5F554A] hover:bg-[#174D35]/10 md:hidden"
               onClick={() => setIsMobileOpen(true)}
             >
-              <Menu size={20} />
+              <Menu size={18} />
             </button>
-            <span className="font-semibold text-lg capitalize">{pathname.split('/').pop() || 'Dashboard'}</span>
+            <div className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#174D35]" />
+              <span className="font-serif text-xl font-normal capitalize text-[#1C1B18]">
+                {pathname.split('/').pop() || 'Dashboard'}
+              </span>
+            </div>
           </div>
           <div className="flex-1" />
           <div className="flex items-center gap-3">
-            <div className="flex flex-col text-right hidden md:flex">
-                <span className="text-sm font-medium text-[#1C1B18]">{user.username}</span>
-                <span className="text-[10px] uppercase tracking-wider text-[#5F554A]">{user.role}</span>
+            <div className="hidden flex-col text-right md:flex">
+              <span className="text-xs font-semibold text-[#1C1B18]">{user.username}</span>
+              <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#174D35]">{user.role}</span>
             </div>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#174D35] text-sm font-semibold text-[#F8F4EA]">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#174D35] text-xs font-bold !text-[#F8F4EA] shadow-xs">
               {user.username?.charAt(0).toUpperCase()}
             </div>
           </div>
@@ -135,7 +141,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Page Content */}
         <div 
-          className="flex-1 overflow-y-auto p-4 md:p-8"
+          className="flex-1 overflow-y-auto p-5 md:p-8"
           data-lenis-prevent="true"
         >
           <div className="mx-auto max-w-6xl">

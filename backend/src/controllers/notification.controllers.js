@@ -18,7 +18,7 @@ async function getMyNotificationsController(req, res) {
                 .populate("sender", USER_SELECT)
                 .populate("room", ROOM_SELECT)
                 .populate("conversation")
-                .populate("message", "message createdAt")
+                .populate("messageRef", "message createdAt")
                 .sort({ createdAt: -1 })
                 .lean();
 
@@ -54,25 +54,10 @@ async function markNotificationAsReadController(
     try {
         const { notificationId } = req.params;
 
-        const notification =
-            await NotificationModel.findOneAndUpdate(
-                {
-                    _id: notificationId,
-                    user: req.user._id,
-                },
-                {
-                    $set: {
-                        isRead: true,
-                    },
-                },
-                {
-                    new: true,
-                }
-            )
-                .populate("sender", USER_SELECT)
-                .populate("room", ROOM_SELECT)
-                .populate("conversation")
-                .populate("message", "message createdAt");
+        const notification = await NotificationModel.findOne({
+            _id: notificationId,
+            user: req.user._id,
+        });
 
         if (!notification) {
             return res.status(404).json({
@@ -80,6 +65,27 @@ async function markNotificationAsReadController(
                 message: "Notification not found",
             });
         }
+
+        // Only update read status, readAt, and expiresAt if the notification is unread.
+        // Reading an already-read notification must NOT extend its lifetime.
+        if (!notification.isRead) {
+            const now = new Date();
+            const expiresAt = new Date(
+                now.getTime() + 7 * 24 * 60 * 60 * 1000
+            );
+
+            notification.isRead = true;
+            notification.readAt = now;
+            notification.expiresAt = expiresAt;
+            await notification.save();
+        }
+
+        await notification.populate([
+            { path: "sender", select: USER_SELECT },
+            { path: "room", select: ROOM_SELECT },
+            { path: "conversation" },
+            { path: "messageRef", select: "message createdAt" },
+        ]);
 
         return res.status(200).json({
             success: true,

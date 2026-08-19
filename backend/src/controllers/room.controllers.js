@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import roomModel from "../models/room.model.js";
 import { uploadFile, deleteFile } from "../services/storage.service.js";
+import { sendRoomAddedEmail } from "../services/email.service.js";
 
 // ===============================
 // Create Room
@@ -62,6 +63,21 @@ export async function createRoomController(req, res) {
             facilities: parsedFacilities,
             images: roomImages,
         });
+
+        // Send "Room Added" Email to Owner
+        if (req.user && req.user.email) {
+            try {
+                await sendRoomAddedEmail({
+                    email: req.user.email,
+                    username: req.user.username || "Property Owner",
+                    roomTitle: room.title,
+                    rent: room.rent,
+                    location: room.location,
+                });
+            } catch (emailErr) {
+                console.error("Room Added Email Error:", emailErr);
+            }
+        }
 
         return res.status(201).json({
             success: true,

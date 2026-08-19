@@ -8,6 +8,7 @@ import {
   Home,
   RefreshCw,
   X,
+  Trash2,
 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
@@ -149,28 +150,31 @@ export default function OwnerDashboardPage() {
     }
   };
 
+  const [roomToDelete, setRoomToDelete] =
+    useState<string | null>(null);
+
   // ==========================================
   // DELETE
   // ==========================================
 
-  const handleDelete = async (
-    roomId: string
-  ) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this room listing?"
-    );
+  const handleDeleteClick = (roomId: string) => {
+    setRoomToDelete(roomId);
+  };
 
-    if (!confirmed) return;
+  const confirmDelete = async () => {
+    if (!roomToDelete) return;
 
     try {
-      setDeletingRoom(roomId);
-      await deleteRoom(roomId);
+      setDeletingRoom(roomToDelete);
+      setServerError("");
+      await deleteRoom(roomToDelete);
 
       setRooms((prev) =>
         prev.filter(
-          (room) => room._id !== roomId
+          (room) => (room._id || (room as any).id) !== roomToDelete
         )
       );
+      setRoomToDelete(null);
     } catch (error: unknown) {
       console.error(
         "Delete room error:",
@@ -332,7 +336,7 @@ export default function OwnerDashboardPage() {
           <StatCard
             icon={<X size={15} />}
             value={unavailableRooms}
-            label="Unavailable rooms"
+            label="Sold out rooms"
           />
 
         </section>
@@ -397,7 +401,7 @@ export default function OwnerDashboardPage() {
                   onAvailabilityChange={
                     handleAvailabilityChange
                   }
-                  onDelete={handleDelete}
+                  onDelete={handleDeleteClick}
                   onEdit={(roomId: string) =>
                     router.push(
                       `/owner-dashboard/rooms/${roomId}/edit`
@@ -473,6 +477,37 @@ export default function OwnerDashboardPage() {
       </div>
 
     </main>
+
+    {/* DELETE CONFIRMATION MODAL */}
+    {roomToDelete && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1C1B18]/60 backdrop-blur-xs">
+        <div className="w-full max-w-sm rounded-3xl border border-[#174D35]/15 bg-[#F8F4EA] p-6 shadow-2xl text-[#1C1B18] animate-in fade-in zoom-in-95 duration-200">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-600 mb-3">
+            <Trash2 size={22} />
+          </div>
+          <h3 className="font-serif text-2xl font-normal leading-tight text-[#1C1B18]">Delete Listing?</h3>
+          <p className="mt-2 text-xs leading-relaxed text-[#756A5C]">Are you sure you want to delete this room listing? This action cannot be undone.</p>
+          <div className="mt-6 flex items-center justify-end gap-2.5">
+            <button
+              type="button"
+              disabled={deletingRoom === roomToDelete}
+              onClick={() => setRoomToDelete(null)}
+              className="h-10 rounded-full border border-[#174D35]/30 bg-transparent px-5 text-xs font-semibold text-[#1C1B18] hover:bg-[#1C1B18]/5 transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              disabled={deletingRoom === roomToDelete}
+              onClick={confirmDelete}
+              className="h-10 rounded-full bg-red-600 px-5 text-xs font-semibold !text-white hover:bg-red-700 transition-colors disabled:opacity-50 shadow-xs"
+            >
+              {deletingRoom === roomToDelete ? "Deleting..." : "Delete Listing"}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </>
   );
 }

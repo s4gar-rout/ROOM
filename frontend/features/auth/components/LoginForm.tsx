@@ -97,36 +97,23 @@ export default function LoginForm() {
   const validateForm = () => {
     const newErrors: LoginErrors = {};
 
-    const email =
-      formData.email.trim();
+    const email = formData.email.trim();
 
     if (!email) {
-      newErrors.email =
-        "Email is required";
-    } else if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-        email
-      )
-    ) {
-      newErrors.email =
-        "Enter a valid email address";
+      newErrors.email = "Email or phone number is required";
+    } else if (email.length < 3) {
+      newErrors.email = "Enter a valid email address or phone number";
     }
 
     if (!formData.password) {
-      newErrors.password =
-        "Password is required";
-    } else if (
-      formData.password.length < 8
-    ) {
-      newErrors.password =
-        "Password must be at least 8 characters";
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
     }
 
     setErrors(newErrors);
 
-    return (
-      Object.keys(newErrors).length === 0
-    );
+    return Object.keys(newErrors).length === 0;
   };
 
   // ==========================================
@@ -147,15 +134,10 @@ export default function LoginForm() {
     try {
       setIsLoading(true);
 
-      const response =
-        await loginUser({
-          email:
-            formData.email.trim(),
-          password:
-            formData.password,
-        });
-
-
+      const response = await loginUser({
+        email: formData.email.trim(),
+        password: formData.password,
+      });
 
       const user = response?.user;
 
@@ -163,61 +145,34 @@ export default function LoginForm() {
         setServerError(
           "Login successful, but user information was not received."
         );
-
         return;
       }
 
-      // Update global context so the next page knows we're logged in
       setUser(user);
 
-      // ========================================
-      // OWNER
-      // ========================================
-
       if (user.role === "owner") {
-        /*
-         * Both verified and unverified owners
-         * can access the dashboard.
-         */
         router.replace(returnUrl || "/owner-dashboard");
         return;
       }
-
-      // ========================================
-      // TENANT
-      // ========================================
 
       if (user.role === "tenant") {
         router.replace(returnUrl || "/");
         return;
       }
 
-      // ========================================
-      // ADMIN
-      // ========================================
-
       if (user.role === "admin") {
         router.replace(returnUrl || "/admin");
         return;
       }
 
-      // ========================================
-      // UNKNOWN ROLE
-      // ========================================
-
       setServerError(
         "Your account role is not configured correctly."
       );
     } catch (error: unknown) {
-      console.error(
-        "Login error:",
-        error
-      );
-
       const message =
         (error as { response?: { data?: { message?: string } } })?.response?.data
           ?.message ||
-        "Invalid email or password.";
+        "Invalid email/phone or password.";
 
       setServerError(message);
     } finally {
@@ -250,24 +205,24 @@ export default function LoginForm() {
       noValidate
       className="space-y-5"
     >
-      {/* EMAIL */}
+      {/* EMAIL OR PHONE */}
 
       <div>
         <label
           htmlFor="email"
           className={labelClass}
         >
-          01 / Email
+          01 / Email or Phone
         </label>
 
         <input
           id="email"
-          type="email"
+          type="text"
           name="email"
           value={formData.email}
           onChange={handleChange}
-          placeholder="you@example.com"
-          autoComplete="email"
+          placeholder="email@example.com or phone number"
+          autoComplete="username"
           className={inputClass(
             "email"
           )}

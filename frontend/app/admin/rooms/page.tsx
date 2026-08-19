@@ -70,27 +70,36 @@ export default function AdminRooms() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6">
         <div>
-          <h1 className="font-serif text-3xl font-medium tracking-tight text-[#1C1B18]">Rooms</h1>
-          <p className="text-sm text-[#5F554A]">Manage property listings across the platform.</p>
+          <div className="mb-2 flex items-center gap-2.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#174D35]" />
+            <span className="h-px w-6 bg-[#174D35]/30" />
+            <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
+              Inventory Management
+            </span>
+          </div>
+          <h1 className="font-serif text-[38px] font-normal leading-none tracking-[-0.03em] text-[#1C1B18]">
+            Room <span className="italic text-[#174D35]">listings.</span>
+          </h1>
+          <p className="mt-2 text-[11px] font-medium text-[#5F554A]">Manage property listings, locations, and availability across the platform.</p>
         </div>
-        <div className="relative w-full sm:w-72">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5F554A]" />
+        <div className="relative w-full sm:w-80">
+          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#756A5C]" />
           <input 
             type="text" 
             placeholder="Search by title or location..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-full border border-[#1C1B18]/10 bg-white py-2 pl-9 pr-4 text-sm outline-none focus:border-[#174D35] focus:ring-1 focus:ring-[#174D35]"
+            className="w-full rounded-full border border-[#174D35]/15 bg-[#FAF7F0] py-2.5 pl-10 pr-4 text-xs font-medium text-[#1C1B18] outline-none transition focus:border-[#174D35] focus:ring-1 focus:ring-[#174D35]"
           />
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[#1C1B18]/10 bg-white shadow-sm overflow-hidden">
+      <div className="overflow-hidden rounded-[22px] border border-[#174D35]/12 bg-[#FAF7F0] shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-[#5F554A]">
-            <thead className="border-b border-[#1C1B18]/10 bg-[#F8F4EA] text-xs font-semibold uppercase tracking-wider text-[#1C1B18]">
+          <table className="w-full text-left text-xs text-[#5F554A]">
+            <thead className="border-b border-[#174D35]/10 bg-[#F8F4EA] text-[9px] font-bold uppercase tracking-[0.18em] text-[#174D35]">
               <tr>
                 <th className="px-6 py-4">Room</th>
                 <th className="px-6 py-4">Owner</th>
@@ -147,7 +156,7 @@ export default function AdminRooms() {
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
-                          <XCircle size={12} /> Unavailable
+                          <XCircle size={12} /> Sold Out
                         </span>
                       )}
                     </td>

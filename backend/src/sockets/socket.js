@@ -12,6 +12,7 @@ import {
 const onlineUsers = new Map();
 
 export function isUserOnline(userId) {
+    if (!userId) return false;
     const sockets = onlineUsers.get(userId.toString());
     return Boolean(sockets && sockets.size > 0);
 }

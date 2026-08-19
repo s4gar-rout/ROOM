@@ -21,7 +21,22 @@ const userSchema = new mongoose.Schema(
         contact: {
             type: String,
             trim: true,
-        }, isBlocked: {
+        },
+
+        isEmailVerified: {
+            type: Boolean,
+            default: false,
+        },
+
+        emailVerificationOtp: {
+            type: String,
+        },
+
+        emailVerificationOtpExpiresAt: {
+            type: Date,
+        },
+
+        isBlocked: {
             type: Boolean,
             default: false,
         },

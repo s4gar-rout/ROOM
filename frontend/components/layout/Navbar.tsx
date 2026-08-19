@@ -23,12 +23,14 @@ import { useConversationSocket } from "@/features/conversation/hooks/useConversa
 import { chatStore } from "@/features/conversation/store";
 import MobileDrawer from "./MobileDrawer";
 import NotificationDrawer from "@/features/notifications/components/NotificationDrawer";
+import BecomeOwnerModal from "@/features/auth/components/BecomeOwnerModal";
 
 export default function Navbar() {
   const { user, loading, isAuthenticated, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [notificationDrawerOpen, setNotificationDrawerOpen] = useState(false);
+  const [becomeOwnerModalOpen, setBecomeOwnerModalOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -150,6 +152,12 @@ export default function Navbar() {
 
             <Link
               href="/owner-dashboard/add-room"
+              onClick={(e) => {
+                if (isAuthenticated && user?.role === "tenant") {
+                  e.preventDefault();
+                  setBecomeOwnerModalOpen(true);
+                }
+              }}
               className={getDesktopLinkClass("/owner-dashboard/add-room")}
             >
               List Room
@@ -340,6 +348,7 @@ export default function Navbar() {
         isOpen={mobileDrawerOpen}
         onClose={() => setMobileDrawerOpen(false)}
         onOpenNotifications={() => setNotificationDrawerOpen(true)}
+        onOpenBecomeOwnerModal={() => setBecomeOwnerModalOpen(true)}
         unreadMessagesCount={unreadMessages}
         unreadNotificationsCount={unreadNotifications}
       />
@@ -349,6 +358,12 @@ export default function Navbar() {
         isOpen={notificationDrawerOpen}
         onClose={() => setNotificationDrawerOpen(false)}
         onUnreadCountChange={(count) => setUnreadNotifications(count)}
+      />
+
+      {/* Tenant -> Owner Role Conversion Modal */}
+      <BecomeOwnerModal
+        isOpen={becomeOwnerModalOpen}
+        onClose={() => setBecomeOwnerModalOpen(false)}
       />
     </>
   );

@@ -29,6 +29,7 @@ interface MobileDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenNotifications: () => void;
+  onOpenBecomeOwnerModal?: () => void;
   unreadMessagesCount: number;
   unreadNotificationsCount: number;
 }
@@ -37,6 +38,7 @@ export default function MobileDrawer({
   isOpen,
   onClose,
   onOpenNotifications,
+  onOpenBecomeOwnerModal,
   unreadMessagesCount,
   unreadNotificationsCount,
 }: MobileDrawerProps) {
@@ -202,6 +204,29 @@ export default function MobileDrawer({
                 <div className="flex items-center gap-3">
                   <Building2 size={16} />
                   <span>Find Rooms</span>
+                </div>
+              </Link>
+
+              <Link
+                href="/owner-dashboard/add-room"
+                onClick={(e) => {
+                  if (isAuthenticated && user?.role === "tenant") {
+                    e.preventDefault();
+                    onClose();
+                    onOpenBecomeOwnerModal?.();
+                  } else {
+                    onClose();
+                  }
+                }}
+                className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                  isActive("/owner-dashboard/add-room")
+                    ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
+                    : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <PlusCircle size={16} />
+                  <span>List a Room</span>
                 </div>
               </Link>
 

@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft,
   ArrowUpRight,
   Check,
   ImagePlus,
@@ -17,11 +16,17 @@ import {
   BatteryCharging,
   Droplets,
   X,
+  Building2,
 } from "lucide-react";
 import Image from "next/image";
 import ButtonLoader from "@/components/ui/ButtonLoader";
+import Navbar from "@/components/layout/Navbar";
+import BecomeOwnerModal from "@/features/auth/components/BecomeOwnerModal";
 
 import { createRoom } from "@/features/rental/services/rental.service";
+
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useEffect } from "react";
 
 const ROOM_TYPES = [
   { value: "single", label: "Single" },
@@ -52,6 +57,19 @@ type RoomType =
 
 export default function AddRoomPage() {
   const router = useRouter();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const [becomeOwnerModalOpen, setBecomeOwnerModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.replace(`/login?returnUrl=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+
+    if (!authLoading && isAuthenticated && user?.role === "tenant") {
+      setBecomeOwnerModalOpen(true);
+    }
+  }, [isAuthenticated, authLoading, user?.role, router]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -294,40 +312,68 @@ export default function AddRoomPage() {
   const errorClass =
     "mt-1.5 text-[9px] font-semibold text-red-500";
 
+  if (authLoading || !isAuthenticated) {
+    return (
+      <main className="min-h-screen bg-[#F8F4EA] flex items-center justify-center p-4">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#174D35]">
+          <div className="w-4 h-4 rounded-full border-2 border-[#174D35] border-t-transparent animate-spin" />
+          <span>Checking authentication...</span>
+        </div>
+      </main>
+    );
+  }
+
+  if (user?.role === "tenant") {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-[#F8F4EA] px-4 pt-12 pb-24 text-[#1C1B18] sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-xl text-center py-12 px-6 rounded-3xl border border-[#174D35]/15 bg-[#FAF7F0] shadow-xs mt-6">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#174D35]/10 text-[#174D35]">
+              <Building2 size={28} />
+            </div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
+              Account Role Conversion
+            </p>
+            <h1 className="mt-2 font-serif text-3xl font-normal leading-tight text-[#1C1B18] sm:text-4xl">
+              Want to list a room?
+            </h1>
+            <p className="mt-4 text-xs sm:text-sm leading-relaxed text-[#756A5C]">
+              You're currently a tenant. To add and manage rental listings, your account needs to be converted to an owner. Your account will be updated to "Owner" after you confirm.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => router.push("/")}
+                className="h-11 w-full sm:w-auto rounded-full border border-[#174D35]/30 bg-transparent px-6 text-xs font-semibold text-[#1C1B18] hover:bg-[#1C1B18]/5 transition-colors"
+              >
+                Back to Home
+              </button>
+              <button
+                type="button"
+                onClick={() => setBecomeOwnerModalOpen(true)}
+                className="flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-[#174D35] px-7 text-xs font-semibold !text-[#F8F4EA] transition-all hover:bg-[#123d2a] shadow-xs"
+              >
+                <span>Become an Owner</span>
+                <ArrowUpRight size={15} />
+              </button>
+            </div>
+          </div>
+        </main>
+        <BecomeOwnerModal
+          isOpen={becomeOwnerModalOpen}
+          onClose={() => setBecomeOwnerModalOpen(false)}
+        />
+      </>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-[#F8F4EA] px-4 pt-4 pb-24 md:py-4 text-[#1C1B18] sm:px-6 lg:px-8">
-      <div className="mx-auto flex min-h-[calc(100vh-32px)] max-w-[1400px] flex-col border border-[#174D35]/15 bg-[#F8F4EA]">
+    <>
+      <Navbar />
 
-        {/* =========================================
-            TOP HEADER
-        ========================================= */}
-
-        <header className="flex h-[72px] shrink-0 items-center justify-between border-b border-[#1C1B18]/10 px-6 sm:px-8 lg:px-10">
-
-          <button
-            type="button"
-            onClick={() => router.push("/")}
-            className="font-serif text-[27px] italic tracking-tight text-[#1C1B18]"
-          >
-            room.
-          </button>
-
-          <button
-            type="button"
-            onClick={() => router.push("/owner-dashboard")}
-            className="flex h-9 items-center gap-2 border border-[#1C1B18]/15 bg-transparent px-4 text-[9px] font-bold uppercase tracking-[0.15em] text-[#1C1B18] transition hover:border-[#174D35] hover:text-[#174D35]"
-          >
-            <ArrowLeft size={13} />
-
-            <span className="hidden sm:inline">
-              Back to dashboard
-            </span>
-
-            <span className="sm:hidden">
-              Back
-            </span>
-          </button>
-        </header>
+      <main className="min-h-screen bg-[#F8F4EA] px-4 pt-4 pb-24 md:py-4 text-[#1C1B18] sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-[calc(100vh-32px)] max-w-[1400px] flex-col border border-[#174D35]/15 bg-[#F8F4EA]">
 
         {/* =========================================
             MAIN FORM
@@ -804,5 +850,6 @@ export default function AddRoomPage() {
         </form>
       </div>
     </main>
-  );
+  </>
+);
 }

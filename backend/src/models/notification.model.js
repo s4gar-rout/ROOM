@@ -62,10 +62,28 @@ const notificationSchema = new mongoose.Schema(
             ref: "Message",
             default: null,
         },
+
+        readAt: {
+            type: Date,
+            default: null,
+        },
+
+        expiresAt: {
+            type: Date,
+            required: true,
+            default: () =>
+                new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        },
     },
     {
         timestamps: true,
     }
+);
+
+// MongoDB TTL index for automated notification cleanup
+notificationSchema.index(
+    { expiresAt: 1 },
+    { expireAfterSeconds: 0 }
 );
 
 notificationSchema.index({
@@ -93,3 +111,4 @@ const NotificationModel = mongoose.model(
 );
 
 export default NotificationModel;
+

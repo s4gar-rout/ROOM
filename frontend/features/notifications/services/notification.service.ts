@@ -28,6 +28,8 @@ export interface NotificationItem {
   title: string;
   body: string;
   isRead: boolean;
+  readAt?: string | null;
+  expiresAt?: string;
   createdAt: string;
   updatedAt: string;
 }

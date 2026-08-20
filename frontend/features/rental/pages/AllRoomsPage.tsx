@@ -825,7 +825,7 @@ export default function AllRoomsPage() {
             </button>
           </div>
         ) : loading ? (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div
                 key={i}
@@ -854,7 +854,7 @@ export default function AllRoomsPage() {
               variants={staggerContainerVariants}
               initial={reduceMotion ? false : "hidden"}
               animate={reduceMotion ? false : "visible"}
-              className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4"
+              className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4"
             >
               {rooms.map((room) => (
                 <RentalCard key={room._id} room={room} />

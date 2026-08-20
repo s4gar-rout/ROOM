@@ -1,6 +1,7 @@
 import ConversationModel from "../models/conversation.model.js";
 import MessageModel from "../models/message.model.js";
 import { createNotification } from "./notification.service.js";
+import { sendWebPushNotification } from "./webpush.service.js";
 
 const USER_SELECT = "username email avatar";
 
@@ -171,17 +172,33 @@ export async function sendMessage({
         );
     }
 
-    await createNotification({
-        userId: receiverId,
-        type: "NEW_MESSAGE",
-        title: "New message",
-        message: `${newMessage.sender.username}: ${trimmed.slice(0, 80)}`,
-        conversation: conversationId,
-        sender: senderId,
-        room: conversation.room,
-        messageId: newMessage._id,
-        io,
-    });
+    const isInitialInquiry = !conversation.lastMessage;
+
+    if (isInitialInquiry) {
+        await createNotification({
+            userId: receiverId,
+            type: "ROOM_QUERY",
+            title: "Room Inquiry",
+            message: `${newMessage.sender.username} inquired about your room listing`,
+            conversation: conversationId,
+            sender: senderId,
+            room: conversation.room,
+            messageId: newMessage._id,
+            io,
+        });
+    } else {
+        // Direct web push notification for active chat messages without polluting in-app database notification center
+        sendWebPushNotification(receiverId, {
+            type: "NEW_MESSAGE",
+            title: `Message from ${newMessage.sender.username}`,
+            message: trimmed.slice(0, 80),
+            senderId,
+            conversationId,
+            roomId: conversation.room,
+        }).catch((pushErr) => {
+            console.error("Web push message dispatch error:", pushErr?.message);
+        });
+    }
 
     return populatedMessage;
 }

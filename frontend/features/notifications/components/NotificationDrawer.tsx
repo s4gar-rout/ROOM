@@ -215,25 +215,25 @@ export default function NotificationDrawer({
               {unreadCount > 0 ? `${unreadCount} New Unread` : "All Caught Up"}
             </span>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllRead}
                   title="Mark all as read"
-                  className="inline-flex items-center gap-1 rounded-full border border-[#174D35]/20 bg-transparent px-3 py-1 font-sans text-[9px] font-bold uppercase tracking-wider text-[#174D35] transition-all hover:bg-[#174D35] hover:text-[#F8F4EA]"
+                  className="inline-flex h-7 items-center justify-center gap-1.5 rounded-full border border-[#174D35]/30 bg-transparent px-3 font-sans text-[10px] font-bold uppercase tracking-[0.12em] text-[#174D35] transition-all hover:bg-[#174D35] hover:text-[#F8F4EA] whitespace-nowrap leading-none shrink-0"
                 >
-                  <CheckCheck size={12} />
-                  <span>Mark read</span>
+                  <CheckCheck size={13} className="shrink-0" />
+                  <span>Mark Read</span>
                 </button>
               )}
               {notifications.length > 0 && (
                 <button
                   onClick={handleClearAll}
                   title="Clear all notifications"
-                  className="inline-flex items-center gap-1 rounded-full border border-[#A53B32]/20 bg-transparent px-3 py-1 font-sans text-[9px] font-bold uppercase tracking-wider text-[#A53B32] transition-all hover:bg-[#A53B32] hover:text-[#F8F4EA]"
+                  className="inline-flex h-7 items-center justify-center gap-1.5 rounded-full border border-[#A53B32]/30 bg-transparent px-3 font-sans text-[10px] font-bold uppercase tracking-[0.12em] text-[#A53B32] transition-all hover:bg-[#A53B32] hover:text-[#F8F4EA] whitespace-nowrap leading-none shrink-0"
                 >
-                  <Trash2 size={12} />
-                  <span>Clear all</span>
+                  <Trash2 size={13} className="shrink-0" />
+                  <span>Clear All</span>
                 </button>
               )}
             </div>

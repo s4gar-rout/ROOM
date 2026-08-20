@@ -25,7 +25,7 @@ export default function Home() {
           {/* Mobile Compact Hero (< md) */}
           <div className="block md:hidden text-center py-2">
             <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
-              ROOM / RENTALS
+              livansa / RENTALS
             </p>
             <h1 className="mt-2 font-serif text-2xl font-normal leading-tight tracking-[-0.02em] text-[#1C1B18] sm:text-3xl">
               Thoughtfully listed homes for long-term living.

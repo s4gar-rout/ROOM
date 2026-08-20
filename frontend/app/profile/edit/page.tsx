@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
+import ButtonLoader from "@/components/ui/ButtonLoader";
 
 export default function EditProfilePage() {
   const [profile, setProfile] = useState<ProfileUser | null>(null);
@@ -126,7 +127,7 @@ export default function EditProfilePage() {
           Edit <em className="text-[#174D35]">profile.</em>
         </h1>
         <p className="text-sm font-medium text-[#5F554A] max-w-sm">
-          Update your personal information to keep your ROOM account current.
+          Update your personal information to keep your livansa account current.
         </p>
       </div>
 
@@ -259,7 +260,7 @@ export default function EditProfilePage() {
                 disabled={isSaving}
                 className="group flex h-11 items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-[10px] font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:!text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isSaving ? "Saving..." : "Save Changes"}
+                {isSaving ? <ButtonLoader color="#F8F4EA" /> : "Save Changes"}
                 {!isSaving && (
                   <ArrowUpRight
                     size={16}

@@ -114,7 +114,7 @@ export default function LoginPage() {
               {/* Bottom */}
               <div className="mt-7 border-t border-[#1C1B18]/10 pt-4">
                 <p className="text-[8px] font-medium leading-4 text-[#756A5C]/75">
-                  Secure access to your ROOM account.
+                  Secure access to your livansa account.
                 </p>
               </div>
             </div>

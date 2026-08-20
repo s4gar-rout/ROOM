@@ -65,7 +65,7 @@ export default function LocalDiscovery() {
               {/* Desktop Decorative Bottom Footer Tag */}
               <div className="hidden md:flex items-center gap-3 mt-14 pt-2">
                 <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#756A5C]/70 shrink-0">
-                  ROOM / LOCAL LIVING
+                  livansa / LOCAL LIVING
                 </span>
                 <div className="flex-1 flex items-center">
                   <div className="h-[1px] w-full bg-[#174D35]/25" />
@@ -91,7 +91,7 @@ export default function LocalDiscovery() {
             {/* Mobile Decorative Bottom Footer Tag */}
             <div className="flex md:hidden items-center gap-3 mt-2 pt-2 col-span-1">
               <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#756A5C]/70 shrink-0">
-                ROOM / LOCAL LIVING
+                livansa / LOCAL LIVING
               </span>
               <div className="flex-1 flex items-center">
                 <div className="h-[1px] w-full bg-[#174D35]/25" />

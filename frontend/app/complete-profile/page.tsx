@@ -220,7 +220,7 @@ export default function CompleteProfilePage() {
 
             <p className="mt-7 max-w-[370px] text-[13px] font-medium leading-6 text-[#62594F]">
               Complete your profile before
-              exploring rooms on ROOM.
+              exploring rooms on livansa.
             </p>
 
             <div className="mt-12 border-t border-[#1C1B18]/10 pt-4">

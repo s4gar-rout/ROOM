@@ -110,7 +110,7 @@ export default function FeedbackPage() {
                       Feedback
                     </p>
                     <h1 className="mt-2 font-serif text-[36px] leading-[0.95] tracking-[-0.035em] sm:text-[42px]">
-                      Help us make <em className="text-[#174D35]">ROOM</em> better.
+                      Help us make <em className="text-[#174D35]">livansa</em> better.
                     </h1>
                     <p className="mt-3 max-w-md text-[11px] font-medium leading-5 text-[#756A5C]">
                       We value your thoughts and suggestions. Let us know how we can improve.

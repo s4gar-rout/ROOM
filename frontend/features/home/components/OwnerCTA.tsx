@@ -78,7 +78,7 @@ export default function OwnerCTA() {
               {/* Desktop Decorative Bottom Footer Tag */}
               <div className="hidden md:flex items-center gap-3 mt-14 pt-2">
                 <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#756A5C]/70 shrink-0">
-                  ROOM / FOR OWNERS
+                  livansa / FOR OWNERS
                 </span>
                 <div className="flex-1 flex items-center">
                   <div className="h-[1px] w-full bg-[#174D35]/25" />
@@ -92,7 +92,7 @@ export default function OwnerCTA() {
               <div className="relative aspect-[4/3] sm:aspect-[16/11] md:aspect-[1.15/1] lg:aspect-[4/3] w-full overflow-hidden rounded-[24px] sm:rounded-[28px] border border-[#174D35]/10 bg-[#F8F4EA]">
                 <Image
                   src="/images/owner_cta.jpg"
-                  alt="List your rental home with ROOM"
+                  alt="List your rental home with livansa"
                   fill
                   sizes="(max-width: 768px) 100vw, 55vw"
                   className="object-cover transition-transform duration-700 hover:scale-[1.02]"
@@ -103,7 +103,7 @@ export default function OwnerCTA() {
             {/* Mobile Decorative Bottom Footer Tag */}
             <div className="flex md:hidden items-center gap-3 mt-2 pt-2 col-span-1">
               <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#756A5C]/70 shrink-0">
-                ROOM / FOR OWNERS
+                livansa / FOR OWNERS
               </span>
               <div className="flex-1 flex items-center">
                 <div className="h-[1px] w-full bg-[#174D35]/25" />

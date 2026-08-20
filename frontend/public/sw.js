@@ -1,4 +1,4 @@
-// ROOM Service Worker - Web Push Notifications
+// livansa Service Worker - Web Push Notifications
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -22,9 +22,9 @@ self.addEventListener("push", (event) => {
     }
   }
 
-  const title = data.title || "ROOM";
-  const body = data.message || "You have a new notification from ROOM.";
-  const type = data.type || "ROOM_NOTIFICATION";
+  const title = data.title || "livansa";
+  const body = data.message || "You have a new notification from livansa.";
+  const type = data.type || "ROOM_NOTIFICATION"; // keep functional type as is
 
   // Determine target URL for click routing
   let targetUrl = "/";
@@ -72,7 +72,7 @@ self.addEventListener("notificationclick", (event) => {
     self.clients
       .matchAll({ type: "window", includeUncontrolled: true })
       .then((clientList) => {
-        // If an existing ROOM window/tab is open, focus it and navigate
+        // If an existing livansa window/tab is open, focus it and navigate
         for (const client of clientList) {
           if ("focus" in client) {
             client.focus();

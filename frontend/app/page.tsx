@@ -7,6 +7,23 @@ import HowRoomWorks from "@/features/home/components/HowRoomWorks";
 import OwnerCTA from "@/features/home/components/OwnerCTA";
 import EditorialBrandStatement from "@/features/home/components/EditorialBrandStatement";
 import Footer from "@/components/layout/Footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Livansa — Find a Place to Belong",
+  description:
+    "Find verified rooms and monthly rentals with Livansa. Discover spaces that feel like home and connect with local property owners directly.",
+  alternates: {
+    canonical: "https://livansa.in",
+  },
+  openGraph: {
+    title: "Livansa — Find a Place to Belong",
+    description:
+      "Find verified rooms and monthly rentals with Livansa. Discover spaces that feel like home and connect with local property owners directly.",
+    url: "https://livansa.in",
+  },
+};
+
 
 export default function Home() {
   return (

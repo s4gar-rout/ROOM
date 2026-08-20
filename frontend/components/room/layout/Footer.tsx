@@ -22,7 +22,7 @@ export default function Footer() {
           {/* Heading */}
           <div className="max-w-2xl">
             <p className="mb-2 text-[9px] font-medium uppercase tracking-[0.3em] text-[#C8D5CA]">
-              ROOM / FIND YOUR SPACE
+              livansa / FIND YOUR SPACE
             </p>
 
             <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl leading-[1.1] tracking-[-0.03em]">
@@ -40,7 +40,7 @@ export default function Footer() {
                 href="/"
                 className="font-serif text-2xl md:text-3xl italic"
               >
-                room.
+              livansa
               </Link>
 
               <p className="mt-2 max-w-xs text-[11px] leading-4 sm:text-xs text-[#C8D5CA]">
@@ -108,7 +108,7 @@ export default function Footer() {
           {/* Bottom */}
           <div className="mt-6 flex flex-col gap-3 border-t border-[#F8F4EA]/15 pt-4 text-[10px] text-[#C8D5CA] sm:flex-row sm:items-center sm:justify-between">
             <p>
-              © {new Date().getFullYear()} room. All rights reserved.
+              © {new Date().getFullYear()} livansa. All rights reserved.
             </p>
 
             <div className="flex flex-wrap items-center gap-5">

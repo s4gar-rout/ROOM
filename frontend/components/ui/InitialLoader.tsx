@@ -10,14 +10,14 @@ export default function InitialLoader() {
   useEffect(() => {
     setMounted(true);
     // Check if this is the first visit in the current session
-    const hasVisited = sessionStorage.getItem("room_intro_played");
+    const hasVisited = sessionStorage.getItem("livansa_intro_played");
     
     if (!hasVisited) {
       setShow(true);
       // Let the animation play, then remove it
       const timer = setTimeout(() => {
         setShow(false);
-        sessionStorage.setItem("room_intro_played", "true");
+        sessionStorage.setItem("livansa_intro_played", "true");
       }, 1800);
       
       return () => clearTimeout(timer);
@@ -44,7 +44,7 @@ export default function InitialLoader() {
               transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
               className="font-serif text-5xl md:text-6xl italic tracking-tight text-[#1C1B18]"
             >
-              room.
+              livansa
             </motion.h1>
 
             {/* Progress Line */}

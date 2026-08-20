@@ -3,8 +3,9 @@ import Footer from "@/components/layout/Footer";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions | room.",
-  description: "Terms and conditions for using the room. platform.",
+  title: "Terms & Conditions",
+  description: "Read Livansa's terms and conditions governing the use of our rental discovery platform, listings, and communication services.",
+  alternates: { canonical: "https://livansa.in/terms-and-conditions" },
 };
 
 export default function TermsAndConditionsPage() {

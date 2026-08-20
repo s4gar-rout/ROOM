@@ -116,7 +116,7 @@ export default function RegisterPage() {
               {/* Bottom Note */}
            <div className="mt-6 border-t border-[#1C1B18]/10 pt-4">
                 <p className="text-[8px] font-medium leading-4 text-[#756A5C]/75">
-                  By continuing, you agree to ROOM&apos;s
+                  By continuing, you agree to livansa&apos;s
                   Terms of Service and Privacy Policy.
                 </p>
               </div>

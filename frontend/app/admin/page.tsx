@@ -68,7 +68,7 @@ export default function AdminDashboard() {
           Dashboard <span className="italic text-[#174D35]">metrics.</span>
         </h1>
         <p className="mt-2.5 text-[11px] font-medium leading-5 text-[#5F554A]">
-          Real-time metrics, user statistics, and room inventory across ROOM marketplace.
+          Real-time metrics, user statistics, and room inventory across the livansa marketplace.
         </p>
       </div>
 

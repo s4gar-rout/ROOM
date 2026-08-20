@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { Loader2, MoreHorizontal, Trash2 } from "lucide-react";
 import type { Message } from "../types/conversation";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -18,6 +18,8 @@ interface MessageBubbleProps {
   isGroupEnd?: boolean;
   onDeleteForMe?: () => void;
   onDeleteForEveryone?: () => void;
+  isDeletingForMe?: boolean;
+  isDeletingForEveryone?: boolean;
 }
 
 // ── Deleted tombstone ──────────────────────────────────────────────────────
@@ -47,9 +49,11 @@ function DeletedTombstone({ mine }: { mine: boolean }) {
 function DeleteConfirm({
   onConfirm,
   onCancel,
+  isDeleting,
 }: {
   onConfirm: () => void;
   onCancel: () => void;
+  isDeleting?: boolean;
 }) {
   return (
     <div
@@ -74,10 +78,12 @@ function DeleteConfirm({
         <button
           type="button"
           onClick={onCancel}
+          disabled={isDeleting}
           className="
             flex-1 border-r border-[#E8E3D6]
             py-2.5 text-[12px] font-medium text-[#756B60]
             transition-colors hover:bg-[#1C1B18]/5
+            disabled:opacity-50
           "
         >
           Cancel
@@ -85,12 +91,15 @@ function DeleteConfirm({
         <button
           type="button"
           onClick={onConfirm}
+          disabled={isDeleting}
           className="
-            flex-1 py-2.5 text-[12px]
+            flex flex-1 items-center justify-center gap-1.5 py-2.5 text-[12px]
             font-medium text-[#A53B32]
             transition-colors hover:bg-[#A53B32]/5
+            disabled:opacity-50
           "
         >
+          {isDeleting && <Loader2 size={12} className="animate-spin" />}
           Delete
         </button>
       </div>
@@ -104,6 +113,8 @@ function ActionMenu({
   mine,
   menuRef,
   showConfirm,
+  isDeletingForMe,
+  isDeletingForEveryone,
   onDeleteForMe,
   onDeleteForEveryoneClick,
   onConfirmDeleteForEveryone,
@@ -112,6 +123,8 @@ function ActionMenu({
   mine: boolean;
   menuRef: React.RefObject<HTMLDivElement | null>;
   showConfirm: boolean;
+  isDeletingForMe?: boolean;
+  isDeletingForEveryone?: boolean;
   onDeleteForMe: () => void;
   onDeleteForEveryoneClick: () => void;
   onConfirmDeleteForEveryone: () => void;
@@ -135,15 +148,21 @@ function ActionMenu({
         role="menuitem"
         type="button"
         onClick={onDeleteForMe}
+        disabled={isDeletingForMe}
         className="
           flex w-full items-center gap-2.5
           px-4 py-3 text-left
           font-sans text-[13px] text-[#1C1B18]
           transition-colors hover:bg-[#1C1B18]/5
+          disabled:opacity-50 disabled:cursor-not-allowed
         "
       >
-        <Trash2 size={14} className="shrink-0 text-[#756B60]" aria-hidden />
-        Delete for me
+        {isDeletingForMe ? (
+          <Loader2 size={14} className="shrink-0 text-[#756B60] animate-spin" aria-hidden />
+        ) : (
+          <Trash2 size={14} className="shrink-0 text-[#756B60]" aria-hidden />
+        )}
+        {isDeletingForMe ? "Deleting..." : "Delete for me"}
       </button>
 
       {mine && (
@@ -168,6 +187,7 @@ function ActionMenu({
             <DeleteConfirm
               onConfirm={onConfirmDeleteForEveryone}
               onCancel={onCancelConfirm}
+              isDeleting={isDeletingForEveryone}
             />
           )}
         </div>
@@ -185,6 +205,8 @@ export default function MessageBubble({
   isGroupEnd = true,
   onDeleteForMe,
   onDeleteForEveryone,
+  isDeletingForMe,
+  isDeletingForEveryone,
 }: MessageBubbleProps) {
   const [hovered, setHovered] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -369,6 +391,8 @@ export default function MessageBubble({
                   mine={mine}
                   menuRef={menuRef}
                   showConfirm={showConfirm}
+                  isDeletingForMe={isDeletingForMe}
+                  isDeletingForEveryone={isDeletingForEveryone}
                   onDeleteForMe={handleDeleteForMe}
                   onDeleteForEveryoneClick={handleDeleteForEveryoneClick}
                   onConfirmDeleteForEveryone={handleConfirmDeleteForEveryone}

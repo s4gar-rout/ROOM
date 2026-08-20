@@ -43,7 +43,7 @@ export default function HowRoomWorks() {
         {/* Header */}
         <motion.div variants={staggerItemVariants} className="max-w-xl">
           <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.3em] text-[#174D35]">
-            How ROOM works
+            How livansa works
           </p>
 
           <h2 className="font-serif text-2xl sm:text-3xl leading-tight tracking-[-0.025em] text-[#1C1B18] md:text-4xl">
@@ -53,7 +53,7 @@ export default function HowRoomWorks() {
 
           <p className="mt-2 text-xs sm:text-sm leading-6 text-[#756A5C]">
             From finding a place to connecting with the owner,
-            ROOM keeps the process simple.
+            livansa keeps the process simple.
           </p>
         </motion.div>
 

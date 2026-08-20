@@ -162,7 +162,7 @@ export default function NotificationSettings() {
 
       {/* Description */}
       <p className="mb-6 text-xs font-medium leading-relaxed text-[#5F554A]">
-        Receive instant alerts on this browser when you get new messages, room updates, or account status changes even when ROOM is in the background.
+        Receive instant alerts on this browser when you get new messages, room updates, or account status changes even when livansa is in the background.
       </p>
 
       {/* Permission: Denied Explanation */}

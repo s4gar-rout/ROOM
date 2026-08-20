@@ -331,7 +331,7 @@ export default function LoginForm() {
       {/* REGISTER */}
 
       <p className="pt-1 text-center text-[11px] font-medium text-[#5F554A]">
-        New to ROOM?{" "}
+        New to livansa?{" "}
         <Link
           href="/register"
           className="font-semibold text-[#174D35] underline underline-offset-4"

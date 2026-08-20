@@ -76,7 +76,7 @@ export default function ForgotPasswordPage() {
 
               <p className="mt-8 max-w-[390px] text-sm font-medium leading-6 text-[#5F554A]">
                 A simple three-step process to safely
-                recover your ROOM account.
+                recover your livansa account.
               </p>
 
               <div className="mt-14 flex max-w-[600px] items-center justify-between border-t border-[#1C1B18]/10 pt-4">

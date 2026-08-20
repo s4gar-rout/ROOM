@@ -61,6 +61,8 @@ export default function ChatWindow({
   const [profileImageOpen, setProfileImageOpen] = useState(false);
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [deletingForMeId, setDeletingForMeId] = useState<string | null>(null);
+  const [deletingForEveryoneId, setDeletingForEveryoneId] = useState<string | null>(null);
 
   const showToast = useCallback((message: string, type: "success" | "error" = "success") => {
     setToast({ message, type });
@@ -382,21 +384,23 @@ export default function ChatWindow({
 
   const handleDeleteForMe = useCallback(
     async (messageId: string) => {
-      // Optimistic: remove from local state immediately.
-      setMessages((current) =>
-        current.filter((m) => m._id !== messageId)
-      );
+      setDeletingForMeId(messageId);
       try {
         await deleteConversationMessage(conversation._id, messageId, "me");
         showToast("Message deleted for me", "success");
+        // Remove from local state immediately.
+        setMessages((current) =>
+          current.filter((m) => m._id !== messageId)
+        );
       } catch (err: unknown) {
-        // Rollback is complex — for now just show the error.
         const msg =
           err instanceof Error
             ? err.message
             : (err as { response?: { data?: { message?: string } } })?.response
                 ?.data?.message ?? "Failed to delete message";
         showToast(msg, "error");
+      } finally {
+        setDeletingForMeId(null);
       }
     },
     [conversation._id, showToast]
@@ -406,27 +410,24 @@ export default function ChatWindow({
 
   const handleDeleteForEveryone = useCallback(
     async (messageId: string) => {
-      // Optimistic: show tombstone immediately.
-      setMessages((current) =>
-        current.map((m) =>
-          m._id === messageId ? { ...m, isDeletedForEveryone: true } : m
-        )
-      );
+      setDeletingForEveryoneId(messageId);
       try {
         await deleteConversationMessage(conversation._id, messageId, "everyone");
-      } catch (err: unknown) {
-        // Rollback tombstone on error.
+        // Show tombstone immediately.
         setMessages((current) =>
           current.map((m) =>
-            m._id === messageId ? { ...m, isDeletedForEveryone: false } : m
+            m._id === messageId ? { ...m, isDeletedForEveryone: true } : m
           )
         );
+      } catch (err: unknown) {
         const msg =
           err instanceof Error
             ? err.message
             : (err as { response?: { data?: { message?: string } } })?.response
                 ?.data?.message ?? "Failed to delete message";
         showToast(msg, "error");
+      } finally {
+        setDeletingForEveryoneId(null);
       }
     },
     [conversation._id, showToast]
@@ -669,6 +670,8 @@ export default function ChatWindow({
                   mine={isMine}
                   isGroupStart={!sameSenderAsPrev}
                   isGroupEnd={!sameSenderAsNext}
+                  isDeletingForMe={deletingForMeId === message._id}
+                  isDeletingForEveryone={deletingForEveryoneId === message._id}
                   onDeleteForMe={() => handleDeleteForMe(message._id)}
                   onDeleteForEveryone={
                     isMine

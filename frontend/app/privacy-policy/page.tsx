@@ -3,8 +3,9 @@ import Footer from "@/components/layout/Footer";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | room.",
-  description: "Privacy policy and data handling practices for room.",
+  title: "Privacy Policy",
+  description: "Read Livansa's privacy policy to understand how we handle your personal data, account information, and rental activity on our platform.",
+  alternates: { canonical: "https://livansa.in/privacy-policy" },
 };
 
 export default function PrivacyPolicyPage() {

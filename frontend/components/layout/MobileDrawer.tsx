@@ -169,9 +169,10 @@ export default function MobileDrawer({
                 <Link
                   href="/"
                   onClick={onClose}
-                  className="font-serif text-2xl italic tracking-tight text-[#174D35]"
+                  className="font-serif italic text-[22px] font-normal tracking-[-0.03em] text-[#1C1B18] leading-none select-none"
+                  aria-label="livansa home"
                 >
-                  room.
+                  livansa
                 </Link>
                 <button
                   type="button"
@@ -549,7 +550,7 @@ export default function MobileDrawer({
                   className="w-full flex items-center justify-center gap-2 rounded-full bg-[#174D35] py-2.5 text-xs font-semibold uppercase tracking-[0.15em] !text-[#F8F4EA] transition-colors hover:bg-[#174D35]/90"
                 >
                   <UserRound size={14} />
-                  Sign in to ROOM
+                  Sign in to livansa
                 </Link>
               )}
             </motion.div>

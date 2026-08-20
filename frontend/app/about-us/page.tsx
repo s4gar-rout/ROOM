@@ -5,8 +5,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "About Us | ROOM",
-  description: "Learn about ROOM — simplifying long-term rental discovery through thoughtful editorial design and direct owner connections.",
+  title: "About Us | livansa",
+  description: "Learn about livansa — simplifying long-term rental discovery through thoughtful editorial design and direct owner connections.",
 };
 
 const values = [
@@ -50,7 +50,7 @@ export default function AboutUsPage() {
         ======================================================== */}
         <section className="text-center max-w-3xl mx-auto">
           <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.3em] text-[#174D35]">
-            ABOUT ROOM
+            ABOUT livansa
           </p>
 
           <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal leading-[1.1] tracking-[-0.035em] text-[#1C1B18]">
@@ -58,7 +58,7 @@ export default function AboutUsPage() {
           </h1>
 
           <p className="mt-6 font-serif text-lg sm:text-xl italic text-[#756A5C] leading-relaxed">
-            ROOM is an editorial-grade long-term rental platform designed to make discovering your next sanctuary simple, transparent, and beautiful.
+            livansa is an editorial-grade long-term rental platform designed to make discovering your next sanctuary simple, transparent, and beautiful.
           </p>
 
           <div className="mt-8 flex justify-center">

@@ -43,6 +43,7 @@ export default function NotificationDrawer({
   const [loading, setLoading] = useState(false);
   const [isMarkingRead, setIsMarkingRead] = useState(false);
   const [isClearingAll, setIsClearingAll] = useState(false);
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
 
   const fetchNotifications = useCallback(async () => {
     if (!isAuthenticated) return;
@@ -149,6 +150,7 @@ export default function NotificationDrawer({
     notifId: string
   ) => {
     e.stopPropagation();
+    setDeletingIds((prev) => new Set(prev).add(notifId));
     try {
       await deleteNotification(notifId);
       setNotifications((prev) => {
@@ -160,6 +162,12 @@ export default function NotificationDrawer({
       });
     } catch {
       // Silently handle error
+    } finally {
+      setDeletingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(notifId);
+        return next;
+      });
     }
   };
 
@@ -397,10 +405,15 @@ export default function NotificationDrawer({
                       <button
                         type="button"
                         onClick={(e) => handleDeleteNotification(e, item._id)}
+                        disabled={deletingIds.has(item._id)}
                         title="Delete notification"
-                        className="flex h-7 w-7 items-center justify-center rounded-full text-[#756A5C] opacity-50 hover:opacity-100 hover:bg-[#A53B32]/10 hover:text-[#A53B32] transition-all"
+                        className="flex h-7 w-7 items-center justify-center rounded-full text-[#756A5C] opacity-50 hover:opacity-100 hover:bg-[#A53B32]/10 hover:text-[#A53B32] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <Trash2 size={13} />
+                        {deletingIds.has(item._id) ? (
+                          <div className="h-3.5 w-3.5 animate-spin rounded-full border-[1.5px] border-current border-t-transparent" />
+                        ) : (
+                          <Trash2 size={13} />
+                        )}
                       </button>
                     </div>
                   </div>

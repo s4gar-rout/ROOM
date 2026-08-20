@@ -52,7 +52,7 @@ export default function NotificationPromptModal({
         </div>
 
         <h2 className="font-serif text-3xl font-normal leading-tight tracking-tight text-[#1C1B18]">
-          Stay updated with <em className="text-[#174D35]">ROOM.</em>
+          Stay updated with <em className="text-[#174D35]">livansa.</em>
         </h2>
 
         <p className="mt-3 text-xs font-medium leading-relaxed text-[#5F554A]">

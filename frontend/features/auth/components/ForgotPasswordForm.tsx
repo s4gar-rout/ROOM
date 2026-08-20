@@ -16,6 +16,8 @@ import {
   EyeOff,
 } from "lucide-react";
 
+import ButtonLoader from "@/components/ui/ButtonLoader";
+
 import {
   forgotPassword,
   verifyResetOtp,
@@ -662,9 +664,7 @@ export default function ForgotPasswordForm({
             disabled={loading}
             className="flex h-13 w-full items-center justify-center rounded-full bg-[#174D35] px-6 text-xs font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition-all hover:bg-[#123F2B] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading
-              ? "Sending OTP..."
-              : "Send Verification Code ↗"}
+            {loading ? <ButtonLoader color="#F8F4EA" /> : "Send Verification Code ↗"}
           </button>
         </form>
       )}
@@ -719,9 +719,7 @@ export default function ForgotPasswordForm({
             }
             className="flex h-13 w-full items-center justify-center rounded-full bg-[#174D35] px-6 text-xs font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition-all hover:bg-[#123F2B] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading
-              ? "Verifying..."
-              : "Verify Code ↗"}
+            {loading ? <ButtonLoader color="#F8F4EA" /> : "Verify Code ↗"}
           </button>
 
           <div className="flex items-center justify-between gap-4">
@@ -746,11 +744,13 @@ export default function ForgotPasswordForm({
               }
               className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#174D35] transition-opacity hover:opacity-60 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {resendLoading
-                ? "Sending..."
-                : resendTimer > 0
-                  ? `Resend in ${resendTimer}s`
-                  : "Resend OTP"}
+              {resendLoading ? (
+                <ButtonLoader color="#174D35" />
+              ) : resendTimer > 0 ? (
+                `Resend in ${resendTimer}s`
+              ) : (
+                "Resend OTP"
+              )}
             </button>
           </div>
         </form>
@@ -895,9 +895,7 @@ export default function ForgotPasswordForm({
             }
             className="flex h-13 w-full items-center justify-center rounded-full bg-[#174D35] px-6 text-xs font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition-all hover:bg-[#123F2B] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading
-              ? "Updating Password..."
-              : "Update Password ↗"}
+            {loading ? <ButtonLoader color="#F8F4EA" /> : "Update Password ↗"}
           </button>
         </form>
       )}

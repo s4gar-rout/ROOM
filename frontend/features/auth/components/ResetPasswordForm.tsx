@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowUpRight, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import ButtonLoader from "@/components/ui/ButtonLoader";
 import { resetPassword } from "../services/auth.service";
 
 interface ResetPasswordFormProps {
@@ -192,7 +193,7 @@ export default function ResetPasswordForm({
         disabled={loading}
         className="group mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#174D35] text-xs font-semibold uppercase tracking-[0.16em] text-[#F8F4EA] disabled:opacity-60"
       >
-        {loading ? "Updating..." : "Update password"}
+        {loading ? <ButtonLoader color="#F8F4EA" /> : "Update password"}
 
         {!loading && <ArrowUpRight size={16} />}
       </button>

@@ -77,7 +77,7 @@ export default function ProfilePage() {
           Your <em className="text-[#174D35]">profile.</em>
         </h1>
         <p className="text-sm font-medium text-[#5F554A] max-w-sm">
-          Manage your personal information and ROOM account details.
+          Manage your personal information and livansa account details.
         </p>
       </div>
 

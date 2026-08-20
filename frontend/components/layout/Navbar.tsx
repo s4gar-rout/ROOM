@@ -123,9 +123,10 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="font-serif text-2xl italic tracking-tight text-[#174D35]"
+              className="font-serif italic text-[24px] sm:text-[28px] md:text-[30px] font-normal tracking-[-0.03em] text-[#1C1B18] leading-none select-none"
+              aria-label="livansa home"
             >
-              room.
+              livansa
             </Link>
           </div>
 

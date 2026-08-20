@@ -308,7 +308,11 @@ export default function MessageBubble({
       onTouchMove={cancelLongPress}
     >
       {/* ── Bubble wrapper (max width container) ── */}
-      <div className="relative flex min-w-0 max-w-[85%] flex-col sm:max-w-[70%] lg:max-w-[65%]">
+      <div
+        className={`relative flex min-w-0 max-w-[85%] flex-col sm:max-w-[70%] lg:max-w-[65%] ${
+          mine ? "items-end" : "items-start"
+        }`}
+      >
 
         {/* ── Bubble ── */}
         <div className="relative flex items-center group">
@@ -386,12 +390,21 @@ export default function MessageBubble({
           >
             <span>{time}</span>
             {mine && (
-              <span
-                aria-label={message.read ? "Read" : "Sent"}
-                className="tracking-[-1.5px]"
+              <div
+                className={`flex items-center gap-1 transition-colors duration-300 ${
+                  message.read ? "text-[#174D35]" : ""
+                }`}
               >
-                {message.read ? "✓✓" : "✓"}
-              </span>
+                <span
+                  aria-label={message.read ? "Seen" : "Sent"}
+                  className="tracking-[-1.5px]"
+                >
+                  {message.read ? "✓✓" : "✓"}
+                </span>
+                {message.read && (
+                  <span className="text-[9px] font-medium tracking-wide sm:text-[10px]">Seen</span>
+                )}
+              </div>
             )}
           </div>
         )}

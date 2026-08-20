@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import {
   X,
   Home,
@@ -32,13 +32,13 @@ interface MobileDrawerProps {
   unreadMessagesCount: number;
 }
 
-const backdropVariants = {
+const backdropVariants: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.25, ease: "easeInOut" } },
   exit: { opacity: 0, transition: { duration: 0.2, ease: "easeInOut" } },
 };
 
-const drawerVariants = {
+const drawerVariants: Variants = {
   hidden: { x: "100%" },
   visible: {
     x: 0,
@@ -58,7 +58,7 @@ const drawerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, x: 14 },
   visible: {
     opacity: 1,

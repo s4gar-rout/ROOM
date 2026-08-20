@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowUpRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import ButtonLoader from "@/components/ui/ButtonLoader";

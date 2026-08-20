@@ -28,10 +28,8 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 interface MobileDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  onOpenNotifications?: () => void;
   onOpenBecomeOwnerModal?: () => void;
   unreadMessagesCount: number;
-  unreadNotificationsCount?: number;
 }
 
 const backdropVariants = {
@@ -41,7 +39,7 @@ const backdropVariants = {
 };
 
 const drawerVariants = {
-  hidden: { x: "-100%" },
+  hidden: { x: "100%" },
   visible: {
     x: 0,
     transition: {
@@ -52,7 +50,7 @@ const drawerVariants = {
     },
   },
   exit: {
-    x: "-100%",
+    x: "100%",
     transition: {
       duration: 0.28,
       ease: [0.7, 0, 0.84, 0],
@@ -61,7 +59,7 @@ const drawerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, x: -14 },
+  hidden: { opacity: 0, x: 14 },
   visible: {
     opacity: 1,
     x: 0,
@@ -114,7 +112,7 @@ export default function MobileDrawer({
   return (
     <AnimatePresence mode="wait">
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex md:hidden">
+        <div className="fixed inset-0 z-50 flex justify-end md:hidden">
           {/* Dark Backdrop */}
           <motion.div
             variants={backdropVariants}
@@ -132,7 +130,7 @@ export default function MobileDrawer({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="relative z-10 flex h-full w-[84%] max-w-[340px] flex-col border-r border-[#1C1B18]/15 bg-[#F8F4EA] shadow-2xl"
+            className="relative z-10 flex h-full w-[84%] max-w-[340px] flex-col border-l border-[#1C1B18]/15 bg-[#F8F4EA] shadow-2xl"
             aria-label="Navigation Menu"
           >
             {/* Drawer Header with User Profile / Guest State */}

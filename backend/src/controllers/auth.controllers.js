@@ -593,6 +593,8 @@ async function becomeOwnerController(req, res) {
             message: "Internal server error"
         });
     }
+}
+
 // Resend Verification OTP Controller
 async function resendVerificationOtpController(req, res) {
     try {
@@ -670,5 +672,5 @@ export default {
     getMeController,
     refreshTokenController,
     logoutController,
-    becomeOwnerController
-}
+    becomeOwnerController,
+};

@@ -346,10 +346,8 @@ export default function Navbar() {
       <MobileDrawer
         isOpen={mobileDrawerOpen}
         onClose={() => setMobileDrawerOpen(false)}
-        onOpenNotifications={() => setNotificationDrawerOpen(true)}
         onOpenBecomeOwnerModal={() => setBecomeOwnerModalOpen(true)}
         unreadMessagesCount={unreadMessages}
-        unreadNotificationsCount={unreadNotifications}
       />
 
       {/* Slide-over Notification Panel */}

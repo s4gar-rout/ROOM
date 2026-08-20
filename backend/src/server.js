@@ -1,3 +1,6 @@
+import dns from 'dns'
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
+
 import http from "http";
 import { Server } from "socket.io";
 
@@ -9,8 +12,8 @@ import { initializeSocket } from "./sockets/socket.js";
 import socketAuthMiddleware from "./middlewares/socket.middleware.js";
 import { testRedisConnection } from "./services/redis.service.js";
 
-connectToDB();
-await testRedisConnection();
+connectToDB().catch((err) => console.error("Database connection startup warning:", err?.message));
+testRedisConnection().catch((err) => console.error("Redis connection startup warning:", err?.message));
 
 const server = http.createServer(app);
 

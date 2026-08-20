@@ -226,9 +226,8 @@ export default function AllRoomsPage() {
           {/* SEARCH */}
           <div className="relative w-full lg:max-w-[560px]">
             <Search
-              size={16}
               strokeWidth={1.8}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-[#5F554A]"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-[#5F554A] w-[14px] h-[14px] sm:w-[16px] sm:h-[16px]"
             />
 
             <input
@@ -237,15 +236,15 @@ export default function AllRoomsPage() {
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               className="
-                h-[44px]
+                h-[40px] sm:h-[44px]
                 w-full
                 border
                 border-[#1C1B18]/15
                 bg-transparent
-                pl-11
-                pr-5
+                pl-10 sm:pl-11
+                pr-4 sm:pr-5
                 font-sans
-                text-sm
+                text-[13px] sm:text-sm
                 font-medium
                 text-[#1C1B18]
                 outline-none
@@ -258,25 +257,25 @@ export default function AllRoomsPage() {
           </div>
 
           {/* FILTER + SORT + REFRESH */}
-          <div className="flex w-full items-center gap-2 lg:w-auto">
+          <div className="flex w-full items-center gap-1.5 sm:gap-2 lg:w-auto">
 
             {/* FILTER BUTTON */}
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`
                 flex
-                h-[40px] sm:h-[44px]
+                h-[36px] sm:h-[44px]
                 shrink-0
                 items-center
                 justify-center
                 gap-1.5 sm:gap-2
                 border
-                px-3.5 sm:px-5
+                px-2.5 sm:px-5
                 font-sans
-                text-[10px] sm:text-xs
+                text-[9px] sm:text-xs
                 font-bold sm:font-semibold
                 uppercase
-                tracking-[0.12em] sm:tracking-[0.15em]
+                tracking-[0.08em] sm:tracking-[0.15em]
                 transition-colors
                 ${showFilters || activeFilterCount > 0
                   ? "border-[#174D35] bg-[#174D35]/5 text-[#174D35]"
@@ -284,7 +283,7 @@ export default function AllRoomsPage() {
                 }
               `}
             >
-              <Filter size={13} strokeWidth={1.8} />
+              <Filter strokeWidth={1.8} className="w-[11px] h-[11px] sm:w-[13px] sm:h-[13px]" />
 
               <span className="hidden sm:inline">Filters</span>
               <span className="inline sm:hidden">Filter</span>
@@ -294,14 +293,14 @@ export default function AllRoomsPage() {
                   className="
                     ml-0.5
                     flex
-                    h-[15px]
-                    min-w-[15px]
+                    h-[14px] sm:h-[15px]
+                    min-w-[14px] sm:min-w-[15px]
                     items-center
                     justify-center
                     rounded-full
                     bg-[#174D35]
                     px-1
-                    text-[8px]
+                    text-[7px] sm:text-[8px]
                     font-bold
                     text-[#F8F4EA]
                   "
@@ -312,24 +311,24 @@ export default function AllRoomsPage() {
             </button>
 
             {/* SORT */}
-            <div className="relative min-w-0 flex-1 lg:flex-none" ref={sortRef}>
+            <div className={`relative min-w-0 flex-1 lg:flex-none ${isSortOpen ? 'z-50' : 'z-10'}`} ref={sortRef}>
               <button
                 onClick={() => setIsSortOpen(!isSortOpen)}
                 className="
                   flex
-                  h-[40px] sm:h-[44px]
+                  h-[36px] sm:h-[44px]
                   w-full
                   items-center
                   justify-between
                   border
                   border-[#1C1B18]/15
                   bg-transparent
-                  px-3 sm:px-4
+                  px-2.5 sm:px-4
                   font-sans
-                  text-[10px] sm:text-xs
+                  text-[9px] sm:text-xs
                   font-bold sm:font-semibold
                   uppercase
-                  tracking-[0.08em] sm:tracking-[0.1em]
+                  tracking-[0.05em] sm:tracking-[0.1em]
                   text-[#5F554A]
                   transition-colors
                   hover:border-[#174D35]/30
@@ -346,9 +345,8 @@ export default function AllRoomsPage() {
                     : "Sort: High to Low"}
                 </span>
                 <ChevronDown
-                  size={10}
                   strokeWidth={1.8}
-                  className={`shrink-0 text-[#5F554A] transition-transform duration-300 ${
+                  className={`shrink-0 w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#5F554A] transition-transform duration-300 ${
                     isSortOpen ? "rotate-180" : ""
                   }`}
                 />
@@ -356,7 +354,7 @@ export default function AllRoomsPage() {
 
               {/* DROPDOWN MENU */}
               {isSortOpen && (
-                <div className="absolute left-0 top-full z-20 mt-1 w-full border border-[#1C1B18]/15 bg-[#F8F4EA] py-0 shadow-lg">
+                <div className="absolute left-0 top-full z-50 mt-1 w-full border border-[#1C1B18]/15 bg-[#F8F4EA] py-0 shadow-lg">
                   {[
                     { value: "newest", label: "Sort: Newest" },
                     { value: "oldest", label: "Sort: Oldest" },
@@ -371,11 +369,11 @@ export default function AllRoomsPage() {
                       }}
                       className={`
                         w-full
-                        px-3.5 sm:px-4
-                        py-2
+                        px-3 sm:px-4
+                        py-2 sm:py-2.5
                         text-left
                         font-sans
-                        text-xs sm:text-[13px]
+                        text-[11px] sm:text-[13px]
                         font-medium
                         tracking-normal
                         transition-colors
@@ -401,8 +399,8 @@ export default function AllRoomsPage() {
               title="Refresh results"
               className="
                 flex
-                h-[44px]
-                w-[44px]
+                h-[36px] sm:h-[44px]
+                w-[36px] sm:w-[44px]
                 shrink-0
                 items-center
                 justify-center
@@ -416,11 +414,10 @@ export default function AllRoomsPage() {
               "
             >
               <RefreshCw
-                size={14}
                 strokeWidth={1.8}
-                className={
+                className={`w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] ${
                   loading ? "animate-spin text-[#174D35]" : ""
-                }
+                }`}
               />
             </button>
           </div>
@@ -458,13 +455,13 @@ export default function AllRoomsPage() {
               <div>
                 <label
                   className="
-                    mb-2
+                    mb-1.5 sm:mb-2
                     block
                     font-sans
-                    text-[9px]
+                    text-[8px] sm:text-[9px]
                     font-semibold
                     uppercase
-                    tracking-[0.25em]
+                    tracking-[0.2em] sm:tracking-[0.25em]
                     text-[#5F554A]
                   "
                 >
@@ -479,14 +476,14 @@ export default function AllRoomsPage() {
                     handleFilterChange("location", e.target.value)
                   }
                   className="
-                    h-[42px]
+                    h-[38px] sm:h-[42px]
                     w-full
                     border
                     border-[#1C1B18]/15
                     bg-transparent
-                    px-3.5
+                    px-3 sm:px-3.5
                     font-sans
-                    text-sm
+                    text-[13px] sm:text-sm
                     font-medium
                     text-[#1C1B18]
                     outline-none
@@ -502,13 +499,13 @@ export default function AllRoomsPage() {
               <div>
                 <label
                   className="
-                    mb-2
+                    mb-1.5 sm:mb-2
                     block
                     font-sans
-                    text-[9px]
+                    text-[8px] sm:text-[9px]
                     font-semibold
                     uppercase
-                    tracking-[0.25em]
+                    tracking-[0.2em] sm:tracking-[0.25em]
                     text-[#5F554A]
                   "
                 >
@@ -520,16 +517,16 @@ export default function AllRoomsPage() {
                     onClick={() => setIsRoomTypeOpen(!isRoomTypeOpen)}
                     className="
                       flex
-                      h-[42px]
+                      h-[38px] sm:h-[42px]
                       w-full
                       items-center
                       justify-between
                       border
                       border-[#1C1B18]/15
                       bg-transparent
-                      px-3.5
+                      px-3 sm:px-3.5
                       font-sans
-                      text-sm
+                      text-[13px] sm:text-sm
                       font-medium
                       transition-colors
                       hover:border-[#174D35]/30
@@ -550,7 +547,7 @@ export default function AllRoomsPage() {
                     </span>
                     <ChevronDown
                       size={14}
-                      className={`text-[#5F554A] transition-transform duration-300 ${
+                      className={`text-[#5F554A] w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform duration-300 ${
                         isRoomTypeOpen ? "rotate-180" : ""
                       }`}
                     />
@@ -563,6 +560,8 @@ export default function AllRoomsPage() {
                         { value: "", label: "All Types" },
                         { value: "single", label: "Single Room" },
                         { value: "double", label: "Double Room" },
+                        { value: "1BHK", label: "1 BHK" },
+                        { value: "2BHK", label: "2 BHK" },
                         { value: "3BHK", label: "3 BHK" },
                       ].map((option) => (
                         <button
@@ -573,11 +572,11 @@ export default function AllRoomsPage() {
                           }}
                           className={`
                             w-full
-                            px-3.5
-                            py-2
+                            px-3 sm:px-3.5
+                            py-2 sm:py-2.5
                             text-left
                             font-sans
-                            text-[13px]
+                            text-[11px] sm:text-[13px]
                             font-medium
                             tracking-normal
                             transition-colors
@@ -602,13 +601,13 @@ export default function AllRoomsPage() {
               <div>
                 <label
                   className="
-                    mb-2
+                    mb-1.5 sm:mb-2
                     block
                     font-sans
-                    text-[9px]
+                    text-[8px] sm:text-[9px]
                     font-semibold
                     uppercase
-                    tracking-[0.25em]
+                    tracking-[0.2em] sm:tracking-[0.25em]
                     text-[#5F554A]
                   "
                 >
@@ -620,16 +619,16 @@ export default function AllRoomsPage() {
                     onClick={() => setIsRentOpen(!isRentOpen)}
                     className="
                       flex
-                      h-[42px]
+                      h-[38px] sm:h-[42px]
                       w-full
                       items-center
                       justify-between
                       border
                       border-[#1C1B18]/15
                       bg-transparent
-                      px-3.5
+                      px-3 sm:px-3.5
                       font-sans
-                      text-sm
+                      text-[13px] sm:text-sm
                       font-medium
                       transition-colors
                       hover:border-[#174D35]/30
@@ -650,7 +649,7 @@ export default function AllRoomsPage() {
                     </span>
                     <ChevronDown
                       size={14}
-                      className={`text-[#5F554A] transition-transform duration-300 ${
+                      className={`text-[#5F554A] w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform duration-300 ${
                         isRentOpen ? "rotate-180" : ""
                       }`}
                     />
@@ -678,11 +677,11 @@ export default function AllRoomsPage() {
                           }}
                           className={`
                             w-full
-                            px-3.5
-                            py-2
+                            px-3 sm:px-3.5
+                            py-2 sm:py-2.5
                             text-left
                             font-sans
-                            text-[13px]
+                            text-[11px] sm:text-[13px]
                             font-medium
                             tracking-normal
                             transition-colors
@@ -711,20 +710,20 @@ export default function AllRoomsPage() {
                 <div className="min-w-0 flex-1">
                   <label
                     className="
-                      mb-2.5
+                      mb-2 sm:mb-2.5
                       block
                       font-sans
-                      text-[9px]
+                      text-[8px] sm:text-[9px]
                       font-semibold
                       uppercase
-                      tracking-[0.25em]
+                      tracking-[0.2em] sm:tracking-[0.25em]
                       text-[#5F554A]
                     "
                   >
                     Facilities
                   </label>
 
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     {[
                       "WIFI",
                       "AC",
@@ -742,13 +741,13 @@ export default function AllRoomsPage() {
                         className={`
                           rounded-full
                           border
-                          px-3
-                          py-1.5
+                          px-2.5 sm:px-3
+                          py-1 sm:py-1.5
                           font-sans
-                          text-[10px]
-                          font-semibold
-                          uppercase
-                          tracking-[0.1em]
+                          text-[10px] sm:text-[11px]
+                          font-medium
+                          capitalize
+                          tracking-normal
                           transition-colors
                           ${
                             selectedFacilities.includes(facility)
@@ -757,7 +756,11 @@ export default function AllRoomsPage() {
                           }
                         `}
                       >
-                        {facility}
+                        {facility === "WIFI"
+                          ? "WiFi"
+                          : facility === "AC"
+                          ? "AC"
+                          : facility.toLowerCase()}
                       </button>
                     ))}
                   </div>
@@ -772,13 +775,12 @@ export default function AllRoomsPage() {
                     shrink-0
                     self-start
                     font-sans
-                    text-[9px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.25em]
+                    text-[11px] sm:text-[12px]
+                    font-medium
+                    tracking-normal
                     text-[#5F554A]
-                    transition-opacity
-                    hover:opacity-60
+                    transition-colors
+                    hover:text-[#174D35]
                     lg:self-end
                   "
                 >

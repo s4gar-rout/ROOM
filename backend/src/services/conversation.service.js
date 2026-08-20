@@ -407,6 +407,7 @@ export async function deleteMessageForEveryone({
     const conversation = await ConversationModel.findById(conversationId);
     let payloadLastMessage = undefined;
     let payloadLastMessageAt = undefined;
+    let unreadDecrement = 0;
 
     if (conversation) {
         // Query the latest non-deleted message to ensure consistency
@@ -416,18 +417,34 @@ export async function deleteMessageForEveryone({
             isDeleted: { $ne: true },
         }).sort({ createdAt: -1 });
 
-        const actualLastMessage = latestMessageInDb ? latestMessageInDb.message : "This message was deleted";
+        const actualLastMessage = latestMessageInDb ? latestMessageInDb.message : "";
         const actualLastMessageAt = latestMessageInDb ? latestMessageInDb.createdAt : conversation.createdAt;
+
+        const updateObj = {};
+        let needsUpdate = false;
 
         if (conversation.lastMessage !== actualLastMessage) {
             payloadLastMessage = actualLastMessage;
             payloadLastMessageAt = actualLastMessageAt;
+            updateObj.lastMessage = payloadLastMessage;
+            updateObj.lastMessageAt = payloadLastMessageAt;
+            needsUpdate = true;
+        }
 
+        if (message.read === false) {
+            const isOwnerSender = getParticipantId(conversation.owner) === message.sender.toString();
+            const unreadField = isOwnerSender ? "unreadCountForTenant" : "unreadCountForOwner";
+            
+            if (conversation[unreadField] > 0) {
+                unreadDecrement = 1;
+                updateObj[unreadField] = conversation[unreadField] - 1;
+                needsUpdate = true;
+            }
+        }
+
+        if (needsUpdate) {
             await ConversationModel.findByIdAndUpdate(conversationId, {
-                $set: {
-                    lastMessage: payloadLastMessage,
-                    lastMessageAt: payloadLastMessageAt,
-                },
+                $set: updateObj,
             });
         }
     }
@@ -438,6 +455,7 @@ export async function deleteMessageForEveryone({
             conversationId,
             messageId,
             deletedFor: "everyone",
+            unreadDecrement,
         };
 
         if (payloadLastMessage !== undefined) {

@@ -447,7 +447,6 @@ export default function ChatWindow({
           (m) => new Date(m.createdAt).getTime() > clearedAt
         )
       );
-      showToast("Conversation cleared", "success");
     } catch (err: unknown) {
       const msg =
         err instanceof Error

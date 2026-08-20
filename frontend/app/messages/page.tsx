@@ -144,29 +144,39 @@ export default function MessagesPage({
   );
 
   const handleMessageDeletedForEveryone = useCallback(
-    (payload: { conversationId: string; messageId: string; lastMessage?: string; lastMessageAt?: string }) => {
-      if (payload.lastMessage !== undefined && payload.lastMessageAt !== undefined) {
-        setConversations((current) => {
-          const index = current.findIndex((c) => c._id === payload.conversationId);
-          if (index === -1) return current;
+    (payload: { conversationId: string; messageId: string; lastMessage?: string; lastMessageAt?: string; unreadDecrement?: number }) => {
+      setConversations((current) => {
+        const index = current.findIndex((c) => c._id === payload.conversationId);
+        if (index === -1) return current;
 
-          const updated: Conversation = {
-            ...current[index],
-            lastMessage: payload.lastMessage!,
-            lastMessageAt: payload.lastMessageAt!,
-          };
+        let hasChanges = false;
+        const updated: Conversation = { ...current[index] };
 
-          const next = [...current];
-          next[index] = updated;
-          
+        if (payload.lastMessage !== undefined && payload.lastMessageAt !== undefined) {
+          updated.lastMessage = payload.lastMessage;
+          updated.lastMessageAt = payload.lastMessageAt;
+          hasChanges = true;
+        }
+
+        if (payload.unreadDecrement && payload.unreadDecrement > 0) {
+          updated.unreadCount = Math.max(0, (updated.unreadCount || 0) - payload.unreadDecrement);
+          hasChanges = true;
+        }
+
+        if (!hasChanges) return current;
+
+        const next = [...current];
+        next[index] = updated;
+
+        if (payload.lastMessageAt !== undefined) {
           // Re-sort by lastMessageAt
           next.sort((a, b) =>
               (b.lastMessageAt ? new Date(b.lastMessageAt).getTime() : 0) - (a.lastMessageAt ? new Date(a.lastMessageAt).getTime() : 0)
           );
+        }
 
-          return next;
-        });
-      }
+        return next;
+      });
     },
     []
   );

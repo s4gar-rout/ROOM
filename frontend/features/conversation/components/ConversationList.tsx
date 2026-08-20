@@ -278,13 +278,13 @@ export default function ConversationList({
                         <span
                           aria-label={`${unread} unread`}
                           className="
-                            flex h-[18px] min-w-[18px] shrink-0
+                            flex h-[18px] shrink-0
                             items-center justify-center
                             rounded-full bg-[#174D35]
-                            px-1 text-[9px] font-bold text-white
+                            px-2 text-[9px] font-bold text-white
                           "
                         >
-                          {unread > 99 ? "99+" : unread}
+                          {unread > 9 ? "9+ new" : `${unread} new`}
                         </span>
                       )}
                     </div>

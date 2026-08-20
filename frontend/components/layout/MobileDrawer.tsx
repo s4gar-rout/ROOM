@@ -32,38 +32,61 @@ interface MobileDrawerProps {
   unreadMessagesCount: number;
 }
 
+const premiumEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
 const backdropVariants: Variants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.25, ease: "easeInOut" } },
-  exit: { opacity: 0, transition: { duration: 0.2, ease: "easeInOut" } },
+  visible: { opacity: 1, transition: { duration: 0.4, ease: premiumEase } },
+  exit: { opacity: 0, transition: { duration: 0.3, ease: premiumEase, delay: 0.1 } },
 };
 
 const drawerVariants: Variants = {
-  hidden: { x: "100%" },
+  hidden: { x: "100%", opacity: 0 },
   visible: {
     x: 0,
+    opacity: 1,
     transition: {
-      duration: 0.38,
-      ease: [0.16, 1, 0.3, 1], // cubic-bezier(0.16, 1, 0.3, 1)
-      staggerChildren: 0.04,
-      delayChildren: 0.08,
+      duration: 0.5,
+      ease: premiumEase,
+      staggerChildren: 0.06,
+      delayChildren: 0.05,
     },
   },
   exit: {
     x: "100%",
+    opacity: 0,
     transition: {
-      duration: 0.28,
-      ease: [0.7, 0, 0.84, 0],
+      duration: 0.4,
+      ease: premiumEase,
+      staggerChildren: 0.04,
+      staggerDirection: -1,
     },
   },
 };
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, x: 14 },
+const sectionVariants: Variants = {
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    x: 0,
-    transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] },
+    transition: { staggerChildren: 0.05 },
+  },
+  exit: {
+    opacity: 0,
+    transition: { staggerChildren: 0.03, staggerDirection: -1 },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: premiumEase },
+  },
+  exit: {
+    opacity: 0,
+    y: 10,
+    transition: { duration: 0.25, ease: premiumEase },
   },
 };
 
@@ -110,15 +133,18 @@ export default function MobileDrawer({
   };
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end md:hidden">
+        <motion.div 
+          key="mobile-drawer-wrapper"
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          className="fixed inset-0 z-50 flex justify-end md:hidden"
+        >
           {/* Dark Backdrop */}
           <motion.div
             variants={backdropVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
             className="fixed inset-0 bg-[#1C1B18]/60 backdrop-blur-xs"
             onClick={onClose}
             aria-hidden="true"
@@ -127,9 +153,6 @@ export default function MobileDrawer({
           {/* Drawer Panel */}
           <motion.aside
             variants={drawerVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
             className="relative z-10 flex h-full w-[84%] max-w-[340px] flex-col border-l border-[#1C1B18]/15 bg-[#F8F4EA] shadow-2xl"
             aria-label="Navigation Menu"
           >
@@ -212,12 +235,12 @@ export default function MobileDrawer({
             {/* Scrollable Navigation Links */}
             <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
               {/* Main Exploration */}
-              <motion.div variants={itemVariants}>
+              <motion.div variants={sectionVariants}>
                 <span className="block text-[9px] font-semibold uppercase tracking-[0.24em] text-[#5F554A] px-2 mb-2">
                   Explore
                 </span>
                 <div className="space-y-1">
-                  <Link
+                  <motion.div variants={itemVariants}><Link
                     href="/"
                     onClick={onClose}
                     className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
@@ -230,9 +253,9 @@ export default function MobileDrawer({
                       <Home size={16} />
                       <span>Home</span>
                     </div>
-                  </Link>
+                  </Link></motion.div>
 
-                  <Link
+                  <motion.div variants={itemVariants}><Link
                     href="/rentals"
                     onClick={onClose}
                     className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
@@ -245,9 +268,9 @@ export default function MobileDrawer({
                       <Building2 size={16} />
                       <span>Find Rooms</span>
                     </div>
-                  </Link>
+                  </Link></motion.div>
 
-                  <Link
+                  <motion.div variants={itemVariants}><Link
                     href="/about-us"
                     onClick={onClose}
                     className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
@@ -260,9 +283,9 @@ export default function MobileDrawer({
                       <Info size={16} />
                       <span>About Us</span>
                     </div>
-                  </Link>
+                  </Link></motion.div>
 
-                  <Link
+                  <motion.div variants={itemVariants}><Link
                     href="/owner-dashboard/add-room"
                     onClick={(e) => {
                       if (isAuthenticated && user?.role === "tenant") {
@@ -283,10 +306,10 @@ export default function MobileDrawer({
                       <PlusCircle size={16} />
                       <span>List a Room</span>
                     </div>
-                  </Link>
+                  </Link></motion.div>
 
                   {isAuthenticated && (
-                    <Link
+                    <motion.div variants={itemVariants}><Link
                       href="/messages"
                       onClick={onClose}
                       className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
@@ -304,19 +327,19 @@ export default function MobileDrawer({
                           {unreadMessagesCount > 99 ? "99+" : unreadMessagesCount}
                         </span>
                       )}
-                    </Link>
+                    </Link></motion.div>
                   )}
                 </div>
               </motion.div>
 
               {/* Account Section */}
               {isAuthenticated && (
-                <motion.div variants={itemVariants}>
+                <motion.div variants={sectionVariants}>
                   <span className="block text-[9px] font-semibold uppercase tracking-[0.24em] text-[#5F554A] px-2 mb-2">
                     Account
                   </span>
                   <div className="space-y-1">
-                    <Link
+                    <motion.div variants={itemVariants}><Link
                       href="/profile"
                       onClick={onClose}
                       className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
@@ -327,9 +350,9 @@ export default function MobileDrawer({
                     >
                       <User size={16} />
                       <span>My Profile</span>
-                    </Link>
+                    </Link></motion.div>
 
-                    <Link
+                    <motion.div variants={itemVariants}><Link
                       href="/profile/edit"
                       onClick={onClose}
                       className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
@@ -340,19 +363,19 @@ export default function MobileDrawer({
                     >
                       <Edit2 size={16} />
                       <span>Edit Profile</span>
-                    </Link>
+                    </Link></motion.div>
                   </div>
                 </motion.div>
               )}
 
               {/* Owner Dashboard Links (for Owners) */}
               {isAuthenticated && user?.role === "owner" && (
-                <motion.div variants={itemVariants}>
+                <motion.div variants={sectionVariants}>
                   <span className="block text-[9px] font-semibold uppercase tracking-[0.24em] text-[#174D35] px-2 mb-2">
                     Owner Portal
                   </span>
                   <div className="space-y-1">
-                    <Link
+                    <motion.div variants={itemVariants}><Link
                       href="/owner-dashboard"
                       onClick={onClose}
                       className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
@@ -363,9 +386,9 @@ export default function MobileDrawer({
                     >
                       <LayoutDashboard size={16} />
                       <span>Owner Dashboard</span>
-                    </Link>
+                    </Link></motion.div>
 
-                    <Link
+                    <motion.div variants={itemVariants}><Link
                       href="/owner-dashboard/add-room"
                       onClick={onClose}
                       className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
@@ -376,19 +399,19 @@ export default function MobileDrawer({
                     >
                       <PlusCircle size={16} />
                       <span>List a New Room</span>
-                    </Link>
+                    </Link></motion.div>
                   </div>
                 </motion.div>
               )}
 
               {/* Admin Dashboard Links (for Admins only) */}
               {isAuthenticated && user?.role === "admin" && (
-                <motion.div variants={itemVariants}>
+                <motion.div variants={sectionVariants}>
                   <span className="block text-[9px] font-semibold uppercase tracking-[0.24em] text-amber-900 px-2 mb-2">
                     Administration
                   </span>
                   <div className="space-y-1">
-                    <Link
+                    <motion.div variants={itemVariants}><Link
                       href="/admin"
                       onClick={onClose}
                       className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
@@ -399,54 +422,54 @@ export default function MobileDrawer({
                     >
                       <ShieldAlert size={16} />
                       <span>Admin Dashboard</span>
-                    </Link>
+                    </Link></motion.div>
 
-                    <Link
+                    <motion.div variants={itemVariants}><Link
                       href="/admin/users"
                       onClick={onClose}
                       className="flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium text-[#1C1B18] hover:bg-[#1C1B18]/5"
                     >
                       <User size={16} />
                       <span>Users Management</span>
-                    </Link>
+                    </Link></motion.div>
 
-                    <Link
+                    <motion.div variants={itemVariants}><Link
                       href="/admin/rooms"
                       onClick={onClose}
                       className="flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium text-[#1C1B18] hover:bg-[#1C1B18]/5"
                     >
                       <Building2 size={16} />
                       <span>Rooms Management</span>
-                    </Link>
+                    </Link></motion.div>
 
-                    <Link
+                    <motion.div variants={itemVariants}><Link
                       href="/admin/issues"
                       onClick={onClose}
                       className="flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium text-[#1C1B18] hover:bg-[#1C1B18]/5"
                     >
                       <AlertCircle size={16} />
                       <span>User Issues</span>
-                    </Link>
+                    </Link></motion.div>
 
-                    <Link
+                    <motion.div variants={itemVariants}><Link
                       href="/admin/feedback"
                       onClick={onClose}
                       className="flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium text-[#1C1B18] hover:bg-[#1C1B18]/5"
                     >
                       <MessageSquare size={16} />
                       <span>Feedback Records</span>
-                    </Link>
+                    </Link></motion.div>
                   </div>
                 </motion.div>
               )}
 
               {/* Support & Legal */}
-              <motion.div variants={itemVariants}>
+              <motion.div variants={sectionVariants}>
                 <span className="block text-[9px] font-semibold uppercase tracking-[0.24em] text-[#5F554A] px-2 mb-2">
                   Support &amp; Legal
                 </span>
                 <div className="space-y-1">
-                  <Link
+                  <motion.div variants={itemVariants}><Link
                     href="/report-issue"
                     onClick={onClose}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
@@ -457,9 +480,9 @@ export default function MobileDrawer({
                   >
                     <AlertCircle size={16} />
                     <span>Report an Issue</span>
-                  </Link>
+                  </Link></motion.div>
 
-                  <Link
+                  <motion.div variants={itemVariants}><Link
                     href="/feedback"
                     onClick={onClose}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
@@ -470,9 +493,9 @@ export default function MobileDrawer({
                   >
                     <MessageSquare size={16} />
                     <span>Feedback &amp; Suggestions</span>
-                  </Link>
+                  </Link></motion.div>
 
-                  <Link
+                  <motion.div variants={itemVariants}><Link
                     href="/privacy-policy"
                     onClick={onClose}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
@@ -483,9 +506,9 @@ export default function MobileDrawer({
                   >
                     <Lock size={16} />
                     <span>Privacy Policy</span>
-                  </Link>
+                  </Link></motion.div>
 
-                  <Link
+                  <motion.div variants={itemVariants}><Link
                     href="/terms-and-conditions"
                     onClick={onClose}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
@@ -496,7 +519,7 @@ export default function MobileDrawer({
                   >
                     <FileText size={16} />
                     <span>Terms &amp; Conditions</span>
-                  </Link>
+                  </Link></motion.div>
                 </div>
               </motion.div>
             </nav>
@@ -524,7 +547,7 @@ export default function MobileDrawer({
               )}
             </motion.div>
           </motion.aside>
-        </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

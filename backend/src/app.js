@@ -20,18 +20,19 @@ const app = express();
 // CORS
 // ==========================================
 const allowedOrigins = [
-  config.FRONTEND_URL,
-  config.FRONTEND_URL_WWW,
-].filter(Boolean);
+  "https://livansa.in",
+  "https://www.livansa.in",
+];
 
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS blocked for origin: ${origin}`));
+        return callback(null, true);
       }
+
+      console.log("Blocked CORS origin:", origin);
+      return callback(null, false);
     },
     credentials: true,
   })

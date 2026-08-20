@@ -33,31 +33,38 @@ interface MobileDrawerProps {
 }
 
 const premiumEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const revealEase: [number, number, number, number] = [0.76, 0, 0.24, 1];
 
 const backdropVariants: Variants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.4, ease: premiumEase } },
-  exit: { opacity: 0, transition: { duration: 0.3, ease: premiumEase, delay: 0.1 } },
+  visible: { opacity: 1, transition: { duration: 0.7, ease: premiumEase } },
+  exit: { opacity: 0, transition: { duration: 0.6, ease: premiumEase, delay: 0.1 } },
 };
 
 const drawerVariants: Variants = {
-  hidden: { x: "100%", opacity: 0 },
+  hidden: { 
+    clipPath: "circle(0px at calc(100% - 40px) 40px)",
+    opacity: 0,
+    scale: 0.95,
+  },
   visible: {
-    x: 0,
+    clipPath: "circle(150% at calc(100% - 40px) 40px)",
     opacity: 1,
+    scale: 1,
     transition: {
-      duration: 0.5,
-      ease: premiumEase,
-      staggerChildren: 0.06,
-      delayChildren: 0.05,
+      duration: 0.75,
+      ease: revealEase,
+      staggerChildren: 0.08,
+      delayChildren: 0.2,
     },
   },
   exit: {
-    x: "100%",
+    clipPath: "circle(0px at calc(100% - 40px) 40px)",
     opacity: 0,
+    scale: 0.95,
     transition: {
-      duration: 0.4,
-      ease: premiumEase,
+      duration: 0.65,
+      ease: revealEase,
       staggerChildren: 0.04,
       staggerDirection: -1,
     },
@@ -68,7 +75,7 @@ const sectionVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.05 },
+    transition: { staggerChildren: 0.06 },
   },
   exit: {
     opacity: 0,
@@ -81,12 +88,12 @@ const itemVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, ease: premiumEase },
+    transition: { duration: 0.5, ease: premiumEase },
   },
   exit: {
     opacity: 0,
     y: 10,
-    transition: { duration: 0.25, ease: premiumEase },
+    transition: { duration: 0.3, ease: premiumEase },
   },
 };
 

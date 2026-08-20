@@ -274,13 +274,13 @@ export default function MessagesPage({
       <Navbar />
 
       {/* Chat shell — grows to fill the remaining viewport */}
-      <div className="flex min-h-0 flex-1 px-0 py-0 sm:px-4 sm:py-4 lg:px-6 lg:py-6">
+      <div className="flex min-h-0 flex-1 px-0 sm:px-4 lg:px-6 sm:pb-4 lg:pb-6 pt-0">
         <div
           className="
             mx-auto flex w-full max-w-[1400px] min-h-0 overflow-hidden
             border-y border-[#1C1B18]/10
             bg-[#FFFDF8]
-            sm:rounded-[18px] sm:border
+            sm:rounded-b-[18px] sm:rounded-t-none sm:border-x sm:border-b sm:border-t-0
           "
         >
           {/* ── LEFT SIDEBAR ── */}

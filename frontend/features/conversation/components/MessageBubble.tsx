@@ -127,7 +127,7 @@ function ActionMenu({
         mt-1.5 w-48 overflow-hidden
         rounded-[18px] border border-[#E8E3D6] bg-[#FFFDF8]
         shadow-[0_12px_40px_rgba(28,27,24,0.14)]
-        ${mine ? "right-0" : "left-0"}
+        ${mine ? "left-0 sm:right-0 sm:left-auto" : "right-0 sm:left-0 sm:right-auto"}
         animate-in fade-in zoom-in-95 duration-150 origin-top
       `}
     >
@@ -269,7 +269,7 @@ export default function MessageBubble({
       <div
         className={`
           flex w-full
-          ${isGroupEnd ? "mb-4" : "mb-0.5"}
+          ${isGroupEnd ? "mb-3 sm:mb-4" : "mb-[2px] sm:mb-0.5"}
           ${mine ? "justify-end" : "justify-start"}
         `}
       >
@@ -280,7 +280,7 @@ export default function MessageBubble({
 
   // ── Border radius per group position ─────────────────────────────────────
 
-  const baseRadius = "rounded-[18px]";
+  const baseRadius = "rounded-[18px] sm:rounded-[20px]";
   const topRadius = mine
     ? isGroupStart ? "" : "!rounded-tr-[6px]"
     : isGroupStart ? "" : "!rounded-tl-[6px]";
@@ -296,93 +296,83 @@ export default function MessageBubble({
     <div
       ref={wrapperRef}
       className={`
-        group flex w-full items-end
+        group relative flex w-full items-end
         ${mine ? "flex-row-reverse" : "flex-row"}
-        ${isGroupEnd ? "mb-4" : "mb-0.5"}
-        gap-1.5
+        ${isGroupEnd ? "mb-3 sm:mb-4" : "mb-[2px] sm:mb-0.5"}
+        gap-1.5 sm:gap-2
       `}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => {
-        setHovered(false);
-        // Don't close menu on mouse leave — only close on outside click
-      }}
+      onMouseLeave={() => setHovered(false)}
       onTouchStart={startLongPress}
       onTouchEnd={cancelLongPress}
       onTouchMove={cancelLongPress}
     >
       {/* ── Bubble wrapper (max width container) ── */}
-      <div className="relative flex min-w-0 max-w-[78%] flex-col sm:max-w-[65%]">
-
-        {/* ── Floating 3-dot trigger ── */}
-        {/*
-         * Hidden by default. Visible on hover or when menu is open.
-         * Uses opacity + scale transition so the layout is NEVER affected —
-         * the button is always in the DOM, just invisible.
-         */}
-        <div
-          className={`
-            relative mb-1 flex h-6 items-center
-            ${mine ? "justify-end" : "justify-start"}
-          `}
-        >
-          <div className="relative">
-            <button
-              ref={triggerRef}
-              type="button"
-              aria-label="Message options"
-              aria-expanded={showMenu}
-              aria-haspopup="menu"
-              onClick={() => setShowMenu((v) => !v)}
-              className={`
-                flex h-6 w-6 items-center justify-center
-                rounded-full
-                text-[#8A8177]
-                transition-all duration-150
-                hover:bg-[#1C1B18]/8 hover:text-[#1C1B18]
-                focus-visible:outline-none focus-visible:ring-1
-                focus-visible:ring-[#174D35]/40
-                ${hovered || showMenu
-                  ? "scale-100 opacity-100"
-                  : "pointer-events-none scale-90 opacity-0"
-                }
-              `}
-            >
-              <MoreHorizontal size={15} aria-hidden />
-            </button>
-
-            {/* Action menu */}
-            {showMenu && (
-              <ActionMenu
-                mine={mine}
-                menuRef={menuRef}
-                showConfirm={showConfirm}
-                onDeleteForMe={handleDeleteForMe}
-                onDeleteForEveryoneClick={handleDeleteForEveryoneClick}
-                onConfirmDeleteForEveryone={handleConfirmDeleteForEveryone}
-                onCancelConfirm={() => setShowConfirm(false)}
-              />
-            )}
-          </div>
-        </div>
+      <div className="relative flex min-w-0 max-w-[85%] flex-col sm:max-w-[70%] lg:max-w-[65%]">
 
         {/* ── Bubble ── */}
-        <div
-          className={`
-            ${bubbleClass}
-            break-words px-3.5 py-2.5
-            text-[14px] leading-relaxed
-            shadow-[0_1px_3px_rgba(0,0,0,0.05)]
-            ${
-              mine
-                ? "bg-[#174D35] text-[#FFFDF8]"
-                : "border border-[#1C1B18]/[0.07] bg-[#FFFDF8] text-[#1C1B18]"
-            }
-          `}
-          style={{ overflowWrap: "break-word", wordBreak: "break-word" }}
-          // Tap on bubble to open menu on mobile
-          onDoubleClick={() => setShowMenu((v) => !v)}
-        >
-          {message.message}
+        <div className="relative flex items-center group">
+          <div
+            className={`
+              ${bubbleClass}
+              break-words px-3.5 py-2 sm:px-4 sm:py-2.5
+              text-[15px] sm:text-[14px] leading-[1.4] sm:leading-relaxed
+              shadow-sm
+              ${
+                mine
+                  ? "bg-[#174D35] text-[#FFFDF8]"
+                  : "border border-[#1C1B18]/[0.08] bg-[#FFFDF8] text-[#1C1B18]"
+              }
+            `}
+            style={{ overflowWrap: "break-word", wordBreak: "break-word" }}
+            onDoubleClick={() => setShowMenu((v) => !v)}
+          >
+            {message.message}
+          </div>
+
+          {/* ── Floating 3-dot trigger (desktop/tablet only usually, but accessible on mobile via double-click/long-press) ── */}
+          <div className={`
+            absolute top-1/2 -translate-y-1/2
+            ${mine ? "-left-9" : "-right-9"}
+          `}>
+            <div className="relative">
+              <button
+                ref={triggerRef}
+                type="button"
+                aria-label="Message options"
+                aria-expanded={showMenu}
+                aria-haspopup="menu"
+                onClick={() => setShowMenu((v) => !v)}
+                className={`
+                  flex h-7 w-7 items-center justify-center
+                  rounded-full bg-transparent
+                  text-[#8A8177]
+                  transition-all duration-150
+                  hover:bg-[#1C1B18]/8 hover:text-[#1C1B18]
+                  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#174D35]/40
+                  ${hovered || showMenu
+                    ? "scale-100 opacity-100"
+                    : "pointer-events-none scale-90 opacity-0"
+                  }
+                `}
+              >
+                <MoreHorizontal size={16} aria-hidden />
+              </button>
+
+              {/* Action menu */}
+              {showMenu && (
+                <ActionMenu
+                  mine={mine}
+                  menuRef={menuRef}
+                  showConfirm={showConfirm}
+                  onDeleteForMe={handleDeleteForMe}
+                  onDeleteForEveryoneClick={handleDeleteForEveryoneClick}
+                  onConfirmDeleteForEveryone={handleConfirmDeleteForEveryone}
+                  onCancelConfirm={() => setShowConfirm(false)}
+                />
+              )}
+            </div>
+          </div>
         </div>
 
         {/* ── Timestamp + read receipt (shown only for last in group) ── */}
@@ -390,7 +380,7 @@ export default function MessageBubble({
           <div
             className={`
               mt-1 flex items-center gap-1
-              text-[9px] text-[#9A9186]
+              text-[10px] text-[#8A8177] sm:text-[11px] sm:text-[#9A9186]
               ${mine ? "justify-end" : "justify-start"}
             `}
           >
@@ -398,7 +388,7 @@ export default function MessageBubble({
             {mine && (
               <span
                 aria-label={message.read ? "Read" : "Sent"}
-                className="tracking-[-2px]"
+                className="tracking-[-1.5px]"
               >
                 {message.read ? "✓✓" : "✓"}
               </span>

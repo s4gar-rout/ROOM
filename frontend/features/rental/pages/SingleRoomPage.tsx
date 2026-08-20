@@ -632,58 +632,66 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
       ======================================================== */}
       {restrictionModal.isOpen && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#1C1B18]/60 px-4 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md overflow-hidden rounded-[32px] border border-[#174D35]/15 bg-[#FAF7F0] p-7 sm:p-8 shadow-[0_24px_60px_rgba(28,27,24,0.18)] text-[#1C1B18]">
-            {/* CLOSE BUTTON */}
-            <button
-              onClick={() =>
-                setRestrictionModal({ ...restrictionModal, isOpen: false })
-              }
-              className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-[#174D35]/5 text-[#756A5C] transition-all hover:bg-[#174D35]/15 hover:text-[#174D35] focus:outline-none"
-              aria-label="Close modal"
-            >
-              <X size={18} />
-            </button>
-
-            {/* EYEBROW */}
-            <div className="mb-4 flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#174D35]" />
-              <span className="h-px w-6 bg-[#174D35]/30" />
-              <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
-                Account Notice
-              </span>
-            </div>
-
-            {/* ICON HEADER */}
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#174D35]/10 text-[#174D35]">
-              <Info size={22} />
-            </div>
-
-            {/* TITLE */}
-            <h2 className="font-serif text-[28px] sm:text-[32px] font-normal leading-[1.15] tracking-[-0.03em] text-[#1C1B18]">
-              {restrictionModal.title}
-            </h2>
-
-            {/* MESSAGE */}
-            <p className="mt-3 text-sm leading-relaxed text-[#5F554A]">
-              {restrictionModal.message}
-            </p>
-
-            {/* ACTION CTA */}
-            <div className="mt-7 flex items-center justify-end border-t border-[#174D35]/10 pt-5">
+          <div className="relative w-full max-w-md">
+            <div className="border border-[#174D35]/15 bg-[#FAF7F0] p-7 sm:p-8 shadow-[0_24px_60px_rgba(28,27,24,0.18)] text-[#1C1B18]">
+              {/* CLOSE BUTTON */}
               <button
-                type="button"
                 onClick={() =>
                   setRestrictionModal({ ...restrictionModal, isOpen: false })
                 }
-                className="group inline-flex h-11 items-center gap-2 rounded-full bg-[#174D35] px-7 text-[10px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition-all hover:bg-[#123d2a] shadow-md"
+                className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-[#174D35]/5 text-[#756A5C] transition-all hover:bg-[#174D35]/15 hover:text-[#174D35] focus:outline-none z-10"
+                aria-label="Close modal"
               >
-                <span>Understood</span>
-                <ArrowRight
-                  size={13}
-                  className="transition-transform group-hover:translate-x-0.5"
-                />
+                <X size={18} />
               </button>
+
+              {/* EYEBROW */}
+              <div className="mb-4 flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#174D35]" />
+                <span className="h-px w-6 bg-[#174D35]/30" />
+                <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
+                  Account Notice
+                </span>
+              </div>
+
+              {/* ICON HEADER */}
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#174D35]/10 text-[#174D35]">
+                <Info size={22} />
+              </div>
+
+              {/* TITLE */}
+              <h2 className="font-serif text-[28px] sm:text-[32px] font-normal leading-[1.15] tracking-[-0.03em] text-[#1C1B18]">
+                {restrictionModal.title}
+              </h2>
+
+              {/* MESSAGE */}
+              <p className="mt-3 text-sm leading-relaxed text-[#5F554A]">
+                {restrictionModal.message}
+              </p>
+
+              {/* ACTION CTA */}
+              <div className="mt-7 flex items-center justify-end border-t border-[#174D35]/10 pt-5">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setRestrictionModal({ ...restrictionModal, isOpen: false })
+                  }
+                  className="group inline-flex h-11 items-center gap-2 bg-[#174D35] px-7 text-[10px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition-all hover:bg-[#123d2a] shadow-md"
+                >
+                  <span>Understood</span>
+                  <ArrowRight
+                    size={13}
+                    className="transition-transform group-hover:translate-x-0.5"
+                  />
+                </button>
+              </div>
             </div>
+            
+            {/* Architectural corners */}
+            <span className="absolute -left-1 -top-1 h-3 w-3 border-l border-t border-[#174D35]" />
+            <span className="absolute -right-1 -top-1 h-3 w-3 border-r border-t border-[#174D35]" />
+            <span className="absolute -bottom-1 -left-1 h-3 w-3 border-b border-l border-[#174D35]" />
+            <span className="absolute -bottom-1 -right-1 h-3 w-3 border-b border-r border-[#174D35]" />
           </div>
         </div>
       )}

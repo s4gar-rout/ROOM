@@ -265,18 +265,18 @@ export default function AllRoomsPage() {
               onClick={() => setShowFilters(!showFilters)}
               className={`
                 flex
-                h-[44px]
+                h-[40px] sm:h-[44px]
                 shrink-0
                 items-center
                 justify-center
-                gap-2
+                gap-1.5 sm:gap-2
                 border
-                px-5
+                px-3.5 sm:px-5
                 font-sans
-                text-[10px]
-                font-semibold
+                text-[10px] sm:text-xs
+                font-bold sm:font-semibold
                 uppercase
-                tracking-[0.15em]
+                tracking-[0.12em] sm:tracking-[0.15em]
                 transition-colors
                 ${showFilters || activeFilterCount > 0
                   ? "border-[#174D35] bg-[#174D35]/5 text-[#174D35]"
@@ -284,7 +284,7 @@ export default function AllRoomsPage() {
                 }
               `}
             >
-              <Filter size={14} strokeWidth={1.8} />
+              <Filter size={13} strokeWidth={1.8} />
 
               <span className="hidden sm:inline">Filters</span>
               <span className="inline sm:hidden">Filter</span>
@@ -292,10 +292,10 @@ export default function AllRoomsPage() {
               {activeFilterCount > 0 && (
                 <span
                   className="
-                    ml-1
+                    ml-0.5
                     flex
-                    h-[16px]
-                    min-w-[16px]
+                    h-[15px]
+                    min-w-[15px]
                     items-center
                     justify-center
                     rounded-full
@@ -317,26 +317,26 @@ export default function AllRoomsPage() {
                 onClick={() => setIsSortOpen(!isSortOpen)}
                 className="
                   flex
-                  h-[44px]
+                  h-[40px] sm:h-[44px]
                   w-full
                   items-center
                   justify-between
                   border
                   border-[#1C1B18]/15
                   bg-transparent
-                  px-4
+                  px-3 sm:px-4
                   font-sans
-                  text-sm
-                  font-semibold
+                  text-[10px] sm:text-xs
+                  font-bold sm:font-semibold
                   uppercase
-                  tracking-[0.1em]
+                  tracking-[0.08em] sm:tracking-[0.1em]
                   text-[#5F554A]
                   transition-colors
                   hover:border-[#174D35]/30
                   lg:w-[220px]
                 "
               >
-                <span>
+                <span className="truncate">
                   {filters.sort === "newest" || !filters.sort
                     ? "Sort: Newest"
                     : filters.sort === "oldest"
@@ -348,7 +348,7 @@ export default function AllRoomsPage() {
                 <ChevronDown
                   size={10}
                   strokeWidth={1.8}
-                  className={`text-[#5F554A] transition-transform duration-300 ${
+                  className={`shrink-0 text-[#5F554A] transition-transform duration-300 ${
                     isSortOpen ? "rotate-180" : ""
                   }`}
                 />
@@ -356,7 +356,7 @@ export default function AllRoomsPage() {
 
               {/* DROPDOWN MENU */}
               {isSortOpen && (
-                <div className="absolute left-0 top-full z-10 mt-1 w-full border border-[#1C1B18]/15 bg-[#F8F4EA] py-0 shadow-lg">
+                <div className="absolute left-0 top-full z-20 mt-1 w-full border border-[#1C1B18]/15 bg-[#F8F4EA] py-0 shadow-lg">
                   {[
                     { value: "newest", label: "Sort: Newest" },
                     { value: "oldest", label: "Sort: Oldest" },
@@ -371,11 +371,11 @@ export default function AllRoomsPage() {
                       }}
                       className={`
                         w-full
-                        px-4
+                        px-3.5 sm:px-4
                         py-2
                         text-left
                         font-sans
-                        text-[13px]
+                        text-xs sm:text-[13px]
                         font-medium
                         tracking-normal
                         transition-colors

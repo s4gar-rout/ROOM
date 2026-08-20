@@ -19,10 +19,20 @@ const app = express();
 // ==========================================
 // CORS
 // ==========================================
+const allowedOrigins = [
+  config.FRONTEND_URL,
+  config.FRONTEND_URL_WWW,
+].filter(Boolean);
 
 app.use(
   cors({
-    origin: config.FRONTEND_URL,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked for origin: ${origin}`));
+      }
+    },
     credentials: true,
   })
 );

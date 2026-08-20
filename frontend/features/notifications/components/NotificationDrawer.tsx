@@ -41,6 +41,8 @@ export default function NotificationDrawer({
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [isMarkingRead, setIsMarkingRead] = useState(false);
+  const [isClearingAll, setIsClearingAll] = useState(false);
 
   const fetchNotifications = useCallback(async () => {
     if (!isAuthenticated) return;
@@ -123,17 +125,23 @@ export default function NotificationDrawer({
   };
 
   const handleMarkAllRead = async () => {
-    const unread = notifications.filter((n) => !n.isRead);
-    for (const item of unread) {
-      try {
-        await markNotificationAsRead(item._id);
-      } catch {
-        // continue
+    if (isMarkingRead) return;
+    setIsMarkingRead(true);
+    try {
+      const unread = notifications.filter((n) => !n.isRead);
+      for (const item of unread) {
+        try {
+          await markNotificationAsRead(item._id);
+        } catch {
+          // continue
+        }
       }
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+      onUnreadCountChange?.(0);
+    } finally {
+      setIsMarkingRead(false);
     }
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-    setUnreadCount(0);
-    onUnreadCountChange?.(0);
   };
 
   const handleDeleteNotification = async (
@@ -156,6 +164,8 @@ export default function NotificationDrawer({
   };
 
   const handleClearAll = async () => {
+    if (isClearingAll) return;
+    setIsClearingAll(true);
     try {
       await clearAllNotifications();
       setNotifications([]);
@@ -163,6 +173,8 @@ export default function NotificationDrawer({
       onUnreadCountChange?.(0);
     } catch {
       // Silently handle error
+    } finally {
+      setIsClearingAll(false);
     }
   };
 
@@ -209,8 +221,8 @@ export default function NotificationDrawer({
           </div>
 
           {/* ACTION SUB-HEADER */}
-          <div className="mt-4 flex items-center justify-between border-t border-[#1C1B18]/8 pt-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#174D35]/5 px-3 py-1 font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-[#174D35]">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[#1C1B18]/8 pt-3">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#174D35]/5 px-3 py-1 font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-[#174D35] shrink-0">
               <span className={`h-1.5 w-1.5 rounded-full ${unreadCount > 0 ? "bg-[#174D35] animate-pulse" : "bg-[#756A5C]"}`} />
               {unreadCount > 0 ? `${unreadCount} New Unread` : "All Caught Up"}
             </span>
@@ -219,21 +231,41 @@ export default function NotificationDrawer({
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllRead}
+                  disabled={isMarkingRead}
                   title="Mark all as read"
-                  className="inline-flex h-7 items-center justify-center gap-1.5 rounded-full border border-[#174D35]/30 bg-transparent px-3 font-sans text-[10px] font-bold uppercase tracking-[0.12em] text-[#174D35] transition-all hover:bg-[#174D35] hover:text-[#F8F4EA] whitespace-nowrap leading-none shrink-0"
+                  className="inline-flex h-8 min-w-[105px] items-center justify-center gap-1.5 rounded-full border border-[#174D35]/30 bg-transparent px-3 font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.12em] text-[#174D35] transition-all hover:bg-[#174D35] hover:text-[#F8F4EA] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap leading-none shrink-0"
                 >
-                  <CheckCheck size={13} className="shrink-0" />
-                  <span>Mark Read</span>
+                  {isMarkingRead ? (
+                    <>
+                      <div className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-current border-t-transparent shrink-0" />
+                      <span>Marking...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCheck size={13} className="shrink-0" />
+                      <span>Mark Read</span>
+                    </>
+                  )}
                 </button>
               )}
               {notifications.length > 0 && (
                 <button
                   onClick={handleClearAll}
+                  disabled={isClearingAll}
                   title="Clear all notifications"
-                  className="inline-flex h-7 items-center justify-center gap-1.5 rounded-full border border-[#A53B32]/30 bg-transparent px-3 font-sans text-[10px] font-bold uppercase tracking-[0.12em] text-[#A53B32] transition-all hover:bg-[#A53B32] hover:text-[#F8F4EA] whitespace-nowrap leading-none shrink-0"
+                  className="inline-flex h-8 min-w-[105px] items-center justify-center gap-1.5 rounded-full border border-[#A53B32]/30 bg-transparent px-3 font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.12em] text-[#A53B32] transition-all hover:bg-[#A53B32] hover:text-[#F8F4EA] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap leading-none shrink-0"
                 >
-                  <Trash2 size={13} className="shrink-0" />
-                  <span>Clear All</span>
+                  {isClearingAll ? (
+                    <>
+                      <div className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-current border-t-transparent shrink-0" />
+                      <span>Clearing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 size={13} className="shrink-0" />
+                      <span>Clear All</span>
+                    </>
+                  )}
                 </button>
               )}
             </div>

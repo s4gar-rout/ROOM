@@ -21,7 +21,7 @@ async function registerController(req, res) {
         // 2. Normalize
         const normalizedEmail = email.toLowerCase().trim();
         const normalizedUsername = username.trim();
-        const normalizedContact = contact ? contact.trim() : "";
+        const normalizedContact = contact && contact.trim() ? contact.trim() : undefined;
 
         // 3. Check existing username
         const existingUsername = await UserModel.findOne({
@@ -47,10 +47,24 @@ async function registerController(req, res) {
             });
         }
 
-        // 5. Generate 6-digit verification OTP
+        // 5. Check existing mobile/contact number
+        if (normalizedContact) {
+            const existingContact = await UserModel.findOne({
+                contact: normalizedContact
+            });
+
+            if (existingContact) {
+                return res.status(409).json({
+                    success: false,
+                    message: "This mobile number is already registered."
+                });
+            }
+        }
+
+        // 6. Generate 6-digit verification OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        // 6. Create user (email unverified by default)
+        // 7. Create user (email unverified by default)
         const user = await UserModel.create({
             username: normalizedUsername,
             email: normalizedEmail,
@@ -63,7 +77,7 @@ async function registerController(req, res) {
             authProvider: "local"
         });
 
-        // 7. Send Verification Email
+        // 8. Send Verification Email
         try {
             await sendVerificationEmail({
                 email: normalizedEmail,
@@ -83,6 +97,28 @@ async function registerController(req, res) {
 
     } catch (error) {
         console.error("Register error:", error);
+
+        if (error.code === 11000) {
+            if (error.keyPattern?.contact || (typeof error.message === "string" && error.message.includes("contact"))) {
+                return res.status(409).json({
+                    success: false,
+                    message: "This mobile number is already registered."
+                });
+            }
+            if (error.keyPattern?.email || (typeof error.message === "string" && error.message.includes("email"))) {
+                return res.status(409).json({
+                    success: false,
+                    message: "Email already exists"
+                });
+            }
+            if (error.keyPattern?.username || (typeof error.message === "string" && error.message.includes("username"))) {
+                return res.status(409).json({
+                    success: false,
+                    message: "Username already exists"
+                });
+            }
+        }
+
         return res.status(500).json({
             success: false,
             message: "Internal server error"

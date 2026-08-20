@@ -21,6 +21,8 @@ const userSchema = new mongoose.Schema(
         contact: {
             type: String,
             trim: true,
+            unique: true,
+            sparse: true,
         },
 
         isEmailVerified: {

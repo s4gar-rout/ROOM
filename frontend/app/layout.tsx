@@ -8,6 +8,11 @@ import BottomNav from "@/components/layout/BottomNav";
 export const metadata: Metadata = {
   title: "ROOM — Find a place that feels like home",
   description: "Find and list long-term rental homes with ROOM.",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({

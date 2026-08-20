@@ -21,7 +21,19 @@ async function registerController(req, res) {
         // 2. Normalize
         const normalizedEmail = email.toLowerCase().trim();
         const normalizedUsername = username.trim();
-        const normalizedContact = contact && contact.trim() ? contact.trim() : undefined;
+        
+        let normalizedContact = undefined;
+        if (contact && typeof contact === 'string') {
+            let cleaned = contact.replace(/[^\d+]/g, '');
+            if (cleaned.startsWith('+91')) {
+                cleaned = cleaned.slice(3);
+            } else if (cleaned.startsWith('0') && cleaned.length === 11) {
+                cleaned = cleaned.slice(1);
+            }
+            if (cleaned.length > 0) {
+                normalizedContact = cleaned;
+            }
+        }
 
         // 3. Check existing username
         const existingUsername = await UserModel.findOne({

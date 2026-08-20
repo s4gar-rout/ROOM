@@ -160,11 +160,21 @@ export default function RegisterForm() {
         setUser(response.user);
         setShowNotificationModal(true);
       }
-    } catch (error: unknown) {
+    } catch (error: any) {
       const message =
-        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        error?.response?.data?.message ||
         "An error occurred during registration. Please try again.";
-      setServerError(message);
+      
+      const lowerMessage = message.toLowerCase();
+      if (lowerMessage.includes("mobile number") || lowerMessage.includes("contact")) {
+        setErrors((prev) => ({ ...prev, contact: message }));
+      } else if (lowerMessage.includes("email")) {
+        setErrors((prev) => ({ ...prev, email: message }));
+      } else if (lowerMessage.includes("username")) {
+        setErrors((prev) => ({ ...prev, username: message }));
+      } else {
+        setServerError(message);
+      }
     } finally {
       setIsLoading(false);
     }

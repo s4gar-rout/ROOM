@@ -8,6 +8,20 @@ import { rateLimiter } from "../middlewares/rateLimit.middleware.js";
 const router = express.Router();
 
 /**
+ * @route POST /api/auth/send-registration-otp
+ * @description Send OTP to email before creating account
+ * @access Public
+ */
+router.post("/send-registration-otp", authControllers.sendRegistrationOtpController);
+
+/**
+ * @route POST /api/auth/verify-registration-otp
+ * @description Verify pre-registration OTP
+ * @access Public
+ */
+router.post("/verify-registration-otp", authControllers.verifyRegistrationOtpController);
+
+/**
  * @route POST /api/auth/register
  * @description Register a new user
  * @access Public

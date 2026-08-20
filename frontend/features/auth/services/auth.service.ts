@@ -39,6 +39,33 @@ export interface ResetPasswordPayload {
 }
 
 // ==========================================
+// PRE-REGISTRATION EMAIL VERIFICATION
+// ==========================================
+
+export interface SendRegistrationOtpPayload {
+  email: string;
+}
+
+export const sendRegistrationOtp = async (
+  data: SendRegistrationOtpPayload
+): Promise<AuthResponse> => {
+  const response = await api.post<AuthResponse>("/auth/send-registration-otp", data);
+  return response.data;
+};
+
+export interface VerifyRegistrationOtpPayload {
+  email: string;
+  otp: string;
+}
+
+export const verifyRegistrationOtp = async (
+  data: VerifyRegistrationOtpPayload
+): Promise<AuthResponse> => {
+  const response = await api.post<AuthResponse>("/auth/verify-registration-otp", data);
+  return response.data;
+};
+
+// ==========================================
 // REGISTER & VERIFY EMAIL
 // ==========================================
 
@@ -49,6 +76,13 @@ export const registerUser = async (
     "/auth/register",
     data
   );
+
+  if (response.data.sessionId) {
+    sessionStorage.setItem("roomSessionId", response.data.sessionId);
+  }
+  if (response.data.accessToken) {
+    setAccessToken(response.data.accessToken);
+  }
 
   return response.data;
 };

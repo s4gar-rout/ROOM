@@ -593,11 +593,79 @@ async function becomeOwnerController(req, res) {
             message: "Internal server error"
         });
     }
+// Resend Verification OTP Controller
+async function resendVerificationOtpController(req, res) {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is required to resend verification OTP",
+            });
+        }
+
+        const normalizedEmail = email.toLowerCase().trim();
+        const user = await UserModel.findOne({ email: normalizedEmail });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User account not found",
+            });
+        }
+
+        if (user.isEmailVerified) {
+            return res.status(400).json({
+                success: false,
+                message: "This account is already verified. Please sign in.",
+            });
+        }
+
+        // Cooldown: ensure at least 60 seconds elapsed since last OTP was issued
+        if (
+            user.emailVerificationOtpExpiresAt &&
+            user.emailVerificationOtpExpiresAt.getTime() - Date.now() > 14 * 60 * 1000
+        ) {
+            return res.status(429).json({
+                success: false,
+                message: "Please wait before requesting another verification code.",
+            });
+        }
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        user.emailVerificationOtp = otp;
+        user.emailVerificationOtpExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
+        await user.save();
+
+        try {
+            await sendVerificationEmail({
+                email: normalizedEmail,
+                username: user.username,
+                otp,
+            });
+        } catch (emailErr) {
+            console.error("Resend Verification Email Error:", emailErr);
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "A new verification code has been sent to your email.",
+        });
+
+    } catch (error) {
+        console.error("Resend verification OTP error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
 }
 
 export default {
     registerController,
     verifyEmailController,
+    resendVerificationOtpController,
     loginController,
     getMeController,
     refreshTokenController,

@@ -73,6 +73,17 @@ export const verifyEmail = async (
   return response.data;
 };
 
+export interface ResendVerificationOtpPayload {
+  email: string;
+}
+
+export const resendVerificationOtp = async (
+  data: ResendVerificationOtpPayload
+): Promise<AuthResponse> => {
+  const response = await api.post<AuthResponse>("/auth/resend-verification-otp", data);
+  return response.data;
+};
+
 // ==========================================
 // LOGIN
 // ==========================================

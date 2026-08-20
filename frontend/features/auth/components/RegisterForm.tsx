@@ -6,7 +6,7 @@ import Link from "next/link";
 import ButtonLoader from "@/components/ui/ButtonLoader";
 import { useRouter } from "next/navigation";
 
-import { registerUser, verifyEmail } from "../services/auth.service";
+import { registerUser, verifyEmail, resendVerificationOtp } from "../services/auth.service";
 import { useAuth } from "../hooks/useAuth";
 import NotificationPromptModal from "@/features/notifications/components/NotificationPromptModal";
 
@@ -37,6 +37,8 @@ export default function RegisterForm() {
   const [otp, setOtp] = useState("");
   const [isVerificationStep, setIsVerificationStep] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
+  const [resendTimer, setResendTimer] = useState(60);
+  const [isResending, setIsResending] = useState(false);
 
   const [errors, setErrors] = useState<RegisterErrors>({});
   const [showPassword, setShowPassword] = useState(false);
@@ -45,6 +47,45 @@ export default function RegisterForm() {
   const [serverError, setServerError] = useState("");
   const [serverSuccess, setServerSuccess] = useState("");
   const [showNotificationModal, setShowNotificationModal] = useState(false);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (isVerificationStep && resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isVerificationStep, resendTimer]);
+
+  const formatTimer = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  };
+
+  const handleResendCode = async () => {
+    if (resendTimer > 0 || isResending) return;
+    try {
+      setIsResending(true);
+      setServerError("");
+      setServerSuccess("");
+      const res = await resendVerificationOtp({ email: registeredEmail });
+      if (res.success) {
+        setServerSuccess(res.message || "A new verification code has been sent to your email.");
+        setResendTimer(60);
+      }
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Failed to resend verification code. Please try again.";
+      setServerError(message);
+    } finally {
+      setIsResending(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -76,7 +117,7 @@ export default function RegisterForm() {
     if (!contact) {
       newErrors.contact = "Contact number is required";
     } else if (!/^\d{10}$/.test(contact)) {
-      newErrors.contact = "Enter a valid 10-digit number";
+      newErrors.contact = "Enter a valid 10-digit mobile number";
     }
 
     if (!formData.password) {
@@ -113,6 +154,7 @@ export default function RegisterForm() {
       if (response.requiresVerification) {
         setIsVerificationStep(true);
         setRegisteredEmail(formData.email.trim());
+        setResendTimer(60);
         setServerSuccess("Verification code sent to your email. Enter the OTP below to activate your account.");
       } else if (response.user) {
         setUser(response.user);
@@ -215,16 +257,34 @@ export default function RegisterForm() {
           />
         </div>
 
+        {/* Resend Timer & Button */}
+        <div className="flex items-center justify-between px-1">
+          <button
+            type="button"
+            onClick={handleResendCode}
+            disabled={resendTimer > 0 || isResending}
+            className="text-xs font-semibold uppercase tracking-[0.14em] text-[#174D35] disabled:text-[#756A5C] disabled:cursor-not-allowed hover:underline transition-colors"
+          >
+            {isResending ? (
+              "Sending..."
+            ) : resendTimer > 0 ? (
+              `Resend code in ${formatTimer(resendTimer)}`
+            ) : (
+              "Resend Code"
+            )}
+          </button>
+        </div>
+
         <button
           type="submit"
           disabled={isLoading}
-          className="group mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#174D35] px-5 text-xs font-semibold uppercase tracking-[0.16em] text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40 disabled:cursor-not-allowed disabled:opacity-60"
+          className="group mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#174D35] px-4 text-xs font-bold uppercase tracking-[0.16em] text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40 disabled:cursor-not-allowed disabled:opacity-60 whitespace-nowrap leading-none shrink-0"
         >
-          {isLoading ? <ButtonLoader color="#F8F4EA" /> : "Verify & Activate Account"}
+          {isLoading ? <ButtonLoader color="#F8F4EA" /> : "Verify Account"}
           {!isLoading && (
             <ArrowUpRight
               size={16}
-              className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              className="shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
             />
           )}
         </button>

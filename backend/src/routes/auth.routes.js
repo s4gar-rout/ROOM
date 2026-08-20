@@ -21,6 +21,21 @@ router.post("/register", registerValidator, validateRequest, authControllers.reg
  */
 router.post("/verify-email", authControllers.verifyEmailController);
 
+/**
+ * @route POST /api/auth/resend-verification-otp
+ * @description Resend verification OTP to email
+ * @access Public
+ */
+router.post(
+    "/resend-verification-otp",
+    rateLimiter({
+        keyPrefix: "resend-verification-otp",
+        limit: 5,
+        windowInSeconds: 15 * 60,
+    }),
+    authControllers.resendVerificationOtpController
+);
+
 
 /**
  * @route POST /api/auth/login

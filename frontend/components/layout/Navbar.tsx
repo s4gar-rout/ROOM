@@ -119,19 +119,8 @@ export default function Navbar() {
             scrolled ? "h-[60px]" : "h-[72px]"
           }`}
         >
-          {/* Left section on Mobile: Hamburger + Brand */}
+          {/* Left section: Brand Logo */}
           <div className="flex items-center gap-3">
-            {/* Hamburger Button for Mobile Drawer */}
-            <button
-              type="button"
-              onClick={() => setMobileDrawerOpen(true)}
-              aria-label="Open menu"
-              className="flex h-10 w-10 items-center justify-center rounded-full text-[#1C1B18] hover:bg-[#1C1B18]/5 transition-colors md:hidden"
-            >
-              <Menu size={22} />
-            </button>
-
-            {/* Logo */}
             <Link
               href="/"
               className="font-serif text-2xl italic tracking-tight text-[#174D35]"
@@ -191,15 +180,15 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Right side: Notifications + Profile / Auth */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            {/* Desktop Notification Bell Button */}
+          {/* Right side: Notification → Profile → Hamburger */}
+          <div className="flex items-center gap-2.5 sm:gap-4">
+            {/* Notification Bell Button (Desktop & Mobile) */}
             {isAuthenticated && (
               <button
                 type="button"
                 onClick={() => setNotificationDrawerOpen(true)}
                 aria-label="Open notifications"
-                className="relative hidden sm:flex h-9 w-9 items-center justify-center rounded-full text-[#5F554A] hover:bg-[#1C1B18]/5 hover:text-[#174D35] transition-colors"
+                className="relative flex h-9 w-9 items-center justify-center rounded-full text-[#5F554A] hover:bg-[#1C1B18]/5 hover:text-[#174D35] transition-colors"
               >
                 <Bell size={18} />
                 {unreadNotifications > 0 && (
@@ -339,6 +328,16 @@ export default function Navbar() {
                 </Link>
               </div>
             )}
+
+            {/* Mobile Hamburger Menu Button (placed on far right) */}
+            <button
+              type="button"
+              onClick={() => setMobileDrawerOpen(true)}
+              aria-label="Open menu"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-[#1C1B18] hover:bg-[#1C1B18]/5 transition-colors md:hidden"
+            >
+              <Menu size={20} />
+            </button>
           </div>
         </nav>
       </motion.header>

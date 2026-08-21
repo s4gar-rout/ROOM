@@ -68,7 +68,7 @@ export default function ProfilePage() {
       <div>
         <button 
           onClick={() => router.back()}
-          className="group flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35] mb-8"
+          className="group flex items-center gap-2 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35] mb-8"
         >
           <ArrowLeft size={13} className="transition-transform duration-300 group-hover:-translate-x-1" /> Back
         </button>
@@ -87,10 +87,10 @@ export default function ProfilePage() {
           
           {/* Top Label */}
           <div className="mb-10 flex items-center justify-between border-b border-[#1C1B18]/10 pb-4">
-            <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]">
+            <span className="text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]">
               Personal Information
             </span>
-            <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
+            <span className="text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
               01 / 01
             </span>
           </div>
@@ -118,7 +118,7 @@ export default function ProfilePage() {
                 <div className="text-center sm:text-left">
                   <h2 className="text-2xl font-serif text-[#1C1B18] leading-tight mb-1">{profile.username}</h2>
                   <p className="text-xs text-[#5F554A] mb-3">@{profile.username.toLowerCase().replace(/\s/g, '')}</p>
-                  <span className="inline-block px-3 py-1 bg-[#174D35]/5 border border-[#174D35]/15 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#174D35]">
+                  <span className="inline-block px-3 py-1 bg-[#174D35]/5 border border-[#174D35]/15 text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.2em] text-[#174D35]">
                     {profile.role}
                   </span>
                 </div>
@@ -127,7 +127,7 @@ export default function ProfilePage() {
               {/* Edit Button */}
               <Link
                 href="/profile/edit"
-                className="group flex h-11 items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-[10px] font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:!text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40"
+                className="group flex h-11 items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-xs md:text-[10px] font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:!text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40"
               >
                 Edit Profile
                 <ArrowUpRight
@@ -140,21 +140,21 @@ export default function ProfilePage() {
             {/* Information List */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               <div className="border-b border-[#1C1B18]/15 pb-4">
-                <span className="block text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A] mb-2">
+                <span className="block text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A] mb-2">
                   01 / Username
                 </span>
                 <p className="text-sm font-medium text-[#1C1B18]">{profile.username}</p>
               </div>
               
               <div className="border-b border-[#1C1B18]/15 pb-4">
-                <span className="block text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A] mb-2">
+                <span className="block text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A] mb-2">
                   02 / Email Address
                 </span>
                 <p className="text-sm font-medium text-[#1C1B18]">{profile.email}</p>
               </div>
 
               <div className="border-b border-[#1C1B18]/15 pb-4 sm:col-span-2">
-                <span className="block text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A] mb-2">
+                <span className="block text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A] mb-2">
                   03 / Phone Number
                 </span>
                 <p className="text-sm font-medium text-[#1C1B18]">{profile.contact || "—"}</p>
@@ -183,7 +183,7 @@ export default function ProfilePage() {
         <button
           type="button"
           onClick={() => setShowDeleteModal(true)}
-          className="self-start sm:self-auto flex h-10 items-center justify-center gap-2 rounded-full border border-[#1C1B18]/20 px-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#5F554A] transition-all hover:border-[#1C1B18] hover:bg-[#1C1B18] hover:!text-[#F8F4EA] whitespace-nowrap"
+          className="self-start sm:self-auto flex h-10 items-center justify-center gap-2 rounded-full border border-[#1C1B18]/20 px-5 text-xs md:text-[10px] font-semibold uppercase tracking-[0.16em] text-[#5F554A] transition-all hover:border-[#1C1B18] hover:bg-[#1C1B18] hover:!text-[#F8F4EA] whitespace-nowrap"
         >
           <Trash2 size={13} />
           Delete Account

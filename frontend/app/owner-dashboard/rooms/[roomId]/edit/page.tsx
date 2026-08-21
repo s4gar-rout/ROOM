@@ -345,13 +345,13 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
   // STYLES
   // ==========================================
   const inputClass =
-    "h-11 w-full border border-[#CFCBBF] bg-transparent px-3 text-[13px] font-medium text-[#1C1B18] outline-none transition placeholder:text-[#918A7D] focus:border-[#174D35]";
+    "h-11 w-full border border-[#CFCBBF] bg-transparent px-3 text-sm md:text-[13px] font-medium text-[#1C1B18] outline-none transition placeholder:text-[#918A7D] focus:border-[#174D35]";
 
   const labelClass =
-    "mb-2 block text-[9px] font-bold uppercase tracking-[0.2em] text-[#1C1B18]";
+    "mb-2 block text-[11px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-[#1C1B18]";
 
   const errorClass =
-    "mt-1.5 text-[9px] font-semibold text-red-500";
+    "mt-1.5 text-xs md:text-[9px] font-semibold text-red-500";
 
   if (authLoading || !isAuthenticated) {
     return (
@@ -398,14 +398,14 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
             <section className="border-b border-[#1C1B18]/10 px-6 py-7 sm:px-8 lg:border-b-0 lg:border-r lg:px-10 lg:py-8">
               
               <div className="mb-7">
-                <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#174D35]">
+                <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.25em] text-[#174D35]">
                   Edit room
                 </p>
                 <h1 className="mt-2 font-serif text-[36px] leading-[0.95] tracking-[-0.035em] sm:text-[42px]">
                   Update your{" "}
                   <em className="text-[#174D35]">listing.</em>
                 </h1>
-                <p className="mt-3 max-w-md text-[11px] font-medium leading-5 text-[#756A5C]">
+                <p className="mt-3 max-w-md text-xs md:text-[11px] font-medium leading-5 text-[#756A5C]">
                   Keep your property information current to attract matching tenants.
                 </p>
               </div>
@@ -413,10 +413,10 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
               {/* Basic Details */}
               <div>
                 <div className="mb-5 flex items-center justify-between border-b border-[#1C1B18]/10 pb-3">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.22em]">
+                  <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.22em]">
                     01 / Basic details
                   </p>
-                  <span className="text-[9px] font-medium text-[#918A7D]">
+                  <span className="text-[11px] md:text-[9px] font-medium text-[#918A7D]">
                     Required
                   </span>
                 </div>
@@ -443,7 +443,7 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
                     onChange={handleChange}
                     rows={3}
                     placeholder="Describe the room and surroundings..."
-                    className="w-full resize-none border border-[#CFCBBF] bg-transparent px-3 py-3 text-[13px] font-medium text-[#1C1B18] outline-none transition placeholder:text-[#918A7D] focus:border-[#174D35]"
+                    className="w-full resize-none border border-[#CFCBBF] bg-transparent px-3 py-3 text-sm md:text-[13px] font-medium text-[#1C1B18] outline-none transition placeholder:text-[#918A7D] focus:border-[#174D35]"
                   />
                   {errors.description && (
                     <p className={errorClass}>{errors.description}</p>
@@ -551,7 +551,7 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
                   <button
                     type="button"
                     onClick={() => setAvailability(false)}
-                    className={`flex h-11 flex-1 items-center justify-center border text-[10px] font-semibold transition ${
+                    className={`flex h-11 flex-1 items-center justify-center border text-xs md:text-[10px] font-semibold transition ${
                       !availability
                         ? "border-[#174D35] bg-[#EEF2E9] text-[#174D35]"
                         : "border-[#CFCBBF] bg-transparent text-[#5F554A] hover:border-[#174D35]"
@@ -572,12 +572,12 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
               {/* Facilities */}
               <div>
                 <div className="mb-5 border-b border-[#1C1B18]/10 pb-3">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.22em]">
+                  <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.22em]">
                     04 / Additional information
                   </p>
                 </div>
 
-                <p className="mb-3 text-[9px] font-bold uppercase tracking-[0.2em]">
+                <p className="mb-3 text-[11px] md:text-[9px] font-bold uppercase tracking-[0.2em]">
                   Facilities
                 </p>
 
@@ -591,7 +591,7 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
                         key={facility.label}
                         type="button"
                         onClick={() => toggleFacility(facility.label)}
-                        className={`flex h-11 items-center justify-between border px-3 text-left text-[10px] font-medium transition ${
+                        className={`flex h-11 items-center justify-between border px-3 text-left text-xs md:text-[10px] font-medium transition ${
                           active
                             ? "border-[#174D35] bg-[#EEF2E9] text-[#174D35]"
                             : "border-[#CFCBBF] bg-transparent text-[#5F554A] hover:border-[#174D35]"
@@ -606,7 +606,7 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
                     );
                   })}
                 </div>
-                <p className="mt-2 text-[9px] text-[#918A7D]">
+                <p className="mt-2 text-[11px] md:text-[9px] text-[#918A7D]">
                   Select all facilities that apply.
                 </p>
               </div>
@@ -615,15 +615,15 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
               <div className="mt-7 border-t border-[#1C1B18]/10 pt-6">
                 <div className="mb-4 flex items-end justify-between">
                   <div>
-                    <p className="text-[9px] font-bold uppercase tracking-[0.2em]">
+                    <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.2em]">
                       05 / Photos
                     </p>
-                    <p className="mt-1 text-[9px] text-[#918A7D]">
+                    <p className="mt-1 text-[11px] md:text-[9px] text-[#918A7D]">
                       Manage photos (max 5 total).
                     </p>
                   </div>
 
-                  <span className="text-[9px] font-bold text-[#174D35]">
+                  <span className="text-[11px] md:text-[9px] font-bold text-[#174D35]">
                     {existingImages.length + images.length} / 5 photos
                   </span>
                 </div>
@@ -684,7 +684,7 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
                       </button>
                       
                       {existingImages.length === 0 && index === 0 && (
-                        <span className="absolute bottom-1.5 left-1.5 bg-[#174D35] px-2 py-1 text-[7px] font-bold uppercase tracking-[0.12em] text-[#F8F4EA]">
+                        <span className="absolute bottom-1.5 left-1.5 bg-[#174D35] px-2 py-1 text-[9px] md:text-[7px] font-bold uppercase tracking-[0.12em] text-[#F8F4EA]">
                           Cover
                         </span>
                       )}
@@ -699,7 +699,7 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
                       className="flex aspect-[1.15] flex-col items-center justify-center border border-dashed border-[#AFA99B] bg-transparent text-[#174D35] transition hover:border-[#174D35] hover:bg-[#EEF2E9]"
                     >
                       <ImagePlus size={19} />
-                      <span className="mt-1.5 text-[8px] font-bold uppercase tracking-[0.12em]">
+                      <span className="mt-1.5 text-[10px] md:text-[8px] font-bold uppercase tracking-[0.12em]">
                         Add photo
                       </span>
                     </button>
@@ -729,7 +729,7 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
           ========================================= */}
           <div className="border-t border-[#1C1B18]/10 px-6 py-4 sm:px-8 lg:px-10">
             {serverError && (
-              <div className="mb-3 border border-red-500/20 bg-red-500/5 px-3 py-2 text-[10px] font-semibold text-red-600">
+              <div className="mb-3 border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs md:text-[10px] font-semibold text-red-600">
                 {serverError}
               </div>
             )}
@@ -740,10 +740,10 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
                   <Check size={14} />
                 </div>
                 <div>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.17em] text-[#1C1B18]">
+                  <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.17em] text-[#1C1B18]">
                     Almost there.
                   </p>
-                  <p className="mt-0.5 text-[9px] text-[#756A5C]">
+                  <p className="mt-0.5 text-[11px] md:text-[9px] text-[#756A5C]">
                     Review details and save updates to your listing.
                   </p>
                 </div>
@@ -752,7 +752,7 @@ export default function EditRoomPage({ params }: EditRoomPageProps) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group flex h-11 items-center justify-center gap-2 bg-[#174D35] px-8 text-[9px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition hover:bg-[#123D2A] disabled:cursor-not-allowed disabled:opacity-60"
+                className="group flex h-11 items-center justify-center gap-2 bg-[#174D35] px-8 text-xs md:text-[9px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition hover:bg-[#123D2A] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSubmitting ? <ButtonLoader color="#F8F4EA" /> : "Save updates"}
                 {!isSubmitting && (

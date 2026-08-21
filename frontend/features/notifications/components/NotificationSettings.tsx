@@ -131,7 +131,7 @@ export default function NotificationSettings() {
             <h3 className="font-serif text-lg font-normal text-[#1C1B18]">
               Browser Push Notifications
             </h3>
-            <p className="text-[10px] uppercase tracking-wider text-[#5F554A]">
+            <p className="text-xs md:text-[10px] uppercase tracking-wider text-[#5F554A]">
               Device Alert Delivery
             </p>
           </div>
@@ -139,29 +139,29 @@ export default function NotificationSettings() {
 
         {/* Status Badge */}
         {permission === "granted" && isSubscribed && (
-          <span className="flex items-center gap-1.5 rounded-full bg-[#174D35]/10 px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#174D35]">
+          <span className="flex items-center gap-1.5 rounded-full bg-[#174D35]/10 px-3 py-1 text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.2em] text-[#174D35]">
             <CheckCircle2 size={12} /> Active
           </span>
         )}
         {permission === "granted" && !isSubscribed && (
-          <span className="flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-amber-700">
+          <span className="flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.2em] text-amber-700">
             <Info size={12} /> Standby
           </span>
         )}
         {permission === "denied" && (
-          <span className="flex items-center gap-1.5 rounded-full bg-red-500/10 px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-red-700">
+          <span className="flex items-center gap-1.5 rounded-full bg-red-500/10 px-3 py-1 text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.2em] text-red-700">
             <AlertCircle size={12} /> Blocked
           </span>
         )}
         {permission === "default" && (
-          <span className="flex items-center gap-1.5 rounded-full bg-[#1C1B18]/5 px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#5F554A]">
+          <span className="flex items-center gap-1.5 rounded-full bg-[#1C1B18]/5 px-3 py-1 text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.2em] text-[#5F554A]">
             Disabled
           </span>
         )}
       </div>
 
       {/* Description */}
-      <p className="mb-6 text-xs font-medium leading-relaxed text-[#5F554A]">
+      <p className="mb-6 text-sm sm:text-xs font-medium leading-relaxed text-[#5F554A]">
         Receive instant alerts on this browser when you get new messages, room updates, or account status changes even when livansa is in the background.
       </p>
 
@@ -172,7 +172,7 @@ export default function NotificationSettings() {
             <AlertCircle size={16} className="shrink-0 mt-0.5" />
             <div>
               <p className="font-semibold mb-1">Notifications are blocked in your browser</p>
-              <p className="text-[11px] leading-4 text-red-600/90">
+              <p className="text-xs md:text-[11px] leading-4 text-red-600/90">
                 To receive alerts, click the lock or settings icon in your browser address bar, set Notifications to &quot;Allow&quot;, then reload this page.
               </p>
             </div>
@@ -187,7 +187,7 @@ export default function NotificationSettings() {
             <AlertCircle size={16} className="shrink-0 mt-0.5 text-amber-700" />
             <div>
               <p className="font-semibold mb-1">Push Service Notice</p>
-              <p className="text-[11px] leading-4 text-amber-800/90">{errorMessage}</p>
+              <p className="text-xs md:text-[11px] leading-4 text-amber-800/90">{errorMessage}</p>
             </div>
           </div>
         </div>
@@ -208,7 +208,7 @@ export default function NotificationSettings() {
               type="button"
               onClick={handleDisable}
               disabled={loading}
-              className="flex h-10 items-center justify-center gap-2 rounded-full border border-[#1C1B18]/20 px-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#5F554A] transition-all hover:border-red-500/40 hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
+              className="flex h-10 items-center justify-center gap-2 rounded-full border border-[#1C1B18]/20 px-5 text-xs md:text-[10px] font-semibold uppercase tracking-[0.16em] text-[#5F554A] transition-all hover:border-red-500/40 hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
             >
               {loading ? <Loader2 size={13} className="animate-spin" /> : "Disable on this device"}
             </button>
@@ -217,7 +217,7 @@ export default function NotificationSettings() {
               type="button"
               onClick={handleTestNotification}
               disabled={loading}
-              className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#174D35] px-5 text-[10px] font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all hover:bg-[#1C1B18] disabled:opacity-50"
+              className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#174D35] px-5 text-xs md:text-[10px] font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all hover:bg-[#1C1B18] disabled:opacity-50"
             >
               {loading ? <Loader2 size={13} className="animate-spin" /> : <><Send size={12} /> Send Test Push</>}
             </button>
@@ -227,7 +227,7 @@ export default function NotificationSettings() {
             type="button"
             onClick={handleEnable}
             disabled={loading}
-            className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-[10px] font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all hover:bg-[#1C1B18] disabled:opacity-50"
+            className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-xs md:text-[10px] font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all hover:bg-[#1C1B18] disabled:opacity-50"
           >
             {loading ? <Loader2 size={13} className="animate-spin" /> : "Re-sync Push Notifications"}
           </button>
@@ -236,7 +236,7 @@ export default function NotificationSettings() {
             type="button"
             onClick={handleEnable}
             disabled={loading}
-            className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-[10px] font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all hover:bg-[#1C1B18] disabled:opacity-50"
+            className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-xs md:text-[10px] font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all hover:bg-[#1C1B18] disabled:opacity-50"
           >
             {loading ? <Loader2 size={13} className="animate-spin" /> : "Enable Browser Notifications"}
           </button>

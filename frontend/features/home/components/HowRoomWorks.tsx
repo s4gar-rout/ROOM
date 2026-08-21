@@ -42,7 +42,7 @@ export default function HowRoomWorks() {
 
         {/* Header */}
         <motion.div variants={staggerItemVariants} className="max-w-xl">
-          <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.3em] text-[#174D35]">
+          <p className="mb-1 text-xs md:text-[10px] font-medium uppercase tracking-[0.3em] text-[#174D35]">
             How livansa works
           </p>
 
@@ -73,7 +73,7 @@ export default function HowRoomWorks() {
                     <Icon size={18} strokeWidth={1.7} />
                   </div>
 
-                  <span className="font-mono text-[10px] tracking-[0.25em] text-[#756A5C]/60">
+                  <span className="font-mono text-xs md:text-[10px] tracking-[0.25em] text-[#756A5C]/60">
                     {step.number}
                   </span>
                 </div>

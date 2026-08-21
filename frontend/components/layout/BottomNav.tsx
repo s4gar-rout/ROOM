@@ -94,7 +94,7 @@ export default function BottomNav() {
           >
             <Home size={19} strokeWidth={isHomeActive ? 2.4 : 1.8} />
           </div>
-          <span className="text-[10px] tracking-tight">Home</span>
+          <span className="text-[11px] tracking-tight">Home</span>
         </Link>
 
         {/* 2. ROOMS */}
@@ -114,7 +114,7 @@ export default function BottomNav() {
           >
             <Building2 size={19} strokeWidth={isRentalsActive ? 2.4 : 1.8} />
           </div>
-          <span className="text-[10px] tracking-tight">Rooms</span>
+          <span className="text-[11px] tracking-tight">Rooms</span>
         </Link>
 
         {/* 3. MESSAGES */}
@@ -134,12 +134,12 @@ export default function BottomNav() {
           >
             <MessageCircle size={19} strokeWidth={isMessagesActive ? 2.4 : 1.8} />
             {isAuthenticated && unreadMessages > 0 && (
-              <span className="absolute -top-0.5 right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#174D35] px-1 text-[8px] font-bold text-[#F8F4EA]">
+              <span className="absolute -top-0.5 right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#174D35] px-1 text-[9px] font-bold text-[#F8F4EA]">
                 {unreadMessages > 99 ? "99+" : unreadMessages}
               </span>
             )}
           </div>
-          <span className="text-[10px] tracking-tight">Messages</span>
+          <span className="text-[11px] tracking-tight">Messages</span>
         </Link>
 
         {/* 4. PROFILE / SIGN IN */}
@@ -171,7 +171,7 @@ export default function BottomNav() {
               <User size={19} strokeWidth={isProfileActive ? 2.4 : 1.8} />
             )}
           </div>
-          <span className="text-[10px] tracking-tight">
+          <span className="text-[11px] tracking-tight">
             {isAuthenticated ? "Profile" : "Sign In"}
           </span>
         </Link>

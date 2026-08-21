@@ -322,7 +322,7 @@ export default function Navbar() {
               <div className="flex items-center gap-3">
                 <Link
                   href="/login"
-                  className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#174D35] transition-colors"
+                  className="flex items-center gap-1.5 text-xs md:text-[10px] font-semibold uppercase tracking-[0.18em] text-[#174D35] transition-colors"
                 >
                   <UserRound size={15} strokeWidth={1.8} />
                   <span>Sign in</span>

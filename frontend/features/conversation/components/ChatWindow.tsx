@@ -488,15 +488,15 @@ export default function ChatWindow({
         </button>
 
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[13px] font-semibold text-[#1C1B18] flex items-center gap-2">
+          <p className="truncate text-sm md:text-[13px] font-semibold text-[#1C1B18] flex items-center gap-2">
             {other?.username || "User"}
             {otherUserOnline ? (
-              <span className="flex items-center gap-1 text-[10px] font-medium text-emerald-600">
+              <span className="flex items-center gap-1 text-xs md:text-[10px] font-medium text-emerald-600">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Online
               </span>
             ) : (
-              <span className="text-[10px] font-medium text-[#8A8177]">
+              <span className="text-xs md:text-[10px] font-medium text-[#8A8177]">
                 Offline
               </span>
             )}
@@ -509,7 +509,7 @@ export default function ChatWindow({
               aria-label={`View listing: ${roomLabel}`}
               className="
                 mt-0.5 flex min-w-0 items-center gap-1
-                rounded text-[10px]
+                rounded text-xs md:text-[10px]
                 hover:underline
                 focus-visible:outline-none focus-visible:ring-1
                 focus-visible:ring-[#174D35]/40
@@ -524,7 +524,7 @@ export default function ChatWindow({
               )}
             </Link>
           ) : (
-            <p className="mt-0.5 flex min-w-0 items-center gap-1 text-[10px] text-[#174D35]">
+            <p className="mt-0.5 flex min-w-0 items-center gap-1 text-xs md:text-[10px] text-[#174D35]">
               <Home size={9} className="shrink-0" aria-hidden />
               <span className="truncate font-medium">{roomLabel}</span>
             </p>
@@ -720,7 +720,7 @@ export default function ChatWindow({
                 />
               ))}
             </span>
-            <span className="text-[11px] font-medium text-[#8A8177]">Typing...</span>
+            <span className="text-xs md:text-[11px] font-medium text-[#8A8177]">Typing...</span>
           </div>
         </div>
       )}
@@ -775,7 +775,7 @@ export default function ChatWindow({
           </button>
         </div>
 
-        <div className="mx-auto mt-1.5 flex max-w-2xl items-center justify-between px-2 text-[8px] uppercase tracking-[0.12em] text-[#8A8177]">
+        <div className="mx-auto mt-1.5 flex max-w-2xl items-center justify-between px-2 text-[10px] md:text-[8px] uppercase tracking-[0.12em] text-[#8A8177]">
           <span className="hidden sm:inline">
             Enter to send · Shift + Enter for new line
           </span>

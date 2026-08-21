@@ -203,10 +203,10 @@ export default function MobileDrawer({
                     <p className="font-medium text-sm text-[#1C1B18] truncate">
                       {user.username}
                     </p>
-                    <p className="text-[11px] text-[#5F554A] truncate">
+                    <p className="text-xs text-[#5F554A] truncate">
                       {user.email}
                     </p>
-                    <span className="mt-1 inline-block rounded-full bg-[#174D35]/10 px-2 py-0.5 text-[8px] font-semibold uppercase tracking-[0.16em] text-[#174D35]">
+                    <span className="mt-1 inline-block rounded-full bg-[#174D35]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#174D35]">
                       {user.role === "admin"
                         ? "Admin"
                         : user.role === "owner"
@@ -217,21 +217,21 @@ export default function MobileDrawer({
                 </div>
               ) : !loading && (
                 <div>
-                  <p className="text-xs font-medium text-[#5F554A] mb-3">
+                  <p className="text-[13px] font-medium text-[#5F554A] mb-3">
                     Find a place that feels like home.
                   </p>
                   <div className="flex items-center gap-2">
                     <Link
                       href="/login"
                       onClick={onClose}
-                      className="flex-1 flex h-9 items-center justify-center rounded-full bg-[#174D35] text-[10px] font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] hover:bg-[#174D35]/90 transition-colors"
+                      className="flex-1 flex h-9 items-center justify-center rounded-full bg-[#174D35] text-xs font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] hover:bg-[#174D35]/90 transition-colors"
                     >
                       Sign in
                     </Link>
                     <Link
                       href="/register"
                       onClick={onClose}
-                      className="flex-1 flex h-9 items-center justify-center rounded-full border border-[#1C1B18]/20 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1C1B18] hover:bg-[#1C1B18]/5 transition-colors"
+                      className="flex-1 flex h-9 items-center justify-center rounded-full border border-[#1C1B18]/20 text-xs font-semibold uppercase tracking-[0.16em] text-[#1C1B18] hover:bg-[#1C1B18]/5 transition-colors"
                     >
                       Register
                     </Link>
@@ -244,14 +244,14 @@ export default function MobileDrawer({
             <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
               {/* Main Exploration */}
               <motion.div variants={sectionVariants}>
-                <span className="block text-[9px] font-semibold uppercase tracking-[0.24em] text-[#5F554A] px-2 mb-2">
+                <span className="block text-[11px] font-semibold uppercase tracking-[0.24em] text-[#5F554A] px-2 mb-2">
                   Explore
                 </span>
                 <div className="space-y-1">
                   <motion.div variants={itemVariants}><Link
                     href="/"
                     onClick={onClose}
-                    className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                    className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                       isActive("/") && pathname === "/"
                         ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                         : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -266,7 +266,7 @@ export default function MobileDrawer({
                   <motion.div variants={itemVariants}><Link
                     href="/rentals"
                     onClick={onClose}
-                    className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                    className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                       isActive("/rentals")
                         ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                         : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -281,7 +281,7 @@ export default function MobileDrawer({
                   <motion.div variants={itemVariants}><Link
                     href="/about-us"
                     onClick={onClose}
-                    className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                    className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                       isActive("/about-us")
                         ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                         : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -304,7 +304,7 @@ export default function MobileDrawer({
                         onClose();
                       }
                     }}
-                    className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                    className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                       isActive("/owner-dashboard/add-room")
                         ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                         : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -320,7 +320,7 @@ export default function MobileDrawer({
                     <motion.div variants={itemVariants}><Link
                       href="/messages"
                       onClick={onClose}
-                      className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                      className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                         isActive("/messages")
                           ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                           : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -331,7 +331,7 @@ export default function MobileDrawer({
                         <span>Messages</span>
                       </div>
                       {unreadMessagesCount > 0 && (
-                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#174D35] px-1.5 text-[9px] font-bold text-[#F8F4EA]">
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#174D35] px-1.5 text-[10px] font-bold text-[#F8F4EA]">
                           {unreadMessagesCount > 99 ? "99+" : unreadMessagesCount}
                         </span>
                       )}
@@ -343,14 +343,14 @@ export default function MobileDrawer({
               {/* Account Section */}
               {isAuthenticated && (
                 <motion.div variants={sectionVariants}>
-                  <span className="block text-[9px] font-semibold uppercase tracking-[0.24em] text-[#5F554A] px-2 mb-2">
+                  <span className="block text-[11px] font-semibold uppercase tracking-[0.24em] text-[#5F554A] px-2 mb-2">
                     Account
                   </span>
                   <div className="space-y-1">
                     <motion.div variants={itemVariants}><Link
                       href="/profile"
                       onClick={onClose}
-                      className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                      className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                         isActive("/profile") && pathname === "/profile"
                           ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                           : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -363,7 +363,7 @@ export default function MobileDrawer({
                     <motion.div variants={itemVariants}><Link
                       href="/profile/edit"
                       onClick={onClose}
-                      className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                      className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                         isActive("/profile/edit")
                           ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                           : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -379,14 +379,14 @@ export default function MobileDrawer({
               {/* Owner Dashboard Links (for Owners) */}
               {isAuthenticated && user?.role === "owner" && (
                 <motion.div variants={sectionVariants}>
-                  <span className="block text-[9px] font-semibold uppercase tracking-[0.24em] text-[#174D35] px-2 mb-2">
+                  <span className="block text-[11px] font-semibold uppercase tracking-[0.24em] text-[#174D35] px-2 mb-2">
                     Owner Portal
                   </span>
                   <div className="space-y-1">
                     <motion.div variants={itemVariants}><Link
                       href="/owner-dashboard"
                       onClick={onClose}
-                      className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                      className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                         isActive("/owner-dashboard") && pathname === "/owner-dashboard"
                           ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                           : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -399,7 +399,7 @@ export default function MobileDrawer({
                     <motion.div variants={itemVariants}><Link
                       href="/owner-dashboard/add-room"
                       onClick={onClose}
-                      className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                      className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                         isActive("/owner-dashboard/add-room")
                           ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                           : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -415,14 +415,14 @@ export default function MobileDrawer({
               {/* Admin Dashboard Links (for Admins only) */}
               {isAuthenticated && user?.role === "admin" && (
                 <motion.div variants={sectionVariants}>
-                  <span className="block text-[9px] font-semibold uppercase tracking-[0.24em] text-amber-900 px-2 mb-2">
+                  <span className="block text-[11px] font-semibold uppercase tracking-[0.24em] text-amber-900 px-2 mb-2">
                     Administration
                   </span>
                   <div className="space-y-1">
                     <motion.div variants={itemVariants}><Link
                       href="/admin"
                       onClick={onClose}
-                      className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                      className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                         isActive("/admin") && pathname === "/admin"
                           ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                           : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -435,7 +435,7 @@ export default function MobileDrawer({
                     <motion.div variants={itemVariants}><Link
                       href="/admin/users"
                       onClick={onClose}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium text-[#1C1B18] hover:bg-[#1C1B18]/5"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1C1B18] hover:bg-[#1C1B18]/5"
                     >
                       <User size={16} />
                       <span>Users Management</span>
@@ -444,7 +444,7 @@ export default function MobileDrawer({
                     <motion.div variants={itemVariants}><Link
                       href="/admin/rooms"
                       onClick={onClose}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium text-[#1C1B18] hover:bg-[#1C1B18]/5"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1C1B18] hover:bg-[#1C1B18]/5"
                     >
                       <Building2 size={16} />
                       <span>Rooms Management</span>
@@ -453,7 +453,7 @@ export default function MobileDrawer({
                     <motion.div variants={itemVariants}><Link
                       href="/admin/issues"
                       onClick={onClose}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium text-[#1C1B18] hover:bg-[#1C1B18]/5"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1C1B18] hover:bg-[#1C1B18]/5"
                     >
                       <AlertCircle size={16} />
                       <span>User Issues</span>
@@ -462,7 +462,7 @@ export default function MobileDrawer({
                     <motion.div variants={itemVariants}><Link
                       href="/admin/feedback"
                       onClick={onClose}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium text-[#1C1B18] hover:bg-[#1C1B18]/5"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1C1B18] hover:bg-[#1C1B18]/5"
                     >
                       <MessageSquare size={16} />
                       <span>Feedback Records</span>
@@ -473,14 +473,14 @@ export default function MobileDrawer({
 
               {/* Support & Legal */}
               <motion.div variants={sectionVariants}>
-                <span className="block text-[9px] font-semibold uppercase tracking-[0.24em] text-[#5F554A] px-2 mb-2">
+                <span className="block text-[11px] font-semibold uppercase tracking-[0.24em] text-[#5F554A] px-2 mb-2">
                   Support &amp; Legal
                 </span>
                 <div className="space-y-1">
                   <motion.div variants={itemVariants}><Link
                     href="/report-issue"
                     onClick={onClose}
-                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                       isActive("/report-issue")
                         ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                         : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -493,7 +493,7 @@ export default function MobileDrawer({
                   <motion.div variants={itemVariants}><Link
                     href="/feedback"
                     onClick={onClose}
-                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                       isActive("/feedback")
                         ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                         : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -506,7 +506,7 @@ export default function MobileDrawer({
                   <motion.div variants={itemVariants}><Link
                     href="/privacy-policy"
                     onClick={onClose}
-                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                       isActive("/privacy-policy")
                         ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                         : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -519,7 +519,7 @@ export default function MobileDrawer({
                   <motion.div variants={itemVariants}><Link
                     href="/terms-and-conditions"
                     onClick={onClose}
-                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                       isActive("/terms-and-conditions")
                         ? "bg-[#174D35]/10 text-[#174D35] font-semibold"
                         : "text-[#1C1B18] hover:bg-[#1C1B18]/5"
@@ -538,7 +538,7 @@ export default function MobileDrawer({
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 rounded-full border border-[#A53B32]/30 py-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#A53B32] transition-all duration-300 hover:bg-[#A53B32]/10 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-[#A53B32]/30"
+                  className="w-full flex items-center justify-center gap-2 rounded-full border border-[#A53B32]/30 py-2.5 text-sm font-semibold uppercase tracking-[0.16em] text-[#A53B32] transition-all duration-300 hover:bg-[#A53B32]/10 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-[#A53B32]/30"
                 >
                   <LogOut size={14} />
                   Logout
@@ -547,7 +547,7 @@ export default function MobileDrawer({
                 <Link
                   href="/login"
                   onClick={onClose}
-                  className="w-full flex items-center justify-center gap-2 rounded-full bg-[#174D35] py-2.5 text-xs font-semibold uppercase tracking-[0.15em] !text-[#F8F4EA] transition-colors hover:bg-[#174D35]/90"
+                  className="w-full flex items-center justify-center gap-2 rounded-full bg-[#174D35] py-2.5 text-sm font-semibold uppercase tracking-[0.15em] !text-[#F8F4EA] transition-colors hover:bg-[#174D35]/90"
                 >
                   <UserRound size={14} />
                   Sign in to livansa

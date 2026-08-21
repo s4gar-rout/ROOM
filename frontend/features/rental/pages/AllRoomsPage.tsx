@@ -244,7 +244,7 @@ export default function AllRoomsPage() {
                 pl-10 sm:pl-11
                 pr-4 sm:pr-5
                 font-sans
-                text-[13px] sm:text-sm
+                text-sm
                 font-medium
                 text-[#1C1B18]
                 outline-none
@@ -272,7 +272,7 @@ export default function AllRoomsPage() {
                 border
                 px-2.5 sm:px-5
                 font-sans
-                text-[9px] sm:text-xs
+                text-[11px] sm:text-xs
                 font-bold sm:font-semibold
                 uppercase
                 tracking-[0.08em] sm:tracking-[0.15em]
@@ -300,7 +300,7 @@ export default function AllRoomsPage() {
                     rounded-full
                     bg-[#174D35]
                     px-1
-                    text-[7px] sm:text-[8px]
+                    text-[9px] sm:text-[8px]
                     font-bold
                     text-[#F8F4EA]
                   "
@@ -325,7 +325,7 @@ export default function AllRoomsPage() {
                   bg-transparent
                   px-2.5 sm:px-4
                   font-sans
-                  text-[9px] sm:text-xs
+                  text-[11px] sm:text-xs
                   font-bold sm:font-semibold
                   uppercase
                   tracking-[0.05em] sm:tracking-[0.1em]
@@ -458,7 +458,7 @@ export default function AllRoomsPage() {
                     mb-1.5 sm:mb-2
                     block
                     font-sans
-                    text-[8px] sm:text-[9px]
+                    text-[10px] sm:text-[9px]
                     font-semibold
                     uppercase
                     tracking-[0.2em] sm:tracking-[0.25em]
@@ -483,7 +483,7 @@ export default function AllRoomsPage() {
                     bg-transparent
                     px-3 sm:px-3.5
                     font-sans
-                    text-[13px] sm:text-sm
+                    text-sm
                     font-medium
                     text-[#1C1B18]
                     outline-none
@@ -502,7 +502,7 @@ export default function AllRoomsPage() {
                     mb-1.5 sm:mb-2
                     block
                     font-sans
-                    text-[8px] sm:text-[9px]
+                    text-[10px] sm:text-[9px]
                     font-semibold
                     uppercase
                     tracking-[0.2em] sm:tracking-[0.25em]
@@ -526,7 +526,7 @@ export default function AllRoomsPage() {
                       bg-transparent
                       px-3 sm:px-3.5
                       font-sans
-                      text-[13px] sm:text-sm
+                      text-sm
                       font-medium
                       transition-colors
                       hover:border-[#174D35]/30
@@ -576,7 +576,7 @@ export default function AllRoomsPage() {
                             py-2 sm:py-2.5
                             text-left
                             font-sans
-                            text-[11px] sm:text-[13px]
+                            text-xs sm:text-[13px]
                             font-medium
                             tracking-normal
                             transition-colors
@@ -604,7 +604,7 @@ export default function AllRoomsPage() {
                     mb-1.5 sm:mb-2
                     block
                     font-sans
-                    text-[8px] sm:text-[9px]
+                    text-[10px] sm:text-[9px]
                     font-semibold
                     uppercase
                     tracking-[0.2em] sm:tracking-[0.25em]
@@ -628,7 +628,7 @@ export default function AllRoomsPage() {
                       bg-transparent
                       px-3 sm:px-3.5
                       font-sans
-                      text-[13px] sm:text-sm
+                      text-sm
                       font-medium
                       transition-colors
                       hover:border-[#174D35]/30
@@ -681,7 +681,7 @@ export default function AllRoomsPage() {
                             py-2 sm:py-2.5
                             text-left
                             font-sans
-                            text-[11px] sm:text-[13px]
+                            text-xs sm:text-[13px]
                             font-medium
                             tracking-normal
                             transition-colors
@@ -713,7 +713,7 @@ export default function AllRoomsPage() {
                       mb-2 sm:mb-2.5
                       block
                       font-sans
-                      text-[8px] sm:text-[9px]
+                      text-[10px] sm:text-[9px]
                       font-semibold
                       uppercase
                       tracking-[0.2em] sm:tracking-[0.25em]
@@ -744,7 +744,7 @@ export default function AllRoomsPage() {
                           px-2.5 sm:px-3
                           py-1 sm:py-1.5
                           font-sans
-                          text-[10px] sm:text-[11px]
+                          text-xs sm:text-[11px]
                           font-medium
                           capitalize
                           tracking-normal
@@ -775,7 +775,7 @@ export default function AllRoomsPage() {
                     shrink-0
                     self-start
                     font-sans
-                    text-[11px] sm:text-[12px]
+                    text-xs sm:text-[12px]
                     font-medium
                     tracking-normal
                     text-[#5F554A]
@@ -795,7 +795,7 @@ export default function AllRoomsPage() {
             MAIN CONTENT
         ================================= */}
         <div className="mb-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]">
+          <p className="text-xs md:text-[10px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]">
             Showing {loading ? "..." : rooms.length} of{" "}
             {loading ? "..." : pagination.total} rooms
           </p>

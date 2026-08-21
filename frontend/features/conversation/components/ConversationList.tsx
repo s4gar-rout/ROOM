@@ -95,7 +95,7 @@ export default function ConversationList({
             className="
               w-full rounded-xl border border-[#1C1B18]/10
               bg-[#F8F4EA] py-2 pl-8 pr-3
-              text-[12px] text-[#1C1B18]
+              text-sm md:text-[12px] text-[#1C1B18]
               outline-none
               placeholder:text-[#9A9186]
               focus:border-[#174D35]/40 focus:ring-1 focus:ring-[#174D35]/20
@@ -247,10 +247,10 @@ export default function ConversationList({
                     </div>
                     {/* Row 1: username + time */}
                     <div className="flex items-baseline justify-between gap-2">
-                      <span className="truncate text-[13px] font-semibold text-[#1C1B18]">
+                      <span className="truncate text-sm md:text-[13px] font-semibold text-[#1C1B18]">
                         {other?.username ?? "User"}
                       </span>
-                      <span className="shrink-0 text-[10px] text-[#8A8177]">
+                      <span className="shrink-0 text-xs md:text-[10px] text-[#8A8177]">
                         {formatTime(
                           conversation.lastMessageAt ??
                             conversation.createdAt
@@ -263,7 +263,7 @@ export default function ConversationList({
                     <div className="mt-1.5 flex items-center justify-between gap-2">
                       <p
                         className={`
-                          truncate text-[12px] leading-4
+                          truncate text-[13px] md:text-[12px] leading-4
                           ${
                             unread > 0
                               ? "font-semibold text-[#1C1B18]"
@@ -281,7 +281,7 @@ export default function ConversationList({
                             flex h-[18px] shrink-0
                             items-center justify-center
                             rounded-full bg-[#174D35]
-                            px-2 text-[9px] font-bold text-white
+                            px-2 text-[10px] md:text-[9px] font-bold text-white
                           "
                         >
                           {unread > 9 ? "9+ new" : `${unread} new`}

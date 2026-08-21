@@ -49,7 +49,7 @@ export default function AboutUsPage() {
             HERO SECTION
         ======================================================== */}
         <section className="text-center max-w-3xl mx-auto">
-          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.3em] text-[#174D35]">
+          <p className="mb-3 text-xs md:text-[10px] font-bold uppercase tracking-[0.3em] text-[#174D35]">
             ABOUT livansa
           </p>
 
@@ -71,7 +71,7 @@ export default function AboutUsPage() {
         ======================================================== */}
         <section className="mt-16 sm:mt-24 grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div className="rounded-3xl border border-[#1C1B18]/12 bg-[#FAF7F0] p-8 sm:p-10 shadow-sm">
-            <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.25em] text-[#174D35] mb-3">
+            <span className="block font-sans text-[11px] md:text-[9px] font-bold uppercase tracking-[0.25em] text-[#174D35] mb-3">
               OUR PHILOSOPHY
             </span>
             <h2 className="font-serif text-2xl sm:text-3xl font-normal text-[#1C1B18] leading-tight">
@@ -83,7 +83,7 @@ export default function AboutUsPage() {
           </div>
 
           <div className="rounded-3xl border border-[#174D35]/20 bg-[#174D35] p-8 sm:p-10 text-[#F8F4EA] shadow-md">
-            <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.25em] text-[#C8D5CA] mb-3">
+            <span className="block font-sans text-[11px] md:text-[9px] font-bold uppercase tracking-[0.25em] text-[#C8D5CA] mb-3">
               OUR MISSION
             </span>
             <h2 className="font-serif text-2xl sm:text-3xl font-normal text-[#F8F4EA] leading-tight">
@@ -100,7 +100,7 @@ export default function AboutUsPage() {
         ======================================================== */}
         <section className="mt-20 sm:mt-28">
           <div className="text-center max-w-xl mx-auto mb-12">
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-[#174D35]">
+            <p className="mb-2 text-xs md:text-[10px] font-bold uppercase tracking-[0.3em] text-[#174D35]">
               WHAT GUIDES US
             </p>
             <h2 className="font-serif text-3xl sm:text-4xl font-normal tracking-tight text-[#1C1B18]">
@@ -122,7 +122,7 @@ export default function AboutUsPage() {
                   <h3 className="font-sans text-base font-semibold text-[#1C1B18]">
                     {item.title}
                   </h3>
-                  <p className="mt-2 font-sans text-xs leading-relaxed text-[#62594F]">
+                  <p className="mt-2 font-sans text-[13px] md:text-xs leading-relaxed text-[#62594F]">
                     {item.description}
                   </p>
                 </div>
@@ -163,7 +163,7 @@ export default function AboutUsPage() {
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/rentals"
-              className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-[#174D35] bg-[#174D35] px-8 font-sans text-xs font-bold uppercase tracking-[0.2em] !text-[#F8F4EA] shadow-md transition-all duration-300 hover:bg-[#123d2a]"
+              className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-[#174D35] bg-[#174D35] px-8 font-sans text-sm sm:text-xs font-bold uppercase tracking-[0.2em] !text-[#F8F4EA] shadow-md transition-all duration-300 hover:bg-[#123d2a]"
             >
               <span className="!text-[#F8F4EA]">Explore Rentals</span>
               <ArrowUpRight size={14} className="!text-[#F8F4EA]" />
@@ -171,7 +171,7 @@ export default function AboutUsPage() {
 
             <Link
               href="/owner-dashboard/add-room"
-              className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-[#174D35]/30 bg-white/40 px-8 font-sans text-xs font-bold uppercase tracking-[0.2em] !text-[#174D35] shadow-sm transition-all duration-300 hover:bg-[#174D35] hover:!text-[#F8F4EA]"
+              className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-[#174D35]/30 bg-white/40 px-8 font-sans text-sm sm:text-xs font-bold uppercase tracking-[0.2em] !text-[#174D35] shadow-sm transition-all duration-300 hover:bg-[#174D35] hover:!text-[#F8F4EA]"
             >
               <span>List a Room</span>
             </Link>

@@ -456,11 +456,11 @@ export default function ForgotPasswordForm({
         {/* HEADER */}
 
         <div className="mb-8 flex items-center justify-between border-b border-[#1C1B18]/10 pb-5">
-          <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#174D35]">
+          <span className="text-xs md:text-[10px] font-bold uppercase tracking-[0.28em] text-[#174D35]">
             Reset Access
           </span>
 
-          <span className="text-[10px] font-bold tracking-[0.2em] text-[#174D35]">
+          <span className="text-xs md:text-[10px] font-bold tracking-[0.2em] text-[#174D35]">
             03 / 03
           </span>
         </div>
@@ -491,7 +491,7 @@ export default function ForgotPasswordForm({
 
           <Link
             href="/login"
-            className="mt-9 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#1C1B18] transition-opacity hover:opacity-60"
+            className="mt-9 inline-flex items-center gap-2 text-xs md:text-[10px] font-bold uppercase tracking-[0.2em] text-[#1C1B18] transition-opacity hover:opacity-60"
           >
             Back to sign in
             <span className="text-sm">
@@ -503,7 +503,7 @@ export default function ForgotPasswordForm({
         {/* FOOTER */}
 
         <div className="border-t border-[#1C1B18]/10 pt-5">
-          <p className="text-[9px] font-medium leading-4 text-[#8B8175]">
+          <p className="text-[11px] md:text-[9px] font-medium leading-4 text-[#8B8175]">
             Your account recovery information is
             securely handled and never shared.
           </p>
@@ -524,11 +524,11 @@ export default function ForgotPasswordForm({
       ==================================== */}
 
       <div className="mb-8 flex items-center justify-between border-b border-[#1C1B18]/10 pb-5">
-        <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#174D35]">
+        <span className="text-xs md:text-[10px] font-bold uppercase tracking-[0.28em] text-[#174D35]">
           Reset Access
         </span>
 
-        <span className="text-[10px] font-bold tracking-[0.2em] text-[#174D35]">
+        <span className="text-xs md:text-[10px] font-bold tracking-[0.2em] text-[#174D35]">
           {String(step).padStart(2, "0")} / 03
         </span>
       </div>
@@ -603,7 +603,7 @@ export default function ForgotPasswordForm({
       {error && (
         <div
           role="alert"
-          className="mt-6 border border-red-500/20 bg-red-500/5 px-4 py-3 text-[10px] font-semibold leading-4 text-red-600"
+          className="mt-6 border border-red-500/20 bg-red-500/5 px-4 py-3 text-xs md:text-[10px] font-semibold leading-4 text-red-600"
         >
           {error}
         </div>
@@ -616,7 +616,7 @@ export default function ForgotPasswordForm({
       {success && (
         <div
           role="status"
-          className="mt-6 border border-[#174D35]/15 bg-[#174D35]/5 px-4 py-3 text-[10px] font-semibold leading-4 text-[#174D35]"
+          className="mt-6 border border-[#174D35]/15 bg-[#174D35]/5 px-4 py-3 text-xs md:text-[10px] font-semibold leading-4 text-[#174D35]"
         >
           {success}
         </div>
@@ -635,7 +635,7 @@ export default function ForgotPasswordForm({
           <div>
             <label
               htmlFor="reset-email"
-              className="mb-2 block text-[9px] font-bold uppercase tracking-[0.22em] text-[#5F554A]"
+              className="mb-2 block text-[11px] md:text-[9px] font-bold uppercase tracking-[0.22em] text-[#5F554A]"
             >
               01 / Email
             </label>
@@ -682,7 +682,7 @@ export default function ForgotPasswordForm({
           <div>
             <label
               htmlFor="reset-otp"
-              className="mb-2 block text-[9px] font-bold uppercase tracking-[0.22em] text-[#5F554A]"
+              className="mb-2 block text-[11px] md:text-[9px] font-bold uppercase tracking-[0.22em] text-[#5F554A]"
             >
               02 / Verification Code
             </label>
@@ -727,7 +727,7 @@ export default function ForgotPasswordForm({
               type="button"
               onClick={handleBackToEmail}
               disabled={loading}
-              className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#5F554A] transition-opacity hover:opacity-60 disabled:opacity-40"
+              className="inline-flex items-center gap-2 text-xs md:text-[10px] font-bold uppercase tracking-[0.16em] text-[#5F554A] transition-opacity hover:opacity-60 disabled:opacity-40"
             >
               <ArrowLeft size={13} />
 
@@ -742,7 +742,7 @@ export default function ForgotPasswordForm({
                 resendLoading ||
                 loading
               }
-              className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#174D35] transition-opacity hover:opacity-60 disabled:cursor-not-allowed disabled:opacity-40"
+              className="text-xs md:text-[10px] font-bold uppercase tracking-[0.16em] text-[#174D35] transition-opacity hover:opacity-60 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {resendLoading ? (
                 <ButtonLoader color="#174D35" />
@@ -771,7 +771,7 @@ export default function ForgotPasswordForm({
           <div>
             <label
               htmlFor="new-password"
-              className="mb-2 block text-[9px] font-bold uppercase tracking-[0.22em] text-[#5F554A]"
+              className="mb-2 block text-[11px] md:text-[9px] font-bold uppercase tracking-[0.22em] text-[#5F554A]"
             >
               03 / New Password
             </label>
@@ -822,7 +822,7 @@ export default function ForgotPasswordForm({
               </button>
             </div>
 
-            <p className="mt-2 text-[9px] font-medium text-[#8B8175]">
+            <p className="mt-2 text-[11px] md:text-[9px] font-medium text-[#8B8175]">
               Minimum 8 characters
             </p>
           </div>
@@ -832,7 +832,7 @@ export default function ForgotPasswordForm({
           <div>
             <label
               htmlFor="confirm-password"
-              className="mb-2 block text-[9px] font-bold uppercase tracking-[0.22em] text-[#5F554A]"
+              className="mb-2 block text-[11px] md:text-[9px] font-bold uppercase tracking-[0.22em] text-[#5F554A]"
             >
               Confirm Password
             </label>
@@ -906,13 +906,13 @@ export default function ForgotPasswordForm({
 
       <div className="mt-8 border-t border-[#1C1B18]/10 pt-5">
         <div className="flex items-center justify-between">
-          <p className="text-[9px] font-medium leading-4 text-[#8B8175]">
+          <p className="text-[11px] md:text-[9px] font-medium leading-4 text-[#8B8175]">
             Secure account recovery
           </p>
 
           <Link
             href="/login"
-            className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#1C1B18] transition-opacity hover:opacity-60"
+            className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.15em] text-[#1C1B18] transition-opacity hover:opacity-60"
           >
             Sign in ↗
           </Link>

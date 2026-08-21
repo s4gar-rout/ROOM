@@ -131,7 +131,7 @@ export default function DeleteAccountModal({
         <div className="mb-6 flex items-center justify-between border-b border-[#1C1B18]/10 pb-4">
           <div className="flex items-center gap-2 text-[#1C1B18]">
             <Trash2 size={16} className="text-[#5F554A]" />
-            <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]">
+            <span className="text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]">
               Delete Account
             </span>
           </div>
@@ -163,11 +163,11 @@ export default function DeleteAccountModal({
               Delete your <em className="text-[#174D35]">account?</em>
             </h2>
 
-            <p className="mt-3 text-xs font-medium leading-relaxed text-[#5F554A]">
+            <p className="mt-3 text-sm font-medium leading-relaxed text-[#5F554A]">
               This action is permanent and cannot be undone. All your room listings, chat conversations, notifications, and profile details will be permanently removed.
             </p>
 
-            <p className="mt-3 text-[11px] font-medium text-[#756A5C]">
+            <p className="mt-3 text-xs md:text-[11px] font-medium text-[#756A5C]">
               We will send a 6-digit verification code to <span className="font-semibold text-[#1C1B18]">{userEmail || "your email"}</span> to verify account ownership.
             </p>
 
@@ -176,7 +176,7 @@ export default function DeleteAccountModal({
                 type="button"
                 onClick={handleSendOtp}
                 disabled={loading}
-                className="group flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1C1B18] px-5 text-xs font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all duration-300 hover:bg-[#174D35] disabled:opacity-60"
+                className="group flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1C1B18] px-5 text-sm sm:text-xs font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all duration-300 hover:bg-[#174D35] disabled:opacity-60"
               >
                 {loading ? (
                   <Loader2 size={16} className="animate-spin text-[#F8F4EA]" />
@@ -192,7 +192,7 @@ export default function DeleteAccountModal({
                 type="button"
                 onClick={onClose}
                 disabled={loading}
-                className="h-10 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5F554A] transition-colors hover:text-[#1C1B18]"
+                className="h-10 text-center text-xs md:text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5F554A] transition-colors hover:text-[#1C1B18]"
               >
                 Cancel
               </button>
@@ -204,14 +204,14 @@ export default function DeleteAccountModal({
               Verify Email <em className="text-[#174D35]">OTP</em>
             </h2>
 
-            <p className="mt-3 text-xs font-medium leading-relaxed text-[#5F554A]">
+            <p className="mt-3 text-sm font-medium leading-relaxed text-[#5F554A]">
               Enter the 6-digit code sent to <span className="font-semibold text-[#1C1B18]">{userEmail || "your email"}</span> to confirm permanent account deletion.
             </p>
 
             <div className="mt-6">
               <label
                 htmlFor="delete-account-otp"
-                className="mb-1 block text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A]"
+                className="mb-1 block text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A]"
               >
                 01 / Enter 6-Digit OTP
               </label>
@@ -228,7 +228,7 @@ export default function DeleteAccountModal({
               />
             </div>
 
-            <div className="mt-4 flex items-center justify-between text-[10px] font-medium text-[#5F554A]">
+            <div className="mt-4 flex items-center justify-between text-xs md:text-[10px] font-medium text-[#5F554A]">
               <span>Didn&apos;t receive code?</span>
               <button
                 type="button"
@@ -245,7 +245,7 @@ export default function DeleteAccountModal({
               <button
                 type="submit"
                 disabled={loading || otp.length !== 6}
-                className="group flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1C1B18] px-5 text-xs font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all duration-300 hover:bg-[#174D35] disabled:cursor-not-allowed disabled:opacity-60"
+                className="group flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1C1B18] px-5 text-sm sm:text-xs font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all duration-300 hover:bg-[#174D35] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? (
                   <Loader2 size={16} className="animate-spin text-[#F8F4EA]" />
@@ -258,7 +258,7 @@ export default function DeleteAccountModal({
                 type="button"
                 onClick={() => setStep("confirm")}
                 disabled={loading}
-                className="h-10 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5F554A] transition-colors hover:text-[#1C1B18]"
+                className="h-10 text-center text-xs md:text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5F554A] transition-colors hover:text-[#1C1B18]"
               >
                 Back
               </button>

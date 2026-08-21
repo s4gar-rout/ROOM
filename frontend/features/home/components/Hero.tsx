@@ -24,14 +24,14 @@ export default function Home() {
 
           {/* Mobile Compact Hero (< md) */}
           <div className="block md:hidden text-center py-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
+            <p className="text-xs md:text-[10px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
               livansa / RENTALS
             </p>
             <h1 className="mt-2 font-serif text-2xl font-normal leading-tight tracking-[-0.02em] text-[#1C1B18] sm:text-3xl">
               Thoughtfully listed homes for long-term living.
             </h1>
             <div className="mt-4 inline-flex flex-col items-center gap-1 rounded-full border border-[#174D35]/15 bg-[#174D35]/5 px-4 py-2 text-xs">
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#174D35]">
+              <span className="text-xs md:text-[10px] font-bold uppercase tracking-[0.2em] text-[#174D35]">
                 JHARSUGUDA • ODISHA
               </span>
               <span className="text-[#756A5C]">Built for local living.</span>

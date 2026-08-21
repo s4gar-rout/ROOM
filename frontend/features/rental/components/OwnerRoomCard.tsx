@@ -67,7 +67,7 @@ export default function OwnerRoomCard({
 
         <div className="absolute left-3 top-3">
           <span
-            className={`rounded-full px-3 py-1.5 text-[8px] font-bold uppercase tracking-[0.12em] backdrop-blur-sm ${
+            className={`rounded-full px-3 py-1.5 text-[10px] md:text-[8px] font-bold uppercase tracking-[0.12em] backdrop-blur-sm ${
               room.availability
                 ? "bg-[#F8F4EA]/95 text-[#174D35]"
                 : "bg-[#1C1B18]/90 text-[#F8F4EA]"
@@ -82,7 +82,7 @@ export default function OwnerRoomCard({
         {/* Room type */}
 
         <div className="absolute right-3 top-3">
-          <span className="rounded-full bg-[#F8F4EA]/95 px-3 py-1.5 text-[8px] font-bold uppercase tracking-[0.12em] text-[#1C1B18] backdrop-blur-sm">
+          <span className="rounded-full bg-[#F8F4EA]/95 px-3 py-1.5 text-[10px] md:text-[8px] font-bold uppercase tracking-[0.12em] text-[#1C1B18] backdrop-blur-sm">
             {roomType}
           </span>
         </div>
@@ -103,7 +103,7 @@ export default function OwnerRoomCard({
               {room.title}
             </h3>
 
-            <div className="mt-1.5 flex items-center gap-1 text-[10px] font-medium text-[#756A5C]">
+            <div className="mt-1.5 flex items-center gap-1 text-xs md:text-[10px] font-medium text-[#756A5C]">
               <MapPin size={11} />
 
               <span className="truncate">
@@ -121,7 +121,7 @@ export default function OwnerRoomCard({
               ₹{Number(room.rent ?? 0).toLocaleString("en-IN")}
             </p>
 
-            <p className="mt-1 text-[7px] font-bold uppercase tracking-[0.15em] text-[#756A5C]">
+            <p className="mt-1 text-[9px] md:text-[7px] font-bold uppercase tracking-[0.15em] text-[#756A5C]">
               / month
             </p>
 
@@ -139,7 +139,7 @@ export default function OwnerRoomCard({
             {visibleFacilities.map((facility) => (
               <span
                 key={facility}
-                className="rounded-full border border-[#1C1B18]/8 bg-white/70 px-2.5 py-1.5 text-[8px] font-semibold text-[#756A5C]"
+                className="rounded-full border border-[#1C1B18]/8 bg-white/70 px-2.5 py-1.5 text-[10px] md:text-[8px] font-semibold text-[#756A5C]"
               >
                 {facility}
               </span>
@@ -147,7 +147,7 @@ export default function OwnerRoomCard({
 
             {room.facilities &&
               room.facilities.length > 3 && (
-                <span className="rounded-full bg-[#174D35]/5 px-2.5 py-1.5 text-[8px] font-semibold text-[#174D35]">
+                <span className="rounded-full bg-[#174D35]/5 px-2.5 py-1.5 text-[10px] md:text-[8px] font-semibold text-[#174D35]">
                   +{room.facilities.length - 3}
                 </span>
               )}
@@ -173,7 +173,7 @@ export default function OwnerRoomCard({
                 !room.availability
               );
             }}
-            className={`flex h-9 flex-1 items-center justify-center gap-1 px-2.5 rounded-full border text-[9px] font-bold uppercase tracking-[0.1em] transition ${
+            className={`flex h-9 flex-1 items-center justify-center gap-1 px-2.5 rounded-full border text-xs md:text-[9px] font-bold uppercase tracking-[0.1em] transition ${
               room.availability
                 ? "border-[#174D35] bg-[#174D35] !text-[#F8F4EA] hover:bg-[#123d2a]"
                 : "border-[#1C1B18]/40 bg-[#1C1B18] !text-[#F8F4EA] hover:bg-[#1C1B18]/80"

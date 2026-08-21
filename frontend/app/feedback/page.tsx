@@ -64,10 +64,10 @@ export default function FeedbackPage() {
   // ==========================================
 
   const inputClass =
-    "h-11 w-full border border-[#CFCBBF] bg-transparent px-3 text-[13px] font-medium text-[#1C1B18] outline-none transition placeholder:text-[#918A7D] focus:border-[#174D35]";
+    "h-11 w-full border border-[#CFCBBF] bg-transparent px-3 text-sm md:text-[13px] font-medium text-[#1C1B18] outline-none transition placeholder:text-[#918A7D] focus:border-[#174D35]";
 
   const labelClass =
-    "mb-2 block text-[9px] font-bold uppercase tracking-[0.2em] text-[#1C1B18]";
+    "mb-2 block text-[11px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-[#1C1B18]";
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F8F4EA]">
@@ -84,7 +84,7 @@ export default function FeedbackPage() {
               <h2 className="font-serif text-[36px] leading-[0.95] tracking-[-0.035em] text-[#1C1B18]">
                 Thank <em className="text-[#174D35]">You.</em>
               </h2>
-              <p className="mt-4 max-w-md text-[13px] font-medium leading-5 text-[#756A5C]">
+              <p className="mt-4 max-w-md text-sm md:text-[13px] font-medium leading-5 text-[#756A5C]">
                 Your feedback is incredibly valuable to us. We appreciate you taking the time to share your thoughts.
               </p>
               <button
@@ -92,7 +92,7 @@ export default function FeedbackPage() {
                   setFormData({ type: "General Feedback", rating: 0, message: "", email: "" });
                   setStatus("idle");
                 }}
-                className="group mt-8 flex h-11 items-center justify-center gap-2 bg-[#174D35] px-8 text-[9px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition hover:bg-[#123D2A]"
+                className="group mt-8 flex h-11 items-center justify-center gap-2 bg-[#174D35] px-8 text-xs md:text-[9px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition hover:bg-[#123D2A]"
               >
                 Send more feedback
               </button>
@@ -106,29 +106,29 @@ export default function FeedbackPage() {
                   
                   {/* Intro */}
                   <div className="mb-6">
-                    <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#174D35]">
+                    <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.25em] text-[#174D35]">
                       Feedback
                     </p>
                     <h1 className="mt-2 font-serif text-[36px] leading-[0.95] tracking-[-0.035em] sm:text-[42px]">
                       Help us make <em className="text-[#174D35]">livansa</em> better.
                     </h1>
-                    <p className="mt-3 max-w-md text-[11px] font-medium leading-5 text-[#756A5C]">
+                    <p className="mt-3 max-w-md text-xs md:text-[11px] font-medium leading-5 text-[#756A5C]">
                       We value your thoughts and suggestions. Let us know how we can improve.
                     </p>
                   </div>
 
                   <div>
                     <div className="mb-4 flex items-center justify-between border-b border-[#1C1B18]/10 pb-2">
-                      <p className="text-[9px] font-bold uppercase tracking-[0.22em]">
+                      <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.22em]">
                         01 / Your thoughts
                       </p>
-                      <span className="text-[9px] font-medium text-[#918A7D]">
+                      <span className="text-[11px] md:text-[9px] font-medium text-[#918A7D]">
                         Required
                       </span>
                     </div>
 
                     <div className="mb-6 flex flex-col items-center justify-center py-2">
-                      <label className="mb-3 block text-[9px] font-bold uppercase tracking-[0.2em] text-[#1C1B18]">
+                      <label className="mb-3 block text-[11px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-[#1C1B18]">
                         Rate your experience
                       </label>
                       <div className="flex items-center gap-2">
@@ -186,7 +186,7 @@ export default function FeedbackPage() {
                                 setFormData({ ...formData, type });
                                 setErrorMessage("");
                               }}
-                              className={`relative flex h-11 items-center justify-center border px-4 text-[10px] font-semibold transition ${
+                              className={`relative flex h-11 items-center justify-center border px-4 text-xs md:text-[10px] font-semibold transition ${
                                 active
                                   ? "border-[#174D35] bg-[#174D35] text-[#F8F4EA]"
                                   : "border-[#CFCBBF] bg-transparent text-[#5F554A] hover:border-[#174D35]"
@@ -210,7 +210,7 @@ export default function FeedbackPage() {
                         value={formData.message}
                         onChange={handleChange}
                         placeholder="Share your thoughts, suggestions, or feedback..."
-                        className="w-full resize-none border border-[#CFCBBF] bg-transparent px-3 py-3 text-[13px] font-medium text-[#1C1B18] outline-none transition placeholder:text-[#918A7D] focus:border-[#174D35]"
+                        className="w-full resize-none border border-[#CFCBBF] bg-transparent px-3 py-3 text-sm md:text-[13px] font-medium text-[#1C1B18] outline-none transition placeholder:text-[#918A7D] focus:border-[#174D35]"
                       />
                     </div>
 
@@ -224,7 +224,7 @@ export default function FeedbackPage() {
               <div className="border-t border-[#1C1B18]/10 px-6 py-3 sm:px-8 lg:px-10 bg-[#F8F4EA]">
                 
                 {errorMessage && (
-                  <div className="mb-3 border border-red-500/20 bg-red-500/5 px-3 py-2 text-[10px] font-semibold text-red-600">
+                  <div className="mb-3 border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs md:text-[10px] font-semibold text-red-600">
                     {errorMessage}
                   </div>
                 )}
@@ -235,10 +235,10 @@ export default function FeedbackPage() {
                       <Check size={14} />
                     </div>
                     <div>
-                      <p className="text-[9px] font-bold uppercase tracking-[0.17em] text-[#1C1B18]">
+                      <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.17em] text-[#1C1B18]">
                         Ready to submit?
                       </p>
-                      <p className="mt-0.5 text-[9px] text-[#756A5C]">
+                      <p className="mt-0.5 text-[11px] md:text-[9px] text-[#756A5C]">
                         Review your feedback before sending.
                       </p>
                     </div>
@@ -247,7 +247,7 @@ export default function FeedbackPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="group flex h-11 items-center justify-center gap-2 bg-[#174D35] px-8 text-[9px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition hover:bg-[#123D2A] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="group flex h-11 items-center justify-center gap-2 bg-[#174D35] px-8 text-xs md:text-[9px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition hover:bg-[#123D2A] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {isSubmitting ? <ButtonLoader color="#F8F4EA" /> : "Submit Feedback"}
                     {!isSubmitting && (

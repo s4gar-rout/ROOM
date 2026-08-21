@@ -252,7 +252,7 @@ export default function OwnerDashboardPage() {
 
               <span className="h-px w-8 bg-[#174D35]" />
 
-              <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
+              <span className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
                 Owner Dashboard
               </span>
 
@@ -265,7 +265,7 @@ export default function OwnerDashboardPage() {
               </span>
             </h1>
 
-            <p className="mt-3 max-w-md text-[11px] font-medium leading-5 text-[#5F554A]">
+            <p className="mt-3 max-w-md text-xs md:text-[11px] font-medium leading-5 text-[#5F554A]">
               Manage your listings, update availability,
               and keep your rooms ready for tenants.
             </p>
@@ -280,7 +280,7 @@ export default function OwnerDashboardPage() {
               onClick={() => {
                 router.push("/owner-dashboard/add-room");
               }}
-              className="group inline-flex h-10 items-center gap-2 rounded-full px-5 text-[9px] font-bold uppercase tracking-[0.16em] transition bg-[#174D35] text-[#F8F4EA] hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40"
+              className="group inline-flex h-10 items-center gap-2 rounded-full px-5 text-xs md:text-[9px] font-bold uppercase tracking-[0.16em] transition bg-[#174D35] text-[#F8F4EA] hover:bg-[#F8F4EA] hover:text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40"
             >
 
               Add a room
@@ -301,7 +301,7 @@ export default function OwnerDashboardPage() {
         ====================================== */}
 
         {serverError && (
-          <div className="mt-5 flex items-center justify-between rounded-[12px] border border-red-500/10 bg-red-500/5 px-4 py-3 text-[10px] font-semibold text-red-600">
+          <div className="mt-5 flex items-center justify-between rounded-[12px] border border-red-500/10 bg-red-500/5 px-4 py-3 text-xs md:text-[10px] font-semibold text-red-600">
 
             <span>{serverError}</span>
 
@@ -352,11 +352,11 @@ export default function OwnerDashboardPage() {
 
             <div>
 
-              <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#174D35]">
+              <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.22em] text-[#174D35]">
                 Your listings
               </p>
 
-              <p className="mt-1 text-[10px] font-medium text-[#756A5C]">
+              <p className="mt-1 text-xs md:text-[10px] font-medium text-[#756A5C]">
                 {totalRooms}{" "}
                 {totalRooms === 1
                   ? "room"
@@ -372,7 +372,7 @@ export default function OwnerDashboardPage() {
                 loadDashboard();
               }}
               disabled={roomsLoading}
-              className="group flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.16em] text-[#756A5C] transition hover:text-[#174D35] disabled:opacity-50"
+              className="group flex items-center gap-1.5 text-[11px] md:text-[9px] font-bold uppercase tracking-[0.16em] text-[#756A5C] transition hover:text-[#174D35] disabled:opacity-50"
             >
               <RefreshCw
                 size={12}
@@ -567,7 +567,7 @@ function StatCard({
 
       </div>
 
-      <p className="mt-3 text-[8px] font-bold uppercase tracking-[0.18em] text-[#756A5C]">
+      <p className="mt-3 text-[10px] md:text-[8px] font-bold uppercase tracking-[0.18em] text-[#756A5C]">
         {label}
       </p>
 

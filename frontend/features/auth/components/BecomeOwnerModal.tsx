@@ -95,7 +95,7 @@ export default function BecomeOwnerModal({
             </div>
 
             {/* Header */}
-            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
+            <p className="text-xs md:text-[10px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
               Account Role Conversion
             </p>
             <h3 className="mt-1 font-serif text-2xl font-normal leading-tight text-[#1C1B18] sm:text-3xl">
@@ -103,17 +103,17 @@ export default function BecomeOwnerModal({
             </h3>
 
             {/* Message */}
-            <p className="mt-3 text-xs leading-relaxed text-[#756A5C] sm:text-sm">
+            <p className="mt-3 text-sm leading-relaxed text-[#756A5C]">
               You're currently a tenant. To add and manage rental listings, your account needs to be converted to an owner.
             </p>
 
-            <div className="mt-3 border border-[#174D35]/15 bg-[#174D35]/5 p-3 text-xs font-medium text-[#174D35]">
+            <div className="mt-3 border border-[#174D35]/15 bg-[#174D35]/5 p-3 text-sm md:text-xs font-medium text-[#174D35]">
               Your account role will be updated to <span className="font-bold">"Owner"</span> after you confirm.
             </div>
 
             {/* Error Message */}
             {error && (
-              <div className="mt-3 flex items-center gap-2 border border-red-500/20 bg-red-500/10 p-3 text-xs font-medium text-red-700">
+              <div className="mt-3 flex items-center gap-2 border border-red-500/20 bg-red-500/10 p-3 text-sm md:text-xs font-medium text-red-700">
                 <AlertCircle size={16} className="shrink-0" />
                 <span>{error}</span>
               </div>
@@ -125,7 +125,7 @@ export default function BecomeOwnerModal({
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="h-11 w-full sm:w-auto border border-[#174D35]/30 bg-transparent px-6 text-xs font-semibold text-[#1C1B18] hover:bg-[#1C1B18]/5 transition-colors disabled:opacity-50"
+                className="h-11 w-full sm:w-auto border border-[#174D35]/30 bg-transparent px-6 text-sm sm:text-xs font-semibold text-[#1C1B18] hover:bg-[#1C1B18]/5 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -134,7 +134,7 @@ export default function BecomeOwnerModal({
                 type="button"
                 onClick={handleConfirm}
                 disabled={isSubmitting}
-                className="group flex h-11 w-full sm:w-auto items-center justify-center gap-2 bg-[#174D35] px-6 text-xs font-semibold !text-[#F8F4EA] transition-all hover:bg-[#123d2a] active:bg-[#0d2e1f] disabled:opacity-70 shadow-xs"
+                className="group flex h-11 w-full sm:w-auto items-center justify-center gap-2 bg-[#174D35] px-6 text-sm sm:text-xs font-semibold !text-[#F8F4EA] transition-all hover:bg-[#123d2a] active:bg-[#0d2e1f] disabled:opacity-70 shadow-xs"
               >
                 {isSubmitting ? (
                   <>

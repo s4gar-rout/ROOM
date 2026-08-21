@@ -218,20 +218,20 @@ export default function RegisterForm() {
       error ? "border-red-500" : "border-[#1C1B18]/25 focus:border-[#174D35]"
     } bg-transparent py-3 text-sm font-medium text-[#1C1B18] outline-none transition-colors placeholder:font-medium placeholder:text-[#756A5C]`;
 
-  const labelClass = "mb-0.5 block text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A]";
-  const errorClass = "mt-0.5 text-[10px] font-medium text-red-500";
+  const labelClass = "mb-0.5 block text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A]";
+  const errorClass = "mt-0.5 text-xs md:text-[10px] font-medium text-red-500";
 
   return (
     <>
       <div className="space-y-4">
         {serverError && (
-          <div className="border border-red-500/20 bg-red-500/5 px-3 py-2 text-[10px] font-medium leading-4 text-red-600">
+          <div className="border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs md:text-[10px] font-medium leading-4 text-red-600">
             {serverError}
           </div>
         )}
         
         {serverSuccess && step === "OTP" && (
-          <div className="border border-green-500/20 bg-green-500/5 px-3 py-2 text-[10px] font-medium leading-4 text-green-700">
+          <div className="border border-green-500/20 bg-green-500/5 px-3 py-2 text-xs md:text-[10px] font-medium leading-4 text-green-700">
             {serverSuccess}
           </div>
         )}
@@ -265,7 +265,7 @@ export default function RegisterForm() {
               )}
             </button>
             
-            <p className="pt-1 text-center text-[11px] font-medium text-[#5F554A]">
+            <p className="pt-1 text-center text-xs md:text-[11px] font-medium text-[#5F554A]">
               Already have a place?{" "}
               <Link href="/login" className="font-semibold text-[#174D35] underline underline-offset-4">
                 Sign in
@@ -278,7 +278,7 @@ export default function RegisterForm() {
         {step === "OTP" && (
           <form onSubmit={handleVerifyOtp} className="space-y-5">
             <div className="rounded-2xl border border-[#174D35]/20 bg-[#174D35]/5 p-4 text-center">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#174D35]">
+              <p className="text-xs md:text-[11px] font-semibold uppercase tracking-[0.16em] text-[#174D35]">
                 Email Verification
               </p>
               <p className="mt-1 text-xs text-[#5F554A]">

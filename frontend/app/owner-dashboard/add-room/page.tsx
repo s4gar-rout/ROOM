@@ -304,13 +304,13 @@ export default function AddRoomPage() {
   // ==========================================
 
   const inputClass =
-    "h-11 w-full border border-[#CFCBBF] bg-transparent px-3 text-[13px] font-medium text-[#1C1B18] outline-none transition placeholder:text-[#918A7D] focus:border-[#174D35]";
+    "h-11 w-full border border-[#CFCBBF] bg-transparent px-3 text-sm md:text-[13px] font-medium text-[#1C1B18] outline-none transition placeholder:text-[#918A7D] focus:border-[#174D35]";
 
   const labelClass =
-    "mb-2 block text-[9px] font-bold uppercase tracking-[0.2em] text-[#1C1B18]";
+    "mb-2 block text-[11px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-[#1C1B18]";
 
   const errorClass =
-    "mt-1.5 text-[9px] font-semibold text-red-500";
+    "mt-1.5 text-xs md:text-[9px] font-semibold text-red-500";
 
   if (authLoading || !isAuthenticated) {
     return (
@@ -332,27 +332,27 @@ export default function AddRoomPage() {
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#174D35]/10 text-[#174D35]">
               <Building2 size={28} />
             </div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
+            <p className="text-xs md:text-[10px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
               Account Role Conversion
             </p>
             <h1 className="mt-2 font-serif text-3xl font-normal leading-tight text-[#1C1B18] sm:text-4xl">
               Want to list a room?
             </h1>
-            <p className="mt-4 text-xs sm:text-sm leading-relaxed text-[#756A5C]">
+            <p className="mt-4 text-sm sm:text-sm leading-relaxed text-[#756A5C]">
               You're currently a tenant. To add and manage rental listings, your account needs to be converted to an owner. Your account will be updated to "Owner" after you confirm.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
                 type="button"
                 onClick={() => router.push("/")}
-                className="h-11 w-full sm:w-auto rounded-full border border-[#174D35]/30 bg-transparent px-6 text-xs font-semibold text-[#1C1B18] hover:bg-[#1C1B18]/5 transition-colors"
+                className="h-11 w-full sm:w-auto rounded-full border border-[#174D35]/30 bg-transparent px-6 text-sm sm:text-xs font-semibold text-[#1C1B18] hover:bg-[#1C1B18]/5 transition-colors"
               >
                 Back to Home
               </button>
               <button
                 type="button"
                 onClick={() => setBecomeOwnerModalOpen(true)}
-                className="flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-[#174D35] px-7 text-xs font-semibold !text-[#F8F4EA] transition-all hover:bg-[#123d2a] shadow-xs"
+                className="flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-[#174D35] px-7 text-sm sm:text-xs font-semibold !text-[#F8F4EA] transition-all hover:bg-[#123d2a] shadow-xs"
               >
                 <span>Become an Owner</span>
                 <ArrowUpRight size={15} />
@@ -396,7 +396,7 @@ export default function AddRoomPage() {
 
               <div className="mb-7">
 
-                <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#174D35]">
+                <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.25em] text-[#174D35]">
                   Add new room
                 </p>
 
@@ -407,7 +407,7 @@ export default function AddRoomPage() {
                   </em>
                 </h1>
 
-                <p className="mt-3 max-w-md text-[11px] font-medium leading-5 text-[#756A5C]">
+                <p className="mt-3 max-w-md text-xs md:text-[11px] font-medium leading-5 text-[#756A5C]">
                   Add accurate details to help the right
                   tenants find your space.
                 </p>
@@ -420,11 +420,11 @@ export default function AddRoomPage() {
 
                 <div className="mb-5 flex items-center justify-between border-b border-[#1C1B18]/10 pb-3">
 
-                  <p className="text-[9px] font-bold uppercase tracking-[0.22em]">
+                  <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.22em]">
                     01 / Basic details
                   </p>
 
-                  <span className="text-[9px] font-medium text-[#918A7D]">
+                  <span className="text-[11px] md:text-[9px] font-medium text-[#918A7D]">
                     Required
                   </span>
 
@@ -468,7 +468,7 @@ export default function AddRoomPage() {
                     onChange={handleChange}
                     rows={3}
                     placeholder="Describe the room, surroundings and what makes it comfortable..."
-                    className="w-full resize-none border border-[#CFCBBF] bg-transparent px-3 py-3 text-[13px] font-medium text-[#1C1B18] outline-none transition placeholder:text-[#918A7D] focus:border-[#174D35]"
+                    className="w-full resize-none border border-[#CFCBBF] bg-transparent px-3 py-3 text-sm md:text-[13px] font-medium text-[#1C1B18] outline-none transition placeholder:text-[#918A7D] focus:border-[#174D35]"
                   />
 
                   {errors.description && (
@@ -491,7 +491,7 @@ export default function AddRoomPage() {
 
                     <div className="relative">
 
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] font-semibold text-[#174D35]">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm md:text-[13px] font-semibold text-[#174D35]">
                         ₹
                       </span>
 
@@ -556,11 +556,11 @@ export default function AddRoomPage() {
 
                 <div className="mb-4 flex items-center justify-between border-b border-[#1C1B18]/10 pb-3">
 
-                  <p className="text-[9px] font-bold uppercase tracking-[0.22em]">
+                  <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.22em]">
                     02 / Room type
                   </p>
 
-                  <span className="text-[9px] text-[#918A7D]">
+                  <span className="text-[11px] md:text-[9px] text-[#918A7D]">
                     Select one
                   </span>
 
@@ -580,7 +580,7 @@ export default function AddRoomPage() {
                         onClick={() =>
                           selectRoomType(type.value)
                         }
-                        className={`relative flex h-11 items-center justify-center border text-[10px] font-semibold transition ${active
+                        className={`relative flex h-11 items-center justify-center border text-xs md:text-[10px] font-semibold transition ${active
                             ? "border-[#174D35] bg-[#174D35] text-[#F8F4EA]"
                             : "border-[#CFCBBF] bg-transparent text-[#5F554A] hover:border-[#174D35]"
                           }`}
@@ -623,13 +623,13 @@ export default function AddRoomPage() {
 
                 <div className="mb-5 border-b border-[#1C1B18]/10 pb-3">
 
-                  <p className="text-[9px] font-bold uppercase tracking-[0.22em]">
+                  <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.22em]">
                     03 / Additional information
                   </p>
 
                 </div>
 
-                <p className="mb-3 text-[9px] font-bold uppercase tracking-[0.2em]">
+                <p className="mb-3 text-[11px] md:text-[9px] font-bold uppercase tracking-[0.2em]">
                   Facilities
                 </p>
 
@@ -651,7 +651,7 @@ export default function AddRoomPage() {
                         onClick={() =>
                           toggleFacility(facility.label)
                         }
-                        className={`flex h-11 items-center justify-between border px-3 text-left text-[10px] font-medium transition ${active
+                        className={`flex h-11 items-center justify-between border px-3 text-left text-xs md:text-[10px] font-medium transition ${active
                             ? "border-[#174D35] bg-[#EEF2E9] text-[#174D35]"
                             : "border-[#CFCBBF] bg-transparent text-[#5F554A] hover:border-[#174D35]"
                           }`}
@@ -680,7 +680,7 @@ export default function AddRoomPage() {
 
                 </div>
 
-                <p className="mt-2 text-[9px] text-[#918A7D]">
+                <p className="mt-2 text-[11px] md:text-[9px] text-[#918A7D]">
                   Select all facilities that apply.
                 </p>
 
@@ -694,17 +694,17 @@ export default function AddRoomPage() {
 
                   <div>
 
-                    <p className="text-[9px] font-bold uppercase tracking-[0.2em]">
+                    <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.2em]">
                       04 / Photos
                     </p>
 
-                    <p className="mt-1 text-[9px] text-[#918A7D]">
+                    <p className="mt-1 text-[11px] md:text-[9px] text-[#918A7D]">
                       Add up to 5 clear photos.
                     </p>
 
                   </div>
 
-                  <span className="text-[9px] font-bold text-[#174D35]">
+                  <span className="text-[11px] md:text-[9px] font-bold text-[#174D35]">
                     {images.length} / 5 uploaded
                   </span>
 
@@ -749,7 +749,7 @@ export default function AddRoomPage() {
                       </button>
 
                       {index === 0 && (
-                        <span className="absolute bottom-1.5 left-1.5 bg-[#174D35] px-2 py-1 text-[7px] font-bold uppercase tracking-[0.12em] text-[#F8F4EA]">
+                        <span className="absolute bottom-1.5 left-1.5 bg-[#174D35] px-2 py-1 text-[9px] md:text-[7px] font-bold uppercase tracking-[0.12em] text-[#F8F4EA]">
                           Cover
                         </span>
                       )}
@@ -770,7 +770,7 @@ export default function AddRoomPage() {
 
                       <ImagePlus size={19} />
 
-                      <span className="mt-1.5 text-[8px] font-bold uppercase tracking-[0.12em]">
+                      <span className="mt-1.5 text-[10px] md:text-[8px] font-bold uppercase tracking-[0.12em]">
                         Add photo
                       </span>
 
@@ -799,7 +799,7 @@ export default function AddRoomPage() {
           <div className="border-t border-[#1C1B18]/10 px-6 py-4 sm:px-8 lg:px-10">
 
             {serverError && (
-              <div className="mb-3 border border-red-500/20 bg-red-500/5 px-3 py-2 text-[10px] font-semibold text-red-600">
+              <div className="mb-3 border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs md:text-[10px] font-semibold text-red-600">
                 {serverError}
               </div>
             )}
@@ -814,11 +814,11 @@ export default function AddRoomPage() {
 
                 <div>
 
-                  <p className="text-[9px] font-bold uppercase tracking-[0.17em] text-[#1C1B18]">
+                  <p className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.17em] text-[#1C1B18]">
                     Almost there.
                   </p>
 
-                  <p className="mt-0.5 text-[9px] text-[#756A5C]">
+                  <p className="mt-0.5 text-[11px] md:text-[9px] text-[#756A5C]">
                     Review your details and publish your listing.
                   </p>
 
@@ -829,7 +829,7 @@ export default function AddRoomPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group flex h-11 items-center justify-center gap-2 bg-[#174D35] px-8 text-[9px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition hover:bg-[#123D2A] disabled:cursor-not-allowed disabled:opacity-60"
+                className="group flex h-11 items-center justify-center gap-2 bg-[#174D35] px-8 text-xs md:text-[9px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition hover:bg-[#123D2A] disabled:cursor-not-allowed disabled:opacity-60"
               >
 
                 {isSubmitting ? <ButtonLoader color="#F8F4EA" /> : "Publish listing"}

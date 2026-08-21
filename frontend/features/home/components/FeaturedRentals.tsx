@@ -75,7 +75,7 @@ export default function FeaturedRentals({
             variants={staggerContainerVariants}
           >
 
-            <motion.p variants={fadeUpVariants} className="mb-1 text-[10px] font-medium uppercase tracking-[0.3em] text-[#174D35]">
+            <motion.p variants={fadeUpVariants} className="mb-1 text-xs md:text-[10px] font-medium uppercase tracking-[0.3em] text-[#174D35]">
               Featured rentals
             </motion.p>
 

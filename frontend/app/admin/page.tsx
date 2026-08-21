@@ -60,14 +60,14 @@ export default function AdminDashboard() {
       <div>
         <div className="mb-2.5 flex items-center gap-3">
           <span className="h-px w-8 bg-[#174D35]" />
-          <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
+          <span className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
             Platform Overview
           </span>
         </div>
         <h1 className="font-serif text-[40px] font-normal leading-none tracking-[-0.03em] text-[#1C1B18] sm:text-[44px]">
           Dashboard <span className="italic text-[#174D35]">metrics.</span>
         </h1>
-        <p className="mt-2.5 text-[11px] font-medium leading-5 text-[#5F554A]">
+        <p className="mt-2.5 text-xs md:text-[11px] font-medium leading-5 text-[#5F554A]">
           Real-time metrics, user statistics, and room inventory across the livansa marketplace.
         </p>
       </div>
@@ -90,7 +90,7 @@ export default function AdminDashboard() {
                 </span>
               </div>
 
-              <p className="mt-5 text-[9px] font-bold uppercase tracking-[0.2em] text-[#756A5C]">
+              <p className="mt-5 text-[11px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-[#756A5C]">
                 {stat.label}
               </p>
             </div>

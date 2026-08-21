@@ -38,10 +38,10 @@ export default function NotificationPromptModal({
       <div className="relative w-full max-w-md border border-[#1C1B18]/20 bg-[#F8F4EA] p-7 sm:p-9 shadow-2xl">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between border-b border-[#1C1B18]/10 pb-4">
-          <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]">
+          <span className="text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]">
             Account Created
           </span>
-          <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
+          <span className="text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
             01 / 02
           </span>
         </div>
@@ -55,7 +55,7 @@ export default function NotificationPromptModal({
           Stay updated with <em className="text-[#174D35]">livansa.</em>
         </h2>
 
-        <p className="mt-3 text-xs font-medium leading-relaxed text-[#5F554A]">
+        <p className="mt-3 text-sm font-medium leading-relaxed text-[#5F554A]">
           Allow browser notifications for instant alerts when you receive new chat messages, room inquiries, or important updates.
         </p>
 
@@ -65,7 +65,7 @@ export default function NotificationPromptModal({
             type="button"
             onClick={handleAllow}
             disabled={loading}
-            className="group flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#174D35] px-5 text-xs font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:!text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40 disabled:cursor-not-allowed disabled:opacity-60"
+            className="group flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#174D35] px-5 text-sm sm:text-xs font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:!text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? (
               <Loader2 size={16} className="animate-spin text-[#F8F4EA]" />
@@ -84,7 +84,7 @@ export default function NotificationPromptModal({
             type="button"
             onClick={handleSkip}
             disabled={loading}
-            className="h-10 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5F554A] transition-colors hover:text-[#174D35]"
+            className="h-10 text-center text-xs md:text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5F554A] transition-colors hover:text-[#174D35]"
           >
             Maybe Later
           </button>

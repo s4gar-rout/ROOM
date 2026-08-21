@@ -408,7 +408,7 @@ export default function MessageBubble({
           <div
             className={`
               mt-1 flex items-center gap-1
-              text-[10px] text-[#8A8177] sm:text-[11px] sm:text-[#9A9186]
+              text-xs text-[#8A8177] sm:text-[11px] sm:text-[#9A9186]
               ${mine ? "justify-end" : "justify-start"}
             `}
           >
@@ -426,7 +426,7 @@ export default function MessageBubble({
                   {message.read ? "✓✓" : "✓"}
                 </span>
                 {message.read && (
-                  <span className="text-[9px] font-medium tracking-wide sm:text-[10px]">Seen</span>
+                  <span className="text-[11px] font-medium tracking-wide sm:text-[10px]">Seen</span>
                 )}
               </div>
             )}

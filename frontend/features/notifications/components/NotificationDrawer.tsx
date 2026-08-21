@@ -210,7 +210,7 @@ export default function NotificationDrawer({
                 <Bell size={20} />
               </div>
               <div>
-                <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
+                <span className="block font-sans text-[11px] md:text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
                   Activity Log
                 </span>
                 <h2 className="font-serif text-2xl font-normal leading-tight tracking-[-0.02em] text-[#1C1B18]">
@@ -230,7 +230,7 @@ export default function NotificationDrawer({
 
           {/* ACTION SUB-HEADER */}
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[#1C1B18]/8 pt-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#174D35]/5 px-3 py-1 font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-[#174D35] shrink-0">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#174D35]/5 px-3 py-1 font-sans text-xs md:text-[10px] font-bold uppercase tracking-[0.16em] text-[#174D35] shrink-0">
               <span className={`h-1.5 w-1.5 rounded-full ${unreadCount > 0 ? "bg-[#174D35] animate-pulse" : "bg-[#756A5C]"}`} />
               {unreadCount > 0 ? `${unreadCount} New Unread` : "All Caught Up"}
             </span>
@@ -241,7 +241,7 @@ export default function NotificationDrawer({
                   onClick={handleMarkAllRead}
                   disabled={isMarkingRead}
                   title="Mark all as read"
-                  className="inline-flex h-8 min-w-[105px] items-center justify-center gap-1.5 rounded-full border border-[#174D35]/30 bg-transparent px-3 font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.12em] text-[#174D35] transition-all hover:bg-[#174D35] hover:text-[#F8F4EA] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap leading-none shrink-0"
+                  className="inline-flex h-8 min-w-[105px] items-center justify-center gap-1.5 rounded-full border border-[#174D35]/30 bg-transparent px-3 font-sans text-[11px] sm:text-[10px] font-bold uppercase tracking-[0.12em] text-[#174D35] transition-all hover:bg-[#174D35] hover:text-[#F8F4EA] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap leading-none shrink-0"
                 >
                   {isMarkingRead ? (
                     <>
@@ -261,7 +261,7 @@ export default function NotificationDrawer({
                   onClick={handleClearAll}
                   disabled={isClearingAll}
                   title="Clear all notifications"
-                  className="inline-flex h-8 min-w-[105px] items-center justify-center gap-1.5 rounded-full border border-[#A53B32]/30 bg-transparent px-3 font-sans text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.12em] text-[#A53B32] transition-all hover:bg-[#A53B32] hover:text-[#F8F4EA] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap leading-none shrink-0"
+                  className="inline-flex h-8 min-w-[105px] items-center justify-center gap-1.5 rounded-full border border-[#A53B32]/30 bg-transparent px-3 font-sans text-[11px] sm:text-[10px] font-bold uppercase tracking-[0.12em] text-[#A53B32] transition-all hover:bg-[#A53B32] hover:text-[#F8F4EA] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap leading-none shrink-0"
                 >
                   {isClearingAll ? (
                     <>
@@ -285,7 +285,7 @@ export default function NotificationDrawer({
           {loading && notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-[#756A5C]">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#174D35]/20 border-t-[#174D35] mb-3" />
-              <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-[#174D35]">
+              <p className="font-sans text-xs md:text-[10px] font-bold uppercase tracking-[0.2em] text-[#174D35]">
                 Fetching updates...
               </p>
             </div>
@@ -366,12 +366,12 @@ export default function NotificationDrawer({
                     {/* TEXT & ROOM DETAILS */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2 mb-1">
-                        <h4 className="font-sans text-xs font-semibold text-[#1C1B18] truncate">
+                        <h4 className="font-sans text-sm sm:text-xs font-semibold text-[#1C1B18] truncate">
                           {item.sender?.username
                             ? `Message from ${item.sender.username}`
                             : item.title || "New Message"}
                         </h4>
-                        <span className="font-sans text-[9px] font-semibold text-[#756A5C] shrink-0">
+                        <span className="font-sans text-[11px] md:text-[9px] font-semibold text-[#756A5C] shrink-0">
                           {new Date(item.createdAt).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
@@ -379,14 +379,14 @@ export default function NotificationDrawer({
                         </span>
                       </div>
 
-                      <p className="font-sans text-xs text-[#514A42] leading-relaxed line-clamp-2">
+                      <p className="font-sans text-[13px] md:text-xs text-[#514A42] leading-relaxed line-clamp-2">
                         {messageText}
                       </p>
 
                       {/* TARGET PROPERTY BADGE */}
                       {targetRoom?.title && (
                         <div className="mt-2.5 flex items-center">
-                          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#174D35]/25 bg-[#174D35]/5 px-3 py-1 font-sans text-[10px] font-bold uppercase tracking-wider text-[#174D35] transition-all duration-300 group-hover:bg-[#174D35] group-hover:text-[#F8F4EA]">
+                          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#174D35]/25 bg-[#174D35]/5 px-3 py-1 font-sans text-xs md:text-[10px] font-bold uppercase tracking-wider text-[#174D35] transition-all duration-300 group-hover:bg-[#174D35] group-hover:text-[#F8F4EA]">
                             <Home size={11} className="shrink-0" />
                             <span className="truncate max-w-[170px]">
                               {targetRoom.title}

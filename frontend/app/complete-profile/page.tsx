@@ -163,7 +163,7 @@ export default function CompleteProfilePage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="group flex items-center gap-2 rounded-full px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F554A] transition-all duration-300 hover:bg-[#EDE6D9] hover:text-[#174D35]"
+          className="group flex items-center gap-2 rounded-full px-3 py-2 text-xs md:text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F554A] transition-all duration-300 hover:bg-[#EDE6D9] hover:text-[#174D35]"
         >
           <ArrowLeft
             size={14}
@@ -177,7 +177,7 @@ export default function CompleteProfilePage() {
           livansa
         </span>
 
-        <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#756A5C]">
+        <span className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.22em] text-[#756A5C]">
           Profile / 01
         </span>
 
@@ -245,7 +245,7 @@ export default function CompleteProfilePage() {
 
               <div className="mb-7 lg:hidden">
 
-                <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.25em] text-[#174D35]">
+                <p className="mb-2 text-[11px] md:text-[9px] font-bold uppercase tracking-[0.25em] text-[#174D35]">
                   Profile setup
                 </p>
 
@@ -273,11 +273,11 @@ export default function CompleteProfilePage() {
 
                   <div className="mb-5">
 
-                    <p className="text-[10px] font-bold uppercase tracking-[0.23em] text-[#174D35]">
+                    <p className="text-xs md:text-[10px] font-bold uppercase tracking-[0.23em] text-[#174D35]">
                       Profile picture
                     </p>
 
-                    <p className="mt-1.5 text-[11px] font-medium text-[#756A5C]">
+                    <p className="mt-1.5 text-xs md:text-[11px] font-medium text-[#756A5C]">
                       Upload a clear photo of yourself
                     </p>
 
@@ -332,7 +332,7 @@ export default function CompleteProfilePage() {
 
                   {/* UPLOAD */}
 
-                  <label className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-full border border-dashed border-[#1C1B18]/15 px-5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F554A] transition-all duration-300 hover:border-[#174D35] hover:bg-[#EDE6D9] hover:text-[#174D35]">
+                  <label className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-full border border-dashed border-[#1C1B18]/15 px-5 text-xs md:text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F554A] transition-all duration-300 hover:border-[#174D35] hover:bg-[#EDE6D9] hover:text-[#174D35]">
 
                     <ImagePlus size={15} />
 
@@ -349,7 +349,7 @@ export default function CompleteProfilePage() {
 
                   </label>
 
-                  <p className="mt-2 text-center text-[9px] font-medium text-[#756A5C]">
+                  <p className="mt-2 text-center text-[11px] md:text-[9px] font-medium text-[#756A5C]">
                     JPG, PNG or WEBP • Maximum 5MB
                   </p>
 
@@ -359,7 +359,7 @@ export default function CompleteProfilePage() {
 
                 <div>
 
-                  <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.23em] text-[#174D35]">
+                  <p className="mb-3 text-xs md:text-[10px] font-bold uppercase tracking-[0.23em] text-[#174D35]">
                     What brings you here?
                   </p>
 
@@ -389,11 +389,11 @@ export default function CompleteProfilePage() {
                         className="text-[#174D35]"
                       />
 
-                      <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.14em]">
+                      <p className="mt-3 text-xs md:text-[10px] font-bold uppercase tracking-[0.14em]">
                         Find a room
                       </p>
 
-                      <p className="mt-1 text-[10px] font-medium leading-4 text-[#756A5C]">
+                      <p className="mt-1 text-xs md:text-[10px] font-medium leading-4 text-[#756A5C]">
                         I am looking for a place
                       </p>
 
@@ -423,11 +423,11 @@ export default function CompleteProfilePage() {
                         className="text-[#174D35]"
                       />
 
-                      <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.14em]">
+                      <p className="mt-3 text-xs md:text-[10px] font-bold uppercase tracking-[0.14em]">
                         List my room
                       </p>
 
-                      <p className="mt-1 text-[10px] font-medium leading-4 text-[#756A5C]">
+                      <p className="mt-1 text-xs md:text-[10px] font-medium leading-4 text-[#756A5C]">
                         I want to rent my property
                       </p>
 
@@ -443,7 +443,7 @@ export default function CompleteProfilePage() {
 
                   <div className="rounded-2xl border border-red-900/10 bg-[#F7E9E6] px-4 py-3">
 
-                    <p className="text-[10px] font-semibold leading-5 text-red-800">
+                    <p className="text-xs md:text-[10px] font-semibold leading-5 text-red-800">
                       {error}
                     </p>
 
@@ -456,7 +456,7 @@ export default function CompleteProfilePage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-[10px] font-bold uppercase tracking-[0.2em] text-[#F8F4EA] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#123D2A] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-xs md:text-[10px] font-bold uppercase tracking-[0.2em] text-[#F8F4EA] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#123D2A] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
                 >
 
                   {loading ? (
@@ -478,7 +478,7 @@ export default function CompleteProfilePage() {
 
               {/* FOOTER NOTE */}
 
-              <p className="mt-5 border-t border-[#1C1B18]/10 pt-4 text-[9px] font-medium leading-5 text-[#756A5C]">
+              <p className="mt-5 border-t border-[#1C1B18]/10 pt-4 text-[11px] md:text-[9px] font-medium leading-5 text-[#756A5C]">
                 Your profile photo is securely
                 stored and can be changed later
                 from your profile settings.

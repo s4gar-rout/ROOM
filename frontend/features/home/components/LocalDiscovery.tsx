@@ -28,7 +28,7 @@ export default function LocalDiscovery() {
             <div className="flex flex-col justify-between md:col-span-5">
               <div>
                 {/* Eyebrow */}
-                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
+                <p className="text-xs md:text-[10px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
                   LOCAL LIVING
                 </p>
 
@@ -90,7 +90,7 @@ export default function LocalDiscovery() {
 
             {/* Mobile Decorative Bottom Footer Tag */}
             <div className="flex md:hidden items-center gap-3 mt-2 pt-2 col-span-1">
-              <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#756A5C]/70 shrink-0">
+              <span className="text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.2em] text-[#756A5C]/70 shrink-0">
                 livansa / LOCAL LIVING
               </span>
               <div className="flex-1 flex items-center">

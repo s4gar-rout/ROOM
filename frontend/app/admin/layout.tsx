@@ -66,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex h-16 items-center justify-between border-b border-[#1C1B18]/8 px-6">
           <Link href="/admin" className="flex items-center gap-2 font-serif text-2xl italic tracking-tight text-[#174D35]">
             <span>livansa</span>
-            <span className="rounded-full bg-[#174D35]/10 px-2.5 py-0.5 font-sans text-[8px] font-bold uppercase tracking-[0.2em] text-[#174D35]">ADMIN</span>
+            <span className="rounded-full bg-[#174D35]/10 px-2.5 py-0.5 font-sans text-[10px] md:text-[8px] font-bold uppercase tracking-[0.2em] text-[#174D35]">ADMIN</span>
           </Link>
           <button className="md:hidden text-[#756A5C] hover:text-[#1C1B18]" onClick={() => setIsMobileOpen(false)}>
             <X size={18} />
@@ -74,7 +74,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <nav className="flex flex-col gap-1.5 p-4">
-          <p className="px-3 pb-2 pt-4 text-[9px] font-bold uppercase tracking-[0.22em] text-[#174D35]">
+          <p className="px-3 pb-2 pt-4 text-[11px] md:text-[9px] font-bold uppercase tracking-[0.22em] text-[#174D35]">
             Management
           </p>
           {navItems.map((item) => {
@@ -85,7 +85,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsMobileOpen(false)}
-                className={`flex items-center gap-3 rounded-full px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] transition-all duration-200 ${
+                className={`flex items-center gap-3 rounded-full px-4 py-2.5 text-sm sm:text-xs font-bold uppercase tracking-[0.14em] transition-all duration-200 ${
                   isActive 
                     ? "bg-[#174D35] !text-[#F8F4EA] shadow-sm" 
                     : "text-[#5F554A] hover:bg-[#174D35]/8 hover:text-[#174D35]"
@@ -101,7 +101,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="absolute bottom-0 left-0 w-full border-t border-[#1C1B18]/8 p-4 bg-[#FAF7F0]">
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-full px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-red-600 transition-colors hover:bg-red-500/10"
+            className="flex w-full items-center gap-3 rounded-full px-4 py-2.5 text-sm sm:text-xs font-bold uppercase tracking-[0.14em] text-red-600 transition-colors hover:bg-red-500/10"
           >
             <LogOut size={16} />
             Logout
@@ -131,7 +131,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center gap-3">
             <div className="hidden flex-col text-right md:flex">
               <span className="text-xs font-semibold text-[#1C1B18]">{user.username}</span>
-              <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#174D35]">{user.role}</span>
+              <span className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.18em] text-[#174D35]">{user.role}</span>
             </div>
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#174D35] text-xs font-bold !text-[#F8F4EA] shadow-xs">
               {user.username?.charAt(0).toUpperCase()}

@@ -109,7 +109,7 @@ export default function EditProfilePage() {
   if (!profile) return null;
 
   const inputClass = "w-full border-b border-[#1C1B18]/25 focus:border-[#174D35] bg-transparent py-3 text-sm font-medium text-[#1C1B18] outline-none transition-colors placeholder:font-medium placeholder:text-[#756A5C]";
-  const labelClass = "mb-1 block text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A]";
+  const labelClass = "mb-1 block text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A]";
 
   return (
     <main className="w-full flex flex-col gap-10">
@@ -118,7 +118,7 @@ export default function EditProfilePage() {
       <div>
         <button 
           onClick={() => router.back()}
-          className="group flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35] mb-8"
+          className="group flex items-center gap-2 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-[#5F554A] transition-colors hover:text-[#174D35] mb-8"
         >
           <ArrowLeft size={13} className="transition-transform duration-300 group-hover:-translate-x-1" /> Back
         </button>
@@ -136,21 +136,21 @@ export default function EditProfilePage() {
         <div className="border border-[#1C1B18]/15 bg-[#F8F4EA] px-6 py-8 sm:p-10">
           
           <div className="mb-10 flex items-center justify-between border-b border-[#1C1B18]/10 pb-4">
-            <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]">
+            <span className="text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]">
               Edit Profile
             </span>
-            <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
+            <span className="text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.25em] text-[#174D35]">
               01 / 01
             </span>
           </div>
 
           {error && (
-            <div className="mb-6 border border-red-500/20 bg-red-500/5 px-4 py-3 text-[11px] font-medium text-red-600">
+            <div className="mb-6 border border-red-500/20 bg-red-500/5 px-4 py-3 text-xs md:text-[11px] font-medium text-red-600">
               {error}
             </div>
           )}
           {successMsg && (
-            <div className="mb-6 border border-green-500/20 bg-green-500/5 px-4 py-3 text-[11px] font-medium text-green-700">
+            <div className="mb-6 border border-green-500/20 bg-green-500/5 px-4 py-3 text-xs md:text-[11px] font-medium text-green-700">
               {successMsg}
             </div>
           )}
@@ -180,7 +180,7 @@ export default function EditProfilePage() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#174D35] hover:opacity-70 transition-opacity flex items-center gap-1"
+                    className="text-xs md:text-[10px] font-semibold uppercase tracking-[0.16em] text-[#174D35] hover:opacity-70 transition-opacity flex items-center gap-1"
                   >
                     Change Image <ArrowUpRight size={12} />
                   </button>
@@ -223,7 +223,7 @@ export default function EditProfilePage() {
                 disabled
                 className="w-full border-b border-[#1C1B18]/10 bg-transparent py-3 text-sm font-medium text-[#756A5C] cursor-not-allowed outline-none"
               />
-              <p className="mt-1 text-[9px] text-[#756A5C]">Email address cannot be changed.</p>
+              <p className="mt-1 text-[11px] md:text-[9px] text-[#756A5C]">Email address cannot be changed.</p>
             </div>
 
             {/* 04 / PHONE NUMBER */}
@@ -250,7 +250,7 @@ export default function EditProfilePage() {
             <div className="pt-6 mt-4 flex items-center justify-between">
               <Link
                 href="/profile"
-                className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#5F554A] hover:text-[#174D35] transition-colors"
+                className="text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.2em] text-[#5F554A] hover:text-[#174D35] transition-colors"
               >
                 Cancel
               </Link>
@@ -258,7 +258,7 @@ export default function EditProfilePage() {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="group flex h-11 items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-[10px] font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:!text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40 disabled:cursor-not-allowed disabled:opacity-60"
+                className="group flex h-11 items-center justify-center gap-2 rounded-full bg-[#174D35] px-6 text-xs md:text-[10px] font-semibold uppercase tracking-[0.16em] !text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:!text-[#174D35] hover:ring-1 hover:ring-[#174D35]/40 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSaving ? <ButtonLoader color="#F8F4EA" /> : "Save Changes"}
                 {!isSaving && (

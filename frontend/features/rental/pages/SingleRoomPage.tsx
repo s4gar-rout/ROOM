@@ -251,7 +251,7 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
         <div className="mx-auto flex min-h-[70vh] max-w-7xl items-center justify-center px-5 py-10 sm:px-8">
           <div className="text-center">
             <div className="mx-auto mb-5 h-9 w-9 animate-spin rounded-full border-2 border-[#174D35]/20 border-t-[#174D35]" />
-            <p className="font-sans text-[10px] font-bold uppercase tracking-[0.3em] text-[#174D35]">
+            <p className="font-sans text-xs md:text-[10px] font-bold uppercase tracking-[0.3em] text-[#174D35]">
               Loading Room Details
             </p>
           </div>
@@ -270,7 +270,7 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
         <Navbar />
         <div className="mx-auto flex min-h-[70vh] max-w-7xl items-center justify-center px-5 py-10 sm:px-8">
           <div className="w-full max-w-md rounded-2xl border border-[#1C1B18]/15 bg-[#FAF7F0] px-8 py-12 text-center shadow-sm">
-            <p className="mb-3 font-sans text-[10px] font-bold uppercase tracking-[0.3em] text-[#174D35]">
+            <p className="mb-3 font-sans text-xs md:text-[10px] font-bold uppercase tracking-[0.3em] text-[#174D35]">
               404 / PROPERTY NOT FOUND
             </p>
             <h1 className="mb-7 font-serif text-3xl text-[#1C1B18]">
@@ -278,7 +278,7 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
             </h1>
             <button
               onClick={() => router.push("/")}
-              className="inline-flex items-center gap-2 rounded-full border border-[#174D35] bg-[#174D35] px-7 py-3.5 font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:text-[#174D35]"
+              className="inline-flex items-center gap-2 rounded-full border border-[#174D35] bg-[#174D35] px-7 py-3.5 font-sans text-xs md:text-[10px] font-bold uppercase tracking-[0.2em] text-[#F8F4EA] transition-all duration-300 hover:bg-[#F8F4EA] hover:text-[#174D35]"
             >
               <ArrowLeft size={14} />
               Return Home
@@ -381,7 +381,7 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
               {/* IMAGE COUNTER BADGE */}
               {images.length > 1 && (
                 <div className="absolute right-4 top-4 z-10 rounded-full border border-white/40 bg-[#F8F4EA]/85 px-3.5 py-1.5 backdrop-blur-md shadow-sm">
-                  <span className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-[#174D35]">
+                  <span className="font-sans text-xs md:text-[10px] font-bold uppercase tracking-[0.2em] text-[#174D35]">
                     {String(activeImageIndex + 1).padStart(2, "0")} /{" "}
                     {String(images.length).padStart(2, "0")}
                   </span>
@@ -452,12 +452,12 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
           >
             {/* ROOM TYPE & AVAILABILITY */}
             <div className="flex items-center justify-between gap-3 mb-4">
-              <span className="inline-flex items-center rounded-full border border-[#174D35]/30 bg-[#174D35]/5 px-3.5 py-1 font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-[#174D35]">
+              <span className="inline-flex items-center rounded-full border border-[#174D35]/30 bg-[#174D35]/5 px-3.5 py-1 font-sans text-xs md:text-[10px] font-bold uppercase tracking-[0.2em] text-[#174D35]">
                 {getRoomTypeLabel(room.roomType)}
               </span>
 
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-sans text-[10px] font-bold uppercase tracking-[0.18em] ${
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-sans text-xs md:text-[10px] font-bold uppercase tracking-[0.18em] ${
                   room.availability
                     ? "bg-[#174D35]/10 text-[#174D35]"
                     : "bg-[#A53B32]/10 text-[#A53B32]"
@@ -488,14 +488,14 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
             {/* MONTHLY RENT */}
             <div className="mt-6 border-t border-[#1C1B18]/10 pt-5 flex items-baseline justify-between">
               <div>
-                <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.24em] text-[#756A5C] mb-1">
+                <span className="block font-sans text-[11px] md:text-[9px] font-bold uppercase tracking-[0.24em] text-[#756A5C] mb-1">
                   Monthly Rent
                 </span>
                 <div className="flex items-baseline gap-2">
                   <span className="font-serif text-3xl sm:text-4xl font-normal tracking-tight text-[#174D35]">
                     ₹{rent.toLocaleString("en-IN")}
                   </span>
-                  <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-[#756A5C]">
+                  <span className="font-sans text-xs md:text-[10px] font-semibold uppercase tracking-[0.18em] text-[#756A5C]">
                     / month
                   </span>
                 </div>
@@ -504,7 +504,7 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
 
             {/* OWNER INFORMATION (NEAR TOP OF ROOM DETAILS) */}
             <div className="mt-6 border-t border-[#1C1B18]/10 pt-5">
-              <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35] mb-3">
+              <span className="block font-sans text-[11px] md:text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35] mb-3">
                 03 / PROPERTY OWNER
               </span>
 
@@ -528,7 +528,7 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
                     <h3 className="font-sans text-base font-semibold text-[#1C1B18] truncate">
                       {ownerName}
                     </h3>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-[#174D35]/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#174D35]">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[#174D35]/10 px-2 py-0.5 text-[10px] md:text-[9px] font-bold uppercase tracking-wider text-[#174D35]">
                       <ShieldCheck size={11} className="text-[#174D35]" />
                       Verified
                     </span>
@@ -545,7 +545,7 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
 
             {/* DESCRIPTION */}
             <div className="mt-6 border-t border-[#1C1B18]/10 pt-5">
-              <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35] mb-3">
+              <span className="block font-sans text-[11px] md:text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35] mb-3">
                 01 / DESCRIPTION
               </span>
               <p className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-[#514A42]">
@@ -556,7 +556,7 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
             {/* FACILITIES */}
             {Array.isArray(room.facilities) && room.facilities.length > 0 && (
               <div className="mt-6 border-t border-[#1C1B18]/10 pt-5">
-                <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35] mb-3">
+                <span className="block font-sans text-[11px] md:text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35] mb-3">
                   02 / FACILITIES
                 </span>
                 <div className="flex flex-wrap gap-2">
@@ -596,7 +596,7 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
               <span className="font-serif text-lg font-normal text-[#174D35]">
                 ₹{rent.toLocaleString("en-IN")}
               </span>
-              <span className="font-sans text-[9px] uppercase tracking-wider text-[#756A5C]">
+              <span className="font-sans text-[11px] md:text-[9px] uppercase tracking-wider text-[#756A5C]">
                 {" "}
                 / month
               </span>
@@ -608,7 +608,7 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
             <button
               onClick={handleChat}
               disabled={chatLoading || !room.availability}
-              className="group inline-flex w-full sm:w-auto h-12 items-center justify-center gap-3 rounded-full border border-[#174D35] bg-[#174D35] px-8 font-sans text-xs font-bold uppercase tracking-[0.2em] !text-[#F8F4EA] shadow-md transition-all duration-300 hover:bg-[#123d2a] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
+              className="group inline-flex w-full sm:w-auto h-12 items-center justify-center gap-3 rounded-full border border-[#174D35] bg-[#174D35] px-8 font-sans text-sm sm:text-xs font-bold uppercase tracking-[0.2em] !text-[#F8F4EA] shadow-md transition-all duration-300 hover:bg-[#123d2a] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
             >
               <MessageCircle size={16} className="!text-[#F8F4EA]" />
               <span className="!text-[#F8F4EA]">
@@ -649,7 +649,7 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
               <div className="mb-4 flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#174D35]" />
                 <span className="h-px w-6 bg-[#174D35]/30" />
-                <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
+                <span className="text-[11px] md:text-[9px] font-bold uppercase tracking-[0.24em] text-[#174D35]">
                   Account Notice
                 </span>
               </div>
@@ -676,7 +676,7 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
                   onClick={() =>
                     setRestrictionModal({ ...restrictionModal, isOpen: false })
                   }
-                  className="group inline-flex h-11 items-center gap-2 bg-[#174D35] px-7 text-[10px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition-all hover:bg-[#123d2a] shadow-md"
+                  className="group inline-flex h-11 items-center gap-2 bg-[#174D35] px-7 text-xs md:text-[10px] font-bold uppercase tracking-[0.18em] text-[#F8F4EA] transition-all hover:bg-[#123d2a] shadow-md"
                 >
                   <span>Understood</span>
                   <ArrowRight

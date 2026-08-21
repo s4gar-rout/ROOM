@@ -17,7 +17,7 @@ export default function EditorialBrandStatement() {
       >
         <motion.p
           variants={fadeUpVariants}
-          className="mb-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#174D35]"
+          className="mb-3 text-xs md:text-[10px] font-semibold uppercase tracking-[0.3em] text-[#174D35]"
         >
           OUR PHILOSOPHY
         </motion.p>

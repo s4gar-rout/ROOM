@@ -55,7 +55,7 @@ export default function LocationSearch() {
             <div className="min-w-0 flex-1">
               <label
                 htmlFor="mobile-location"
-                className="block text-[8px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]"
+                className="block text-[10px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]"
               >
                 Location
               </label>
@@ -87,7 +87,7 @@ export default function LocationSearch() {
 
           {/* Search Suggestion Chips */}
           <div className="mt-4 border-t border-[#1C1B18]/10 pt-3">
-            <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.15em] text-[#756A5C]">
+            <p className="mb-2 text-xs font-medium uppercase tracking-[0.15em] text-[#756A5C]">
               Try searching near
             </p>
 

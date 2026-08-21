@@ -21,7 +21,7 @@ export default function Footer() {
 
           {/* Heading */}
           <div className="max-w-2xl">
-            <p className="mb-2 text-[9px] font-medium uppercase tracking-[0.3em] text-[#C8D5CA]">
+            <p className="mb-2 text-[11px] md:text-[9px] font-medium uppercase tracking-[0.3em] text-[#C8D5CA]">
               livansa / FIND YOUR SPACE
             </p>
 
@@ -43,14 +43,14 @@ export default function Footer() {
               livansa
               </Link>
 
-              <p className="mt-2 max-w-xs text-[11px] leading-4 sm:text-xs text-[#C8D5CA]">
+              <p className="mt-2 max-w-xs text-xs leading-4 sm:text-xs text-[#C8D5CA]">
                 Long-term rentals for real life.
               </p>
             </div>
 
             {/* Explore */}
             <div>
-              <p className="mb-3 text-[9px] uppercase tracking-[0.3em] text-[#C8D5CA]">
+              <p className="mb-3 text-[11px] md:text-[9px] uppercase tracking-[0.3em] text-[#C8D5CA]">
                 Explore
               </p>
 
@@ -59,7 +59,7 @@ export default function Footer() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="w-fit text-xs text-[#F8F4EA]/70 transition hover:text-[#F8F4EA]"
+                    className="w-fit text-[13px] md:text-xs text-[#F8F4EA]/70 transition hover:text-[#F8F4EA]"
                   >
                     {link.label}
                   </Link>
@@ -69,7 +69,7 @@ export default function Footer() {
 
             {/* Owners */}
             <div>
-              <p className="mb-3 text-[9px] uppercase tracking-[0.3em] text-[#C8D5CA]">
+              <p className="mb-3 text-[11px] md:text-[9px] uppercase tracking-[0.3em] text-[#C8D5CA]">
                 For owners
               </p>
 
@@ -78,7 +78,7 @@ export default function Footer() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="w-fit text-xs text-[#F8F4EA]/70 transition hover:text-[#F8F4EA]"
+                    className="w-fit text-[13px] md:text-xs text-[#F8F4EA]/70 transition hover:text-[#F8F4EA]"
                   >
                     {link.label}
                   </Link>
@@ -88,11 +88,11 @@ export default function Footer() {
 
             {/* Contact */}
             <div>
-              <p className="mb-3 text-[9px] uppercase tracking-[0.3em] text-[#C8D5CA]">
+              <p className="mb-3 text-[11px] md:text-[9px] uppercase tracking-[0.3em] text-[#C8D5CA]">
                 Contact
               </p>
 
-              <div className="flex flex-col gap-1.5 text-xs text-[#F8F4EA]/70">
+              <div className="flex flex-col gap-1.5 text-[13px] md:text-xs text-[#F8F4EA]/70">
                 <a
                   href="mailto:hello@room.local"
                   className="hover:text-[#F8F4EA]"
@@ -106,7 +106,7 @@ export default function Footer() {
           </div>
 
           {/* Bottom */}
-          <div className="mt-6 flex flex-col gap-3 border-t border-[#F8F4EA]/15 pt-4 text-[10px] text-[#C8D5CA] sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-6 flex flex-col gap-3 border-t border-[#F8F4EA]/15 pt-4 text-xs md:text-[10px] text-[#C8D5CA] sm:flex-row sm:items-center sm:justify-between">
             <p>
               © {new Date().getFullYear()} livansa. All rights reserved.
             </p>

@@ -194,10 +194,10 @@ export default function LoginForm() {
     } bg-transparent py-3 text-sm font-medium text-[#1C1B18] outline-none transition-colors placeholder:font-medium placeholder:text-[#756A5C]`;
 
   const labelClass =
-    "mb-1 block text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A]";
+    "mb-1 block text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5F554A]";
 
   const errorClass =
-    "mt-1 text-[10px] font-medium text-red-500";
+    "mt-1 text-xs md:text-[10px] font-medium text-red-500";
 
   return (
     <form
@@ -248,7 +248,7 @@ export default function LoginForm() {
 
           <Link
             href="/forgot-password"
-            className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#174D35] transition-opacity hover:opacity-60"
+            className="text-[11px] md:text-[9px] font-semibold uppercase tracking-[0.12em] text-[#174D35] transition-opacity hover:opacity-60"
           >
             Forgot?
           </Link>
@@ -306,7 +306,7 @@ export default function LoginForm() {
       {/* SERVER ERROR */}
 
       {serverError && (
-        <div className="mb-4 border border-red-500/20 bg-red-500/5 px-4 py-3 text-[11px] font-medium text-red-600">
+        <div className="mb-4 border border-red-500/20 bg-red-500/5 px-4 py-3 text-xs md:text-[11px] font-medium text-red-600">
           {serverError}
         </div>
       )}
@@ -330,7 +330,7 @@ export default function LoginForm() {
 
       {/* REGISTER */}
 
-      <p className="pt-1 text-center text-[11px] font-medium text-[#5F554A]">
+      <p className="pt-1 text-center text-xs md:text-[11px] font-medium text-[#5F554A]">
         New to livansa?{" "}
         <Link
           href="/register"

@@ -101,13 +101,13 @@ export default function RentalCard({ room }: RentalCardProps) {
           {/* Badges Container Top */}
           <div className="absolute top-2.5 sm:top-3 inset-x-2.5 sm:inset-x-3 z-20 flex justify-between items-start">
             {/* Room Type Tag */}
-            <span className="rounded-[4px] sm:rounded-[2px] bg-[#F8F4EA]/95 backdrop-blur-md px-2 py-1 sm:px-2.5 sm:py-1 font-sans text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.16em] text-[#174D35] shadow-sm">
+            <span className="rounded-[4px] sm:rounded-[2px] bg-[#F8F4EA]/95 backdrop-blur-md px-2 py-1 sm:px-2.5 sm:py-1 font-sans text-[10px] sm:text-[9px] font-bold uppercase tracking-[0.16em] text-[#174D35] shadow-sm">
               {roomTypeLabel}
             </span>
 
             {/* Availability */}
             <span
-              className={`rounded-[4px] sm:rounded-[2px] px-2 py-1 sm:px-2.5 sm:py-1 font-sans text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.16em] shadow-sm ${
+              className={`rounded-[4px] sm:rounded-[2px] px-2 py-1 sm:px-2.5 sm:py-1 font-sans text-[10px] sm:text-[9px] font-bold uppercase tracking-[0.16em] shadow-sm ${
                 room.availability
                   ? "bg-[#174D35] text-[#F8F4EA]"
                   : "bg-[#1C1B18] text-white"
@@ -146,11 +146,11 @@ export default function RentalCard({ room }: RentalCardProps) {
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1 sm:gap-2.5">
             {/* Title + Location */}
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[13px] sm:text-lg font-medium leading-snug tracking-[-0.02em] text-[#1C1B18] transition-colors duration-300 group-hover:text-[#174D35] line-clamp-1">
+              <h3 className="font-serif text-sm sm:text-lg font-medium leading-snug tracking-[-0.02em] text-[#1C1B18] transition-colors duration-300 group-hover:text-[#174D35] line-clamp-1">
                 {room.title}
               </h3>
 
-              <div className="mt-0.5 sm:mt-1 flex items-center gap-1 font-sans text-[9px] font-semibold uppercase tracking-[0.14em] text-[#5F554A]">
+              <div className="mt-0.5 sm:mt-1 flex items-center gap-1 font-sans text-[11px] sm:text-[9px] font-semibold uppercase tracking-[0.14em] text-[#5F554A]">
                 <MapPin size={10} className="shrink-0 text-[#174D35] sm:w-[11px] sm:h-[11px]" />
                 <span className="truncate">{room.location}</span>
               </div>
@@ -158,10 +158,10 @@ export default function RentalCard({ room }: RentalCardProps) {
 
             {/* Rent Badge */}
             <div className="shrink-0 sm:text-right flex items-baseline gap-1 sm:block border-[#1C1B18]/5 sm:border-none pt-0.5 sm:pt-0">
-              <span className="inline-block font-serif text-[15px] sm:text-[19px] font-bold tracking-tight text-[#174D35]">
+              <span className="inline-block font-serif text-base sm:text-[19px] font-bold tracking-tight text-[#174D35]">
                 ₹{room.rent.toLocaleString("en-IN")}
               </span>
-              <p className="font-sans text-[8px] font-bold uppercase tracking-[0.15em] text-[#756A5C]">
+              <p className="font-sans text-[10px] sm:text-[8px] font-bold uppercase tracking-[0.15em] text-[#756A5C]">
                 / month
               </p>
             </div>
@@ -177,13 +177,13 @@ export default function RentalCard({ room }: RentalCardProps) {
                 {room.facilities.slice(0, 1).map((facility) => (
                   <span
                     key={facility}
-                    className="rounded-[4px] border border-[#174D35]/15 bg-[#174D35]/5 px-1.5 py-0.5 font-sans text-[8px] font-semibold uppercase tracking-[0.12em] text-[#174D35]"
+                    className="rounded-[4px] border border-[#174D35]/15 bg-[#174D35]/5 px-1.5 py-0.5 font-sans text-[10px] sm:text-[8px] font-semibold uppercase tracking-[0.12em] text-[#174D35]"
                   >
                     {facility}
                   </span>
                 ))}
                 {room.facilities.length > 1 && (
-                  <span className="rounded-[4px] border border-[#174D35]/15 bg-[#174D35]/5 px-1.5 py-0.5 font-sans text-[8px] font-semibold uppercase tracking-[0.12em] text-[#174D35]">
+                  <span className="rounded-[4px] border border-[#174D35]/15 bg-[#174D35]/5 px-1.5 py-0.5 font-sans text-[10px] sm:text-[8px] font-semibold uppercase tracking-[0.12em] text-[#174D35]">
                     +{room.facilities.length - 1}
                   </span>
                 )}

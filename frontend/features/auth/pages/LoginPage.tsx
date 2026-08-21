@@ -12,7 +12,7 @@ export default function LoginPage() {
           href="/"
           className="font-serif text-2xl italic tracking-tight text-[#174D35]"
         >
-          room.
+          livansa
         </Link>
 
         <Link
@@ -46,7 +46,7 @@ export default function LoginPage() {
 
               {/* Label */}
               <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#5F554A]">
-                Room / 02
+                Livansa / 02
               </p>
 
               {/* Heading */}
@@ -96,7 +96,7 @@ export default function LoginPage() {
               {/* Mobile heading */}
               <div className="mb-8 lg:hidden">
                 <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]">
-                  Room / 02
+                  Livansa / 02
                 </p>
 
                 <h1 className="font-serif text-4xl leading-none tracking-[-0.04em]">

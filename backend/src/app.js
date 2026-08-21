@@ -22,12 +22,23 @@ const app = express();
 const allowedOrigins = [
   "https://livansa.in",
   "https://www.livansa.in",
-];
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://localhost:5173",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:3001",
+  config.FRONTEND_URL,
+].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        (config.NODE_ENV !== "production" &&
+          /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))
+      ) {
         return callback(null, true);
       }
 

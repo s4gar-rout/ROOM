@@ -19,7 +19,17 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: config.FRONTEND_URL,
+        origin: (origin, callback) => {
+            if (
+                !origin ||
+                origin === config.FRONTEND_URL ||
+                (config.NODE_ENV !== "production" &&
+                  /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))
+            ) {
+                return callback(null, true);
+            }
+            return callback(null, false);
+        },
         credentials: true,
     },
 });

@@ -16,7 +16,7 @@ export default function ResetPasswordPage({
           href="/"
           className="font-serif text-2xl italic tracking-tight text-[#174D35]"
         >
-          room.
+          livansa
         </Link>
 
         <Link

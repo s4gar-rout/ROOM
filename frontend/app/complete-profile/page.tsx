@@ -174,7 +174,7 @@ export default function CompleteProfilePage() {
         </button>
 
         <span className="font-serif text-2xl italic tracking-tight text-[#174D35]">
-          room.
+          livansa
         </span>
 
         <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#756A5C]">

@@ -23,7 +23,7 @@ export default function ForgotPasswordPage() {
           href="/"
           className="font-serif text-2xl italic tracking-tight text-[#174D35]"
         >
-          room.
+          livansa
         </Link>
 
         <Link
@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
               </div>
 
               <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#5F554A]">
-                Room / 03
+                Livansa / 03
               </p>
 
               <h1 className="font-serif text-[5.5rem] leading-[0.84] tracking-[-0.055em]">
@@ -104,7 +104,7 @@ export default function ForgotPasswordPage() {
 
               <div className="mb-7 lg:hidden">
                 <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]">
-                  Room / 03
+                  Livansa / 03
                 </p>
 
                 <h1 className="font-serif text-4xl tracking-[-0.04em]">

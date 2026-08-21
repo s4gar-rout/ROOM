@@ -64,8 +64,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         className={`fixed inset-y-0 left-0 z-50 w-64 transform border-r border-[#1C1B18]/8 bg-[#FAF7F0] transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex h-16 items-center justify-between border-b border-[#1C1B18]/8 px-6">
-          <Link href="/admin" className="flex items-center gap-2 font-serif text-2xl font-normal tracking-tight text-[#174D35]">
-            <span>room.</span>
+          <Link href="/admin" className="flex items-center gap-2 font-serif text-2xl italic tracking-tight text-[#174D35]">
+            <span>livansa</span>
             <span className="rounded-full bg-[#174D35]/10 px-2.5 py-0.5 font-sans text-[8px] font-bold uppercase tracking-[0.2em] text-[#174D35]">ADMIN</span>
           </Link>
           <button className="md:hidden text-[#756A5C] hover:text-[#1C1B18]" onClick={() => setIsMobileOpen(false)}>

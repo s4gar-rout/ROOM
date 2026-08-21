@@ -12,7 +12,7 @@ export default function RegisterPage() {
           href="/"
           className="font-serif text-2xl italic tracking-tight text-[#174D35]"
         >
-          room.
+          livansa
         </Link>
 
         {/* Home */}
@@ -48,7 +48,7 @@ export default function RegisterPage() {
 
               {/* Section Label */}
               <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#5F554A]">
-                Room / 01
+                Livansa / 01
               </p>
 
               {/* Heading */}
@@ -99,7 +99,7 @@ export default function RegisterPage() {
               {/* Mobile Heading */}
               <div className="mb-6 lg:hidden">
                 <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.25em] text-[#5F554A]">
-                  Room / 01
+                  Livansa / 01
                 </p>
 
                 <h1 className="font-serif text-4xl leading-none tracking-[-0.04em]">

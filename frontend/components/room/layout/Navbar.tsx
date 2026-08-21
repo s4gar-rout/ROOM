@@ -9,9 +9,9 @@ export default function Navbar() {
         {/* Logo */}
         <Link
           href="/"
-          className="font-serif text-2xl md:text-3xl tracking-tight text-[#1C1B18]"
+          className="font-serif italic text-2xl md:text-3xl tracking-tight text-[#1C1B18]"
         >
-          room.
+          livansa
         </Link>
 
         {/* Navigation */}

@@ -126,7 +126,7 @@ export default function RootLayout({
           height: 128,
         },
 
-        sameAs: [siteConfig.instagram.url],
+        sameAs: [siteConfig.instagram.url, siteConfig.facebook.url],
       },
     ],
   };

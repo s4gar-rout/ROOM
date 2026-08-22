@@ -22,6 +22,24 @@ function InstagramIcon({ size = 13, className = "" }: { size?: number; className
   );
 }
 
+function FacebookIcon({ size = 13, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </svg>
+  );
+}
+
 const exploreLinks = [
   { label: "Find a home", href: "/rentals" },
   { label: "Saved rentals", href: "/saved" },
@@ -115,11 +133,23 @@ export default function Footer() {
 
               <div className="flex flex-col gap-2 text-xs text-[#F8F4EA]/70">
                 <a
-                  href={`mailto:${siteConfig.supportEmail}`}
+                  href={`mailto:${siteConfig.email}`}
                   className="inline-flex items-center gap-1.5 transition hover:text-[#F8F4EA]"
+                  aria-label="Send email to Livansa Support"
                 >
                   <Mail size={13} className="shrink-0 text-[#C8D5CA]" />
-                  <span>{siteConfig.supportEmail}</span>
+                  <span>{siteConfig.email}</span>
+                </a>
+
+                <a
+                  href={siteConfig.facebook.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 transition hover:text-[#F8F4EA]"
+                  aria-label="Visit Livansa on Facebook"
+                >
+                  <FacebookIcon size={13} className="shrink-0 text-[#C8D5CA]" />
+                  <span>Livansa</span>
                 </a>
 
                 <a
@@ -127,6 +157,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 transition hover:text-[#F8F4EA]"
+                  aria-label="Visit Livansa on Instagram"
                 >
                   <InstagramIcon size={13} className="shrink-0 text-[#C8D5CA]" />
                   <span>{siteConfig.instagram.handle}</span>
@@ -135,6 +166,7 @@ export default function Footer() {
                 <a
                   href={siteConfig.url}
                   className="inline-flex items-center gap-1.5 transition hover:text-[#F8F4EA]"
+                  aria-label="Visit Livansa Official Website"
                 >
                   <Globe size={13} className="shrink-0 text-[#C8D5CA]" />
                   <span>{siteConfig.displayUrl}</span>

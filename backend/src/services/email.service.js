@@ -81,7 +81,7 @@ export async function sendEmail({
             },
             body: JSON.stringify({
                 sender: {
-                    name: "livansa",
+                    name: "Livansa",
                     email: config.BREVO_EMAIL,
                 },
                 to: [

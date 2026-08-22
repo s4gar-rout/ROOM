@@ -4,7 +4,7 @@ dns.setServers(["8.8.8.8", "1.1.1.1"]);
 import http from "http";
 import { Server } from "socket.io";
 
-import app from "./app.js";
+import app, { allowedOrigins } from "./app.js";
 import { config } from "./config/config.js";
 import connectToDB from "./config/db.js";
 
@@ -22,7 +22,7 @@ const io = new Server(server, {
         origin: (origin, callback) => {
             if (
                 !origin ||
-                origin === config.FRONTEND_URL ||
+                allowedOrigins.includes(origin) ||
                 (config.NODE_ENV !== "production" &&
                   /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))
             ) {

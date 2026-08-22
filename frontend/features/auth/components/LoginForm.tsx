@@ -13,6 +13,7 @@ import { useEffect } from "react";
 
 import { loginUser } from "../services/auth.service";
 import { useAuth } from "../hooks/useAuth";
+import { getSafeErrorMessage } from "@/lib/error";
 
 type LoginFormData = {
   email: string;
@@ -169,10 +170,10 @@ export default function LoginForm() {
         "Your account role is not configured correctly."
       );
     } catch (error: unknown) {
-      const message =
-        (error as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message ||
-        "Invalid email/phone or password.";
+      const message = getSafeErrorMessage(
+        error,
+        "Invalid email/phone or password."
+      );
 
       setServerError(message);
     } finally {

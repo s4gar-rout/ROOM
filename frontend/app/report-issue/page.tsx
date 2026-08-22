@@ -7,6 +7,7 @@ import Footer from "@/components/layout/Footer";
 import api from "@/lib/axios";
 import { ArrowUpRight, Check, AlertCircle } from "lucide-react";
 import ButtonLoader from "@/components/ui/ButtonLoader";
+import { getSafeErrorMessage } from "@/lib/error";
 
 export default function ReportIssuePage() {
   const { user } = useAuth();
@@ -48,8 +49,7 @@ export default function ReportIssuePage() {
       setStatus("success");
     } catch (err: unknown) {
       setStatus("error");
-      const axiosErr = err as { response?: { data?: { message?: string } } };
-      setErrorMessage(axiosErr.response?.data?.message || "Something went wrong. Please try again.");
+      setErrorMessage(getSafeErrorMessage(err, "Something went wrong. Please try again."));
     } finally {
       setIsSubmitting(false);
     }

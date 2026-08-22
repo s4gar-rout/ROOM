@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import { becomeOwner } from "../services/auth.service";
 import ButtonLoader from "@/components/ui/ButtonLoader";
+import { getSafeErrorMessage } from "@/lib/error";
 
 interface BecomeOwnerModalProps {
   isOpen: boolean;
@@ -46,11 +47,9 @@ export default function BecomeOwnerModal({
       } else {
         throw new Error(response.message || "Couldn't update your account. Please try again.");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
-        err?.response?.data?.message ||
-        err?.message ||
-        "Couldn't update your account. Please try again."
+        getSafeErrorMessage(err, "Couldn't update your account. Please try again.")
       );
     } finally {
       setIsSubmitting(false);

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
 import ButtonLoader from "@/components/ui/ButtonLoader";
+import { getSafeErrorMessage } from "@/lib/error";
 
 export default function EditProfilePage() {
   const [profile, setProfile] = useState<ProfileUser | null>(null);
@@ -47,7 +48,7 @@ export default function EditProfilePage() {
             setError(data.message || "Failed to load profile.");
           }
         } catch (error: unknown) {
-          setError((error as { response?: { data?: { message?: string } } })?.response?.data?.message || "An error occurred while loading profile.");
+          setError(getSafeErrorMessage(error, "An error occurred while loading profile."));
         } finally {
           setLoadingProfile(false);
         }
@@ -92,7 +93,7 @@ export default function EditProfilePage() {
       }, 1500);
 
     } catch (error: unknown) {
-      setError((error as { response?: { data?: { message?: string } } })?.response?.data?.message || (error as Error).message || "An error occurred during update.");
+      setError(getSafeErrorMessage(error, "An error occurred while updating your profile. Please try again."));
     } finally {
       setIsSaving(false);
     }

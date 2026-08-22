@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getSafeErrorMessage } from "./error";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -48,6 +49,11 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    // Attach user-friendly safe message
+    if (error && typeof error === "object") {
+      (error as { userFriendlyMessage?: string }).userFriendlyMessage = getSafeErrorMessage(error);
+    }
 
     // Check if error response is 401 and request hasn't been retried yet
     // Do NOT intercept if the request was to '/auth/refresh' or '/auth/login' (to prevent infinite loops)

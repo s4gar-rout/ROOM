@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowUpRight, ArrowLeft, Trash2 } from "lucide-react";
 import DeleteAccountModal from "@/features/auth/components/DeleteAccountModal";
+import { getSafeErrorMessage } from "@/lib/error";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileUser | null>(null);
@@ -33,7 +34,7 @@ export default function ProfilePage() {
             setError(data.message || "Failed to load profile.");
           }
         } catch (error: unknown) {
-          setError((error as { response?: { data?: { message?: string } } })?.response?.data?.message || "An error occurred while loading profile.");
+          setError(getSafeErrorMessage(error, "Unable to load your profile. Please try again."));
         } finally {
           setLoadingProfile(false);
         }

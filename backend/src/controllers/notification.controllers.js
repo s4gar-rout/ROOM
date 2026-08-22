@@ -211,7 +211,7 @@ async function testPushController(req, res) {
 
         await sendWebPushNotification(user._id, {
             type: "TEST_NOTIFICATION",
-            title: "ROOM Notification Test",
+            title: "Livansa Notification Test",
             message: `Hello ${user.username || "there"}! Browser push notifications are working perfectly.`,
         });
 

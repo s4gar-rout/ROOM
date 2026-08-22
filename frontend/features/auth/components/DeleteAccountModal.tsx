@@ -8,6 +8,7 @@ import {
   verifyAndDeleteAccount,
 } from "../services/profile.service";
 import { useAuth } from "../hooks/useAuth";
+import { getSafeErrorMessage } from "@/lib/error";
 
 interface DeleteAccountModalProps {
   isOpen: boolean;
@@ -63,9 +64,7 @@ export default function DeleteAccountModal({
         setError(res.message || "Failed to send OTP. Please try again.");
       }
     } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message || "Failed to send verification OTP.";
+      const msg = getSafeErrorMessage(err, "Failed to send verification OTP.");
       setError(msg);
     } finally {
       setLoading(false);
@@ -84,9 +83,7 @@ export default function DeleteAccountModal({
         setError(res.message || "Failed to resend OTP.");
       }
     } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message || "Failed to resend OTP.";
+      const msg = getSafeErrorMessage(err, "Failed to resend OTP. Please try again.");
       setError(msg);
     } finally {
       setResending(false);
@@ -115,9 +112,7 @@ export default function DeleteAccountModal({
         setError(res.message || "Failed to verify OTP.");
       }
     } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message || "Invalid or expired OTP.";
+      const msg = getSafeErrorMessage(err, "Invalid or expired OTP.");
       setError(msg);
     } finally {
       setLoading(false);

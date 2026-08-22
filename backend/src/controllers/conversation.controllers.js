@@ -193,7 +193,7 @@ export async function createConversationController(req, res) {
 
         return res.status(500).json({
             success: false,
-            message: error.message || "Internal server error",
+            message: "Unable to start conversation right now. Please try again later.",
         });
     }
 }
@@ -246,7 +246,7 @@ export async function getConversationMessageController(req, res) {
 
         return res.status(error.status || 500).json({
             success: false,
-            message: error.message || "Internal server error",
+            message: "Failed to load messages. Please try again.",
         });
     }
 }
@@ -316,8 +316,7 @@ export async function sendMessageController(req, res) {
 
         return res.status(error.status || 500).json({
             success: false,
-            message:
-                error.message || "Internal server error",
+            message: "Failed to send message. Please try again.",
         });
     }
 }
@@ -343,8 +342,7 @@ export async function markAsReadController(req, res) {
 
         return res.status(error.status || 500).json({
             success: false,
-            message:
-                error.message || "Internal server error",
+            message: "Unable to update message status",
         });
     }
 }
@@ -461,8 +459,7 @@ export async function deleteMessageController(req, res) {
 
         return res.status(error.status || 500).json({
             success: false,
-            message:
-                error.message || "Internal server error",
+            message: "Failed to delete message. Please try again.",
         });
     }
 }
@@ -502,7 +499,7 @@ export async function clearConversationController(req, res) {
 
         return res.status(error.status || 500).json({
             success: false,
-            message: error.message || "Internal server error",
+            message: "Failed to clear conversation. Please try again.",
         });
     }
 }

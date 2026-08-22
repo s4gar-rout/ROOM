@@ -18,6 +18,7 @@ import { useConversationSocket } from "../hooks/useConversationSocket";
 import Avatar from "./Avatar";
 import MessageBubble from "./MessageBubble";
 import { chatStore } from "../store";
+import { getSafeErrorMessage } from "@/lib/error";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -282,11 +283,7 @@ export default function ChatWindow({
       })
       .catch((err: unknown) => {
         if (!active) return;
-        const msg =
-          err instanceof Error
-            ? err.message
-            : (err as { response?: { data?: { message?: string } } })?.response
-                ?.data?.message ?? "Unable to load messages";
+        const msg = getSafeErrorMessage(err, "Unable to load messages right now. Please try again.");
         showToast(msg, "error");
       })
       .finally(() => {
@@ -343,11 +340,7 @@ export default function ChatWindow({
       setText("");
       requestAnimationFrame(() => scrollToBottom("smooth"));
     } catch (err: unknown) {
-      const errMsg =
-        err instanceof Error
-          ? err.message
-          : (err as { response?: { data?: { message?: string } } })?.response
-              ?.data?.message ?? "Message could not be sent";
+      const errMsg = getSafeErrorMessage(err, "Message could not be sent. Please try again.");
       showToast(errMsg, "error");
     } finally {
       setSending(false);
@@ -393,11 +386,7 @@ export default function ChatWindow({
           current.filter((m) => m._id !== messageId)
         );
       } catch (err: unknown) {
-        const msg =
-          err instanceof Error
-            ? err.message
-            : (err as { response?: { data?: { message?: string } } })?.response
-                ?.data?.message ?? "Failed to delete message";
+        const msg = getSafeErrorMessage(err, "Failed to delete message. Please try again.");
         showToast(msg, "error");
       } finally {
         setDeletingForMeId(null);
@@ -420,11 +409,7 @@ export default function ChatWindow({
           )
         );
       } catch (err: unknown) {
-        const msg =
-          err instanceof Error
-            ? err.message
-            : (err as { response?: { data?: { message?: string } } })?.response
-                ?.data?.message ?? "Failed to delete message";
+        const msg = getSafeErrorMessage(err, "Failed to delete message. Please try again.");
         showToast(msg, "error");
       } finally {
         setDeletingForEveryoneId(null);
@@ -449,11 +434,7 @@ export default function ChatWindow({
         )
       );
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : (err as { response?: { data?: { message?: string } } })?.response
-              ?.data?.message ?? "Failed to clear conversation";
+      const msg = getSafeErrorMessage(err, "Failed to clear conversation. Please try again.");
       showToast(msg, "error");
     } finally {
       setClearLoading(false);

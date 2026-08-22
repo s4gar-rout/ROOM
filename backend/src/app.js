@@ -13,13 +13,14 @@ import profileRoutes from "./routes/profile.routes.js";
 import notificationRoutes from "./routes/rotification.routes.js";
 import issueRoutes from "./routes/issue.routes.js";
 import feedbackRoutes from "./routes/feedback.routes.js";
+import { errorHandler } from "./middlewares/error.middleware.js";
 
 const app = express();
 
 // ==========================================
 // CORS
 // ==========================================
-const allowedOrigins = [
+export const allowedOrigins = [
   "https://livansa.in",
   "https://www.livansa.in",
   "http://localhost:3000",
@@ -64,7 +65,8 @@ app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
   res.json({
-    message: "RoomSetu API is running",
+    success: true,
+    message: "Livansa API is running",
   });
 });
 
@@ -80,5 +82,20 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/issues", issueRoutes);
 app.use("/api/feedback", feedbackRoutes);
+
+// ==========================================
+// 404 NOT FOUND HANDLER
+// ==========================================
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "The requested API route could not be found",
+  });
+});
+
+// ==========================================
+// GLOBAL ERROR HANDLER
+// ==========================================
+app.use(errorHandler);
 
 export default app;

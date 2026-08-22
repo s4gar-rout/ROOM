@@ -14,6 +14,7 @@ import {
 } from "../services/auth.service";
 import { useAuth } from "../hooks/useAuth";
 import NotificationPromptModal from "@/features/notifications/components/NotificationPromptModal";
+import { getSafeErrorMessage } from "@/lib/error";
 
 type Step = "EMAIL" | "OTP" | "DETAILS";
 
@@ -92,8 +93,8 @@ export default function RegisterForm() {
       setStep("OTP");
       setResendTimer(60);
       setServerSuccess("Verification code sent to your email. Enter the OTP below to continue.");
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "Failed to send OTP. Please try again.";
+    } catch (error: unknown) {
+      const message = getSafeErrorMessage(error, "Failed to send verification code. Please try again.");
       setServerError(message);
     } finally {
       setIsLoading(false);
@@ -109,8 +110,8 @@ export default function RegisterForm() {
       await sendRegistrationOtp({ email: formData.email.trim() });
       setServerSuccess("A new verification code has been sent to your email.");
       setResendTimer(60);
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "Failed to resend verification code. Please try again.";
+    } catch (error: unknown) {
+      const message = getSafeErrorMessage(error, "Failed to resend verification code. Please try again.");
       setServerError(message);
     } finally {
       setIsResending(false);
@@ -136,8 +137,8 @@ export default function RegisterForm() {
       });
       setServerSuccess(""); // Clear success message from OTP screen
       setStep("DETAILS");
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "Verification failed. Invalid or expired OTP.";
+    } catch (error: unknown) {
+      const message = getSafeErrorMessage(error, "Verification failed. Invalid or expired OTP.");
       setServerError(message);
     } finally {
       setIsLoading(false);
@@ -197,8 +198,8 @@ export default function RegisterForm() {
         setUser(response.user);
         setShowNotificationModal(true);
       }
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "An error occurred during registration. Please try again.";
+    } catch (error: unknown) {
+      const message = getSafeErrorMessage(error, "An error occurred during registration. Please try again.");
       const lowerMessage = message.toLowerCase();
       
       if (lowerMessage.includes("mobile number") || lowerMessage.includes("contact")) {

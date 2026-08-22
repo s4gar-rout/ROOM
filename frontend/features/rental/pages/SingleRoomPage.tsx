@@ -29,6 +29,7 @@ import {
   Dumbbell,
   Sun,
   Building2,
+  UserCheck,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -37,6 +38,7 @@ import {
   staggerItemVariants,
   shouldReduceMotion,
 } from "@/lib/animations";
+import { getSafeErrorMessage } from "@/lib/error";
 
 import Navbar from "@/components/layout/Navbar";
 import { getSingleRoom } from "@/features/rental/services/rental.service";
@@ -146,9 +148,8 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
       if (res?.success && res?.conversation?._id) {
         router.push(`/messages/${res.conversation._id}`);
       }
-    } catch (err: any) {
-      const msg =
-        err?.response?.data?.message || "Unable to start chat at this time.";
+    } catch (err: unknown) {
+      const msg = getSafeErrorMessage(err, "Unable to start conversation right now. Please try again.");
       setRestrictionModal({
         isOpen: true,
         title: "Cannot Start Chat",
@@ -529,8 +530,8 @@ export default function SingleRoomPage({ roomId }: { roomId: string }) {
                       {ownerName}
                     </h3>
                     <span className="inline-flex items-center gap-1 rounded-full bg-[#174D35]/10 px-2 py-0.5 text-[10px] md:text-[9px] font-bold uppercase tracking-wider text-[#174D35]">
-                      <ShieldCheck size={11} className="text-[#174D35]" />
-                      Verified
+                      <UserCheck size={11} className="text-[#174D35]" />
+                      Direct Owner
                     </span>
                   </div>
                   <p className="mt-1 flex items-center gap-1.5 font-sans text-xs text-[#756A5C]">

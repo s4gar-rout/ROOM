@@ -58,7 +58,7 @@ export default function HowRoomWorks() {
         </motion.div>
 
         {/* Steps */}
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="mt-8 sm:mt-10 grid grid-cols-1 gap-4 md:grid-cols-3">
           {steps.map((step) => {
             const Icon = step.icon;
 
@@ -66,25 +66,27 @@ export default function HowRoomWorks() {
               <motion.div
                 key={step.number}
                 variants={fadeUpVariants}
-                className="rounded-3xl border border-[#174D35]/10 bg-white p-5 sm:p-6"
+                className="group flex flex-col justify-between rounded-3xl border border-[#174D35]/15 bg-[#FAF7F0] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#174D35]/35 hover:shadow-lg hover:shadow-[#174D35]/5"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#174D35] text-[#F8F4EA]">
-                    <Icon size={18} strokeWidth={1.7} />
+                <div>
+                  <div className="flex items-start justify-between">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#174D35] text-[#F8F4EA] transition-transform duration-300 group-hover:scale-105">
+                      <Icon size={20} strokeWidth={1.75} />
+                    </div>
+
+                    <span className="font-mono text-xs md:text-[10px] tracking-[0.25em] text-[#756A5C]/60">
+                      {step.number}
+                    </span>
                   </div>
 
-                  <span className="font-mono text-xs md:text-[10px] tracking-[0.25em] text-[#756A5C]/60">
-                    {step.number}
-                  </span>
+                  <h3 className="mt-6 font-serif text-xl sm:text-2xl text-[#1C1B18] tracking-[-0.01em]">
+                    {step.title}
+                  </h3>
+
+                  <p className="mt-2 text-xs sm:text-sm leading-6 text-[#756A5C]">
+                    {step.description}
+                  </p>
                 </div>
-
-                <h3 className="mt-6 font-serif text-xl sm:text-2xl text-[#1C1B18]">
-                  {step.title}
-                </h3>
-
-                <p className="mt-1.5 text-xs sm:text-sm leading-6 text-[#756A5C]">
-                  {step.description}
-                </p>
               </motion.div>
             );
           })}

@@ -1,6 +1,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Metadata } from "next";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -140,7 +141,7 @@ export default function PrivacyPolicyPage() {
             <section>
               <h2 className="font-serif text-2xl text-[#1C1B18] mb-4">Contact Us</h2>
               <p>
-                If you have any questions about this Privacy Policy or our privacy practices, please contact us at: <a href="mailto:hello@room.local" className="text-[#174D35] hover:underline">hello@room.local</a>.
+                If you have any questions about this Privacy Policy or our privacy practices, please contact us at: <a href={`mailto:${siteConfig.supportEmail}`} className="text-[#174D35] hover:underline">{siteConfig.supportEmail}</a>.
               </p>
             </section>
           </div>

@@ -1,5 +1,26 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Mail, Globe } from "lucide-react";
+import { siteConfig } from "@/config/site";
+
+function InstagramIcon({ size = 13, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
 
 const exploreLinks = [
   { label: "Find a home", href: "/rentals" },
@@ -92,15 +113,36 @@ export default function Footer() {
                 Contact
               </p>
 
-              <div className="flex flex-col gap-1.5 text-xs text-[#F8F4EA]/70">
+              <div className="flex flex-col gap-2 text-xs text-[#F8F4EA]/70">
                 <a
-                  href="mailto:hello@room.local"
-                  className="hover:text-[#F8F4EA]"
+                  href={`mailto:${siteConfig.supportEmail}`}
+                  className="inline-flex items-center gap-1.5 transition hover:text-[#F8F4EA]"
                 >
-                  hello@room.local
+                  <Mail size={13} className="shrink-0 text-[#C8D5CA]" />
+                  <span>{siteConfig.supportEmail}</span>
                 </a>
 
-                <span>Jharsuguda • Odisha</span>
+                <a
+                  href={siteConfig.instagram.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 transition hover:text-[#F8F4EA]"
+                >
+                  <InstagramIcon size={13} className="shrink-0 text-[#C8D5CA]" />
+                  <span>{siteConfig.instagram.handle}</span>
+                </a>
+
+                <a
+                  href={siteConfig.url}
+                  className="inline-flex items-center gap-1.5 transition hover:text-[#F8F4EA]"
+                >
+                  <Globe size={13} className="shrink-0 text-[#C8D5CA]" />
+                  <span>{siteConfig.displayUrl}</span>
+                </a>
+
+                <span className="text-[11px] text-[#C8D5CA]/80 pt-0.5">
+                  {siteConfig.location}
+                </span>
               </div>
             </div>
           </div>
